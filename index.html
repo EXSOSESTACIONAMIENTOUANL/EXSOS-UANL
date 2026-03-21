@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+
+    <head>
+        <meta charset="UTF-8">
+        <title> interfaz IHM </title>
+        <link rel="stylesheet" href="Styles.css">
+        <link rel="icon" href="https://i.postimg.cc/sD1s6x3P/mua.webp">
+    </head>
+
+    <body>
+
+    <!--    ----------------         Aqui esta para el menu despegable               ------------------   -->
+                 <div class="header">
+                    <div class="menu-btn" onclick="abrirMenu()">☰</div>
+                    <div class="imagen-exsos">
+                            <img src="https://i.imgur.com/lXxOiO5.png" alt="EXSOS" class="posicion-logo">
+                    </div>
+                    <div class="notificaciones-container">
+                        <div class="campana-wrapper" onclick="toggleNotificaciones()">
+                        <img src="https://i.imgur.com/gANyK8b.png" class="bell" alt="bell">
+                        <span class="badge" id="badgeNoti">0</span>
+                        </div>
+
+                            <div id="panelNotificaciones" class="panel-notificaciones">
+
+                            <h3 class="titulo-panel">Actualizaciones</h3>
+
+                                    <!-- HOY -->
+                                        <div class="bloque-noti">
+                                            <div class="cabecera-noti" onclick="toggleSeccion('hoy')">
+                                                <span>Hoy</span>
+                                                <span class="flecha" id="flecha-hoy">▼</span>
+                                            </div>
+
+                                            <div class="contenido-noti" id="hoy">
+
+                                                <div class="estado-vacio" id="estadoVacioHoy">
+                                                    <img src="https://i.postimg.cc/vT0816bb/Dino-sorprendido.webp" alt="Sin eventos" class="img-vacio">
+                                                    <p>No se encontraron eventos...</p>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                    
+                                        <div class="bloque-noti">
+                                            <div class="cabecera-noti" onclick="toggleSeccion('anteriores')">
+                                                <span>Anteriores</span>
+                                                <span class="flecha" id="flecha-anteriores">▼</span>
+                                            </div>
+
+                                            <div class="contenido-noti" id="anteriores">
+
+                                                <div class="estado-vacio" id="estadoVacioAnteriores">
+                                                    <img src="https://i.postimg.cc/vT0816bb/Dino-sorprendido.webp" class="img-vacio">
+                                                    <p>No se encontraron eventos...</p>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                            </div>
+                    </div>
+                </div>
+
+
+                
+                <div id="menuLateral" class="menu-lateral">
+
+                    <div class="menu-top">
+                            <div class="menu-icon">☰</div>
+                            </div>
+
+                    <div class="menu-body">
+                    <a href="Calendario.html">Calendario</a>
+                    <a href="#" onclick="abrirAyuda()">Ayuda</a>
+                    <a href="Comentarios.html">Comentarios</a>
+                    </div>
+
+                </div>
+
+                <div id="overlay" class="overlay" onclick="cerrarMenu()"></div>
+
+    <!--    ----------------         Aqui termina  el menu despegable               ------------------   -->
+
+
+
+        <div class="Lugares-disponibles">Lugares disponibles</div>
+        
+<div class="contenedor-disponibilidad">
+
+    <div class="bloque-numero">
+        <span class="numero-verde">003</span>
+        <span class="texto-label">Vacíos</span>
+    </div>
+
+    <div class="linea-vertical"></div>
+
+    <div class="bloque-numero">
+        <span class="numero-rojo">002</span>
+        <span class="texto-label">Ocupados</span>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+<div class="mapa-estacionamiento">
+
+<img src="https://i.imgur.com/AgysTJE.png" class="estadio">
+
+<div class="cajon libre cajon1">
+    <img src="https://i.imgur.com/J6oQWkW.png" class="carro">
+</div>
+
+<div class="cajon libre cajon2">
+    <img src="https://i.imgur.com/UI5w5Cl.png" class="carro">
+</div>
+
+<div class="cajon ocupado cajon3">
+    <img src="https://i.imgur.com/orgo04S.png" class="carro">
+</div>
+
+<div class="cajon ocupado cajon4">
+    <img src="https://i.imgur.com/Uoj2Zxn.png" class="carro">
+</div>
+
+<div class="cajon libre cajon5">
+    <img src="https://i.imgur.com/QnTv1Oe.png" class="carro">
+</div>
+
+</div>
+
+        
+
+
+
+<!--    ----------------         Aqui empieza  el pie de pagina               ------------------   -->
+
+        <footer class="pie-de-pagina">
+            <img src="https://i.imgur.com/ThuJm05.png" alt="FIME" class="tamaño-logos-FIME">
+            <p class="texto-universidad">Universidad Autónoma de Nuevo León
+                    Pedro de Alba S/N, Niños Héroes, Ciudad Universitaria
+                    66455 San Nicolás de los Garza, N.L.</p>
+            
+            <img src="https://i.imgur.com/YqsTbxy.png" alt="UANL" class="tamaño-logos-uni">
+        </footer>
+
+<!--    ----------------         Aqui termina  el pie de pagina               ------------------   --> 
+        
+        
+
+
+
+<div id="overlayAyuda">
+
+<div class="contenedor-ayudante">
+
+    <!-- MONITO CENTRAL -->
+    <img src="https://i.postimg.cc/zv83Hrh0/Dino-saludo.png"
+    id="imagenCentral"
+    class="monito-animado-grande">
+
+    <div class="mensaje-ayuda" id="mensajeAyuda">
+        <h3 id="tituloAyuda"></h3>
+        <p id="textoAyuda"></p>
+    </div>
+
+    <!-- CHAT -->
+    
+<div class="chat-contenedor">
+
+<div class="titulo-chat">
+Asistente virtual Exsos
+</div>
+
+<div class="chat-area" id="chatArea">
+
+<!-- MENSAJE DEL BOT -->
+<div class="mensaje bot">
+<img src="https://i.postimg.cc/76TSnwb3/Dino.jpg" class="avatar">
+<div class="burbuja">
+¿En qué puedo ayudarte?
+</div>
+</div>
+
+</div>
+
+<div class="input-chat">
+<input type="text" id="inputUsuario" placeholder="Escribe tu pregunta...">
+<button class="boton-enviar" onclick="enviarMensaje()">➤</button>
+</div>
+
+</div>
+
+    <button class="btn-cerrar" onclick="cerrarAyuda()">Cerrar</button>
+
+</div>
+
+</div>
+        
+        <script src="script.js"></script>
+
+    </body>
+    
+
+
+</html>

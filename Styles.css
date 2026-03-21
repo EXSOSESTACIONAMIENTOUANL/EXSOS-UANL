@@ -1,0 +1,1124 @@
+body{
+    margin: 0;
+}
+
+
+/*          Encabezado              */
+.imagen-exsos{
+    background: #152191;
+    text-align:center;
+    
+}
+
+.posicion-logo{
+    margin-top: 7%;
+    margin-bottom: 2%;
+    width: 70%;
+    
+}
+
+/*          Campanita             */
+
+.notificaciones-container{
+    position: relative;
+    height: 10vw;
+    width: 15vw;
+}
+
+.campana-wrapper{
+    position: relative;   
+    width: fit-content;
+    cursor: pointer;
+    bottom: 0.4vw;
+}
+
+.bell{
+    width: 12vw;
+}
+
+
+.badge{
+position:absolute;
+top:0.6vw;
+right:0.5vw;
+
+background:red;
+color:white;
+
+font-size:3vw;
+
+min-width:4vw;
+height:4vw;
+padding:0 0.8vw;
+
+border-radius:90px;
+border:0.7vw solid #152191;
+
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.bell.nueva{
+animation:campana 0.6s;
+}
+
+.titulo-panel{
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-size: clamp(40px, 2vw, 20px);
+    font-weight: 600;
+}
+
+.panel-notificaciones{
+
+    position: absolute;
+    top: 60px;
+    right: 0;
+    width: 600px;
+    background: white;
+    color: black;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    padding: 15px;
+    display: none;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: 0.3s ease;
+    z-index: 3000;
+}
+
+.panel-notificaciones.activo{
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+
+.bloque-noti{
+    margin-top: 10px;
+    border-top: 1px solid #ddd;
+    padding-top: 35px;
+}
+
+.cabecera-noti{
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-size: clamp(40px, 2vw, 20px);
+    font-weight: 600;
+    display:flex;
+    justify-content:space-between;
+    cursor:pointer;
+    font-weight:bold;
+    color:#152191;
+}
+
+.flecha{
+    transition: transform 0.3s ease;
+}
+
+.contenido-noti{
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-size: clamp(40px, 2vw, 20px);
+    max-height:0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    margin-top: 5px;
+}
+
+.contenido-noti.activo{
+    max-height: 100vw;
+    overflow-y: auto;
+}
+
+.noti-partido{
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-weight:normal;
+    font-size:3vw;
+    margin:13px 0;
+    text-align: justify;
+}
+
+.noti-anterior{
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-weight:normal;
+    font-size:3vw;
+    margin:6px 0;
+}
+
+.flecha.rotar{
+    transform: rotate(180deg);
+}
+
+.estado-vacio{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:20px 0;
+    text-align:center;
+    animation: fadeIn 0.3s ease;
+}
+
+.img-vacio{
+    width: 15vw;
+    margin-bottom:10px;
+    opacity:1;
+}
+
+
+@keyframes fadeIn{
+    from{ opacity:0; transform: translateY(5px); }
+    to{ opacity:1; transform: translateY(0); }
+}
+
+/* TARJETA DE NOTIFICACION */
+
+.notificacion-card{
+
+display:flex;
+align-items:center;
+gap:20px;
+
+background:#f2f2f2;
+
+padding:14px;
+border-radius:18px;
+
+margin-top:12px;
+
+box-shadow:0 4px 12px rgba(0,0,0,0.15);
+
+transition:0.2s;
+}
+
+.notificacion-card:hover{
+transform:scale(1.02);
+}
+
+/* ICONO */
+
+.noti-icono{
+font-size:4vw;
+width:40px;
+text-align:center;
+}
+
+/* TEXTO */
+
+.noti-texto{
+flex:1;
+}
+
+.noti-titulo{
+font-weight:bold;
+font-size:60%;
+color:#000;
+}
+
+.noti-mensaje{
+font-size:55%;
+color:#444;
+text-align: justify;
+}
+
+
+/*          Menu despegable              */
+
+.header{
+    background: #152191;
+    color:white;
+    display:flex;
+    align-items:center;      
+    justify-content:space-between;
+    padding:15px 20px;
+}
+
+.menu-btn{
+    font-size:12vw;
+    cursor:pointer;
+}
+
+
+.menu-lateral{
+    position:fixed;
+    top:0px;
+    left:-80%;
+    width:40%;
+    height:100%;
+    transition:0.3s ease;
+    z-index:1000;
+}
+
+
+.menu-top{
+    background:#152191;
+    height:23.9vw;
+    display:flex;
+    align-items:center;
+    padding-left:20px;
+}
+
+.menu-icon{
+    font-size:700%;
+    color:white;
+}
+
+
+.menu-body{
+    background:#ead228;
+    height:calc(100% - 90px);
+    padding-top:20px;
+}
+
+.menu-body a{
+    display:block;
+    padding:18px 25px;
+    text-decoration:none;
+    color:white;
+    font-size:5vw;
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet';
+    border-bottom:4px solid rgba(255,255,255,0.6);
+}
+
+.menu-body a:hover{
+    background:rgba(0,0,0,0.1);
+}
+
+
+.menu-lateral.activo{
+    left:0;
+}
+
+
+.overlay{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.4);
+    display:none;
+    z-index:999;
+}
+
+.overlay.activo{
+    display:block;
+}
+
+
+/*         Fin Encabezado              */
+
+
+/* ---------- DISPONIBILIDAD ---------- */
+
+.Lugares-disponibles{
+font-family:'Gill Sans','Gill Sans MT',Calibri,'Trebuchet MS',sans-serif;
+font-size:610%;
+margin-top:5.5%;
+text-align:center;
+}
+
+.contenedor-disponibilidad{
+display:flex;
+justify-content:center;
+align-items:center;
+margin-top:2vw;
+gap:40px;
+}
+
+.bloque-numero{
+display:flex;
+flex-direction:column;
+align-items:center;
+}
+
+.numero-verde{
+font-size:clamp(15vw,6vw,80px);
+font-weight:bold;
+color:#00c800;
+}
+
+.numero-rojo{
+font-size:clamp(15vw,6vw,80px);
+font-weight:bold;
+color:red;
+}
+
+.texto-label{
+font-family:'Gill Sans','Gill Sans MT',Calibri,'Trebuchet MS',sans-serif;
+font-size:clamp(60px,2vw,22px);
+margin-top:5px;
+}
+
+.linea-vertical{
+width:2px;
+height:100%;
+background:black;
+}
+
+/* ---------- MAPA ESTACIONAMIENTO ---------- */
+
+.mapa-estacionamiento{
+position:relative;
+width:100%;
+max-width:900px;
+margin:auto;
+margin-top:40px;
+}
+
+.estadio{
+width:100%;
+display:block;
+}
+
+
+.cajon{
+position:absolute;
+display:flex;
+align-items:flex-end;
+justify-content:center;
+}
+
+
+.libre{
+background:#00ff00;
+}
+
+.ocupado{
+background:red;
+animation:alerta 1s infinite;
+}
+
+.carro{
+width:250%;
+position:absolute;
+bottom:120%;
+left:50%;
+transform:translateX(-50%);
+pointer-events:none;
+}
+
+/* mostrar carro si está ocupado */
+
+.ocupado .carro{
+display:block;
+}
+
+/* si el cajon esta libre el carro desaparece */
+.cajon.libre .carro{
+opacity:0;
+}
+
+/* si esta ocupado aparece */
+.cajon.ocupado .carro{
+opacity:1;
+}
+
+/* LADO IZQUIERDO */
+
+.cajon1{
+width:9.8%;
+height:2%;
+left:2.8%;
+bottom:2.5%;
+}
+
+.cajon2{
+width:10.4%;
+height:2%;
+left:13.1%;
+bottom:2.4%;
+}
+
+.cajon3{
+width:10.7%;
+height:2%;
+left:24.014907%;
+bottom:2.4%;
+}
+
+/* LADO DERECHO */
+
+.cajon4{
+width:10.4%;
+height:2%;    
+right:14.5%;
+bottom:2.4%;
+}
+
+.cajon5{
+width:10.7%;
+height:2%;
+right:3.2%;
+bottom:2.4%;
+}
+
+
+
+
+
+/* ---------- ANIMACION ALERTA ---------- */
+
+@keyframes alerta{
+0%{opacity:1;}
+50%{opacity:0.4;}
+100%{opacity:1;}
+}
+
+
+/*         Seccion de ayuda              */
+
+.seccion-ayuda{
+    width: 90%;
+    margin: 40px auto;
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    flex: 1;
+}
+
+.titulo-ayuda{
+    font-size: 450%;
+    margin-top: 5.5%;
+    text-align:center;
+}
+
+.item-ayuda{
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 12px;
+}
+
+.pregunta{
+    cursor: pointer;
+    padding: 12px 15px;
+    font-weight: 600;
+    background: #f0f0f0;
+    transition: background 0.3s ease;
+    font-size: clamp(2.5vw, 4vw, 18px);
+    border-radius: 6px;
+}
+
+.pregunta:hover{
+    background: #e0e0e0;
+}
+
+.respuesta{
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    padding: 0 15px;
+    background: white;
+    font-size: clamp(13px, 3.8vw, 16px);
+}
+
+.respuesta.activa{
+    max-height: 200px;
+    padding: 15px;
+}
+
+
+.ayuda-interactiva{
+    text-align:center;
+    margin-top:30px;
+}
+
+.monito-ayuda{
+    width:120px;
+    cursor:pointer;
+    transition: transform 0.3s ease;
+}
+
+.monito-ayuda:hover{
+    transform: scale(1.1);
+}
+
+.texto-ayuda{
+    font-size: clamp(14px, 4vw, 18px);
+    margin-top:10px;
+    color:#333;
+}
+
+.panel-ayuda{
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease;
+}
+
+
+.panel-ayuda.activo{
+    max-height: 2000px; 
+}
+
+
+
+
+/* Fondo oscuro */
+#overlayAyuda{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: rgba(0,0,0,0.4);
+
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.3s;
+    z-index: 9999;
+}
+
+#overlayAyuda.activo{
+    opacity: 1;
+    pointer-events: auto;
+}
+
+
+.contenedor-ayudante{
+    background:white;
+    width:90%;
+    max-width:500px;
+    border-radius:20px;
+    padding:20px;
+    text-align:center;
+
+    transform: translateY(100%);
+    transition: transform 0.4s ease;
+
+    box-shadow:0 15px 40px rgba(0,0,0,0.3);
+}
+
+#overlayAyuda.activo .contenedor-ayudante{
+    transform: translateY(0);
+}
+
+
+.monito-animado{
+    width:35vw;
+    max-width:150px;
+    height:auto;
+    margin:0 auto 15px auto;
+    display:block;
+    animation: flotar 2s infinite ease-in-out;
+}
+
+.monito-animado-grande{
+    width:40vw;
+    max-width:200px;
+    height:auto;
+    margin:0 auto 15px auto;
+    display:block;
+    transition: all 0.5s ease;
+}
+
+
+@keyframes flotar{
+    0%{ transform: translateY(0); }
+    50%{ transform: translateY(-5px); }
+    100%{ transform: translateY(0); }
+}
+
+
+.monito-desaparece{
+    animation: desaparecer 0.5s forwards;
+}
+
+@keyframes desaparecer{
+    to{
+        opacity:0;
+        transform:scale(0.8);
+    }
+}
+
+
+.mensaje-ayuda h3{
+    font-family:'Gill Sans','Gill Sans MT',Calibri,'Trebuchet MS',sans-serif;
+    margin:0;
+    font-size:50px;
+}
+
+.mensaje-ayuda p{
+    font-family:'Gill Sans','Gill Sans MT',Calibri,'Trebuchet MS',sans-serif;
+    font-size:25px;
+    margin-top:10px;
+}
+
+
+.btn-cerrar{
+    font-family:'Gill Sans','Gill Sans MT',Calibri,'Trebuchet MS',sans-serif;
+    font-size:3vw;
+    margin-top:15px;
+    padding:8px 15px;
+    border:none;
+    background:#152191;
+    color:white;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+
+
+.chat-contenedor{
+    display:none;
+    flex-direction:column;
+    margin-top:20px;
+    background:#d9d9d9;
+    border-radius:30px;
+    padding:15px;
+    border:2px solid #bdbdbd;
+}
+
+.chat-contenedor.activo{
+    display:flex;
+    animation: aparecerChat 0.5s ease;
+}
+
+
+
+.titulo-chat{
+    font-family:'Gill Sans','Gill Sans MT',Calibri,'Trebuchet MS',sans-serif;
+    font-size: clamp(1vw, 4vw, 2.5vw);
+    background:#bdbdbd;
+    padding:10px;
+    text-align:center;
+    border-radius:20px;
+    font-weight:bold;
+    margin-bottom:10px;
+}
+
+
+
+.chat-area{
+    height:250px;
+    overflow-y:auto;
+    padding:10px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+/* MENSAJES */
+
+.mensaje{
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+/* MENSAJE USUARIO */
+
+.mensaje.usuario{
+    justify-content:flex-end;
+    font-family:'Gill Sans','Gill Sans MT',Calibri,'Trebuchet MS',sans-serif;
+    font-size: clamp(1vw, 4vw, 2.5vw);
+    text-align:justify;
+}
+
+/* MENSAJE BOT */
+
+.mensaje.bot{
+    justify-content:flex-start;
+    text-align:justify;
+}
+
+/* AVATAR BOT */
+
+.avatar{
+    width:40px;
+    max-width:7vw;
+    height:auto;
+    flex-shrink:0;
+}
+
+.usuario-avatar{
+    width:45px;
+    max-width:8vw;
+    height:auto;
+    flex-shrink:0;
+}
+
+
+
+.burbuja{
+    padding:10px 15px;
+    border-radius:18px;
+    max-width:70%;
+    animation: aparecer 0.3s ease;
+}
+
+
+
+.mensaje.usuario .burbuja{
+    font-family:'Gill Sans','Gill Sans MT',Calibri,'Trebuchet MS',sans-serif;
+    font-size: clamp(1vw, 4vw, 2.5vw);
+    background:#e4e6eb;
+}
+
+
+
+.mensaje.bot .burbuja{
+    font-family:'Gill Sans','Gill Sans MT',Calibri,'Trebuchet MS',sans-serif;
+    font-size: clamp(1vw, 4vw, 2.5vw);
+    background:#007bff36;
+    color:rgb(0, 0, 0);
+}
+
+
+
+@keyframes aparecer{
+    from{
+        opacity:0;
+        transform:translateY(10px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+
+
+.input-chat{
+    display:flex;
+    margin-top:10px;
+    gap:5px;
+    align-items:center;
+}
+
+
+.input-chat input{
+    font-family:'Gill Sans','Gill Sans MT',Calibri,'Trebuchet MS',sans-serif;
+    font-size: clamp(2.4vw, 4vw, 1vw);
+
+    flex:1;
+    height:5vw;
+
+    padding:0 15px;
+
+    border-radius:25px;
+    border:1px solid #ccc;
+
+    outline:none;
+}
+
+.input-chat button{
+    font-family:'Gill Sans','Gill Sans MT',Calibri,'Trebuchet MS',sans-serif;
+    font-size: clamp(2vw, 2.5vw, 3vw);
+
+    width:4.5vw;
+    height:4.5vw;
+
+    border:none;
+    border-radius:50%;
+    background:#0c5ae1;
+    color:white;
+
+    cursor:pointer;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    flex-shrink:0;
+}
+
+.input-chat button:hover{
+    background:#0056b3;
+}
+
+
+
+.pensando{
+    font-style:italic;
+    opacity:0.7;
+}
+
+
+
+/* ========= SECCION CALENDARIO ========= */
+body{
+    margin:0;
+    padding:0;
+}
+
+/* TITULO */
+
+.titulo-calendario{
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    text-align:center;
+    box-sizing:border-box;
+    background:#ead228;
+    padding:18px;
+    font-size:5vw;
+    width:100%;
+    margin-top: 0;
+}
+
+
+.calendario{
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    width:100%;
+    margin:0;
+    padding:20px 30px;
+    text-align:center;
+    box-sizing:border-box;
+    flex: 1;
+}
+
+
+/* CONTENEDOR DE MESES */
+
+.contenedor-calendario{
+display:grid;
+grid-template-columns:repeat(auto-fit, minmax(400px,1fr));
+gap:40px;
+max-width:1200px;
+margin:auto;
+}
+
+/* MES */
+
+.mes{
+    background:#f5f5f5;
+    padding:25px;
+    border-radius:12px;
+}
+
+.mes h3{
+    font-size:4vw;
+    margin-bottom:25px;
+}
+
+/* DIAS DE LA SEMANA */
+
+.dias-semana{
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    font-weight:bold;
+    font-size:3vw;
+    margin-bottom:10px;
+}
+
+/* DIAS */
+
+.dias{
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    gap:12px;
+    margin-top:5px;
+}
+
+.dias span{
+    padding:8px;
+    border-radius:100%;
+    background:#eeeeee;
+    transition:0.2s;
+    cursor:pointer;
+    font-size:2.2vw;
+}
+
+.dias span:hover{
+    background:#d9d9d9;
+}
+
+/* DIA CON PARTIDO */
+
+.partido{
+    background:#FFD400 !important;
+    font-weight:bold;
+    border-radius:50%;
+}
+
+
+/* ---------- POPUP PARTIDO ---------- */
+
+.popup{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100vw;
+    height:100%;
+    background:rgba(0,0,0,0.6);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.popup-contenido{
+    background:white;
+    padding:25px;
+    border-radius:10px;
+    width:100%;
+    max-width:90%;
+}
+
+.popup-contenido button{
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-size: 2.5vw;
+    margin:20px auto 0 auto;
+    padding:8px 15px;
+    border:none;
+    background:#FFD400;
+    cursor:pointer;
+    border-radius:5px;
+    display:block;
+}
+
+
+.partido-card{
+    width:100%;
+    background:#eeeeee;
+    border-radius:6px;
+    overflow:hidden;
+    margin-top:10px;
+}
+
+
+.partido-info{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:20px;
+}
+
+
+.equipo{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.equipo img{
+    width:80px;
+}
+
+.nombre-equipo{
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-size:160%;
+    font-weight:bold;
+}
+
+
+.vs{
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-size:4vw;
+    font-weight:bold;
+    color:#E5A900;
+}
+
+
+
+.info-partido{
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    border-left:3px solid #E5A900;
+    padding-left:20px;
+
+    display:flex;
+    align-items:center;   
+    height:11vw;          
+}
+
+.hora{
+    font-size:160%;
+    font-weight:500;
+}
+
+
+.barra-color{
+    height:5vw;
+    background:linear-gradient(to bottom,#f7b500 70%,#002a8f 30%);
+}
+
+.fecha{
+    font-weight:bold;
+}
+
+
+
+
+/* Seccion de comentarios */
+
+html, body{
+height:100%;
+margin:0;
+}
+
+body{
+display:flex;
+flex-direction:column;
+min-height:100vh;
+}
+
+.contenido-encuesta{
+flex:1;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:flex-start;
+margin-top:5vh;
+text-align:center;
+}
+
+.Encuesta{
+font-family:'Gill Sans','Gill Sans MT',Calibri,'Trebuchet MS',sans-serif;
+font-size: clamp(450%,4vw,60px);
+}
+
+.Qr{
+width:clamp(90vw,30vw,350px);
+height:auto;
+margin-top:20px;
+}
+
+.texto-qr{
+font-family:'Gill Sans','Gill Sans MT',Calibri,'Trebuchet MS',sans-serif;
+font-size: clamp(450%,2.5vw,35px);
+margin-top:20px;
+}
+
+
+
+/*          Pie de pagina              */
+
+html, body{
+    height:100%;
+    margin:0;
+}
+
+body{
+    display:flex;
+    flex-direction:column;
+}
+
+
+.pie-de-pagina{
+    height: 241px;
+    display:flex;
+    background:#152191;
+    color:white;
+    text-align:center;
+    margin-top:10px;
+    width: 100hv;
+    align-items:center;
+    justify-content:space-between;
+    padding:15px 20px;
+}
+
+
+.tamaño-logos-uni{
+width:15%;
+}
+
+.tamaño-logos-FIME{
+width:15%;
+}
+
+.texto-universidad{
+font-family:'Gill Sans','Gill Sans MT',Calibri,'Trebuchet MS',sans-serif;
+color:#ffffff;
+font-size:180%;
+text-align:center;
+margin-top:6%;
+margin-bottom:6%;
+}
