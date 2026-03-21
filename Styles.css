@@ -74,7 +74,7 @@ animation:campana 0.6s;
     position: absolute;
     top: 60px;
     right: 0;
-    width: 600px;
+    width: clamp(600px, 90vw, 400px);
     background: white;
     color: black;
     border-radius: 12px;
@@ -86,6 +86,7 @@ animation:campana 0.6s;
     transition: 0.3s ease;
     z-index: 3000;
 }
+
 
 .panel-notificaciones.activo{
     display: block;
@@ -197,7 +198,7 @@ transform:scale(1.02);
 /* ICONO */
 
 .noti-icono{
-font-size:4vw;
+font-size: clamp(40px, 2vw, 28px);
 width:40px;
 text-align:center;
 }
@@ -219,7 +220,6 @@ font-size:55%;
 color:#444;
 text-align: justify;
 }
-
 
 /*          Menu despegable              */
 
