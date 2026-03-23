@@ -8,50 +8,60 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-let estados = [1,1,1,1,1]; // estado global
+// 🔥 GUARDAR ELEMENTOS UNA SOLA VEZ
+const cajones = [
+    document.querySelector(".cajon1"),
+    document.querySelector(".cajon2"),
+    document.querySelector(".cajon3"),
+    document.querySelector(".cajon4"),
+    document.querySelector(".cajon5")
+];
 
-function actualizarUI(){
+const numeroVerde = document.querySelector(".numero-verde");
+const numeroRojo = document.querySelector(".numero-rojo");
 
-    let cajones = [
-        document.querySelector(".cajon1"),
-        document.querySelector(".cajon2"),
-        document.querySelector(".cajon3"),
-        document.querySelector(".cajon4"),
-        document.querySelector(".cajon5")
-    ];
+let estados = [1,1,1,1,1];
 
-    let ocupados = 0;
-    let libres = 0;
+// 🔥 SOLO ACTUALIZA EL CAJÓN QUE CAMBIA
+function actualizarCajon(i){
 
-    for(let i=0;i<5;i++){
-
-        if(estados[i] == 0){
-
-            cajones[i].classList.remove("libre");
-            cajones[i].classList.add("ocupado");
-            ocupados++;
-
-        }else{
-
-            cajones[i].classList.remove("ocupado");
-            cajones[i].classList.add("libre");
-            libres++;
-
-        }
+    if(estados[i] == 0){
+        cajones[i].classList.remove("libre");
+        cajones[i].classList.add("ocupado");
+    }else{
+        cajones[i].classList.remove("ocupado");
+        cajones[i].classList.add("libre");
     }
 
-    document.querySelector(".numero-verde").innerText = libres.toString().padStart(3,'0');
-    document.querySelector(".numero-rojo").innerText = ocupados.toString().padStart(3,'0');
+    actualizarContador();
 }
 
-//  ESCUCHA INDIVIDUAL (ULTRA RAPIDO)
+// 🔥 CONTADOR OPTIMIZADO
+function actualizarContador(){
+
+    let ocupados = estados.filter(e => e == 0).length;
+    let libres = 5 - ocupados;
+
+    numeroVerde.innerText = libres.toString().padStart(3,'0');
+    numeroRojo.innerText = ocupados.toString().padStart(3,'0');
+}
+
+// 🔥 ESCUCHA INDIVIDUAL (ULTRA FLUIDO)
 for(let i=1;i<=5;i++){
 
     db.ref("/estacionamiento/cajon" + i).on("value", (snapshot) => {
 
         if(snapshot.exists()){
-            estados[i-1] = snapshot.val();
-            actualizarUI(); // actualiza instantáneo
+
+            let nuevo = snapshot.val();
+
+            // 🚀 SOLO SI CAMBIA
+            if(estados[i-1] !== nuevo){
+
+                estados[i-1] = nuevo;
+                actualizarCajon(i-1);
+
+            }
         }
 
     });
