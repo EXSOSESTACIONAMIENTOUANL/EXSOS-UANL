@@ -1,41 +1,69 @@
 /* ======================================================== */
-/* 1. CONEXIÓN A FIREBASE (AÑADIDA A TU LÓGICA)             */
+/* 1. CONEXIÓN A FIREBASE (NUBE)                            */
 /* ======================================================== */
-const dbRef = firebase.database().ref('/estacionamiento/raw');
 
-// Esta es la única parte "nueva" para que los cajones funcionen
-if (typeof firebase !== 'undefined' && document.querySelector(".mapa-estacionamiento")) {
-    dbRef.on('value', (snapshot) => {
-        const raw = snapshot.val(); 
-        if (!raw) return;
+const firebaseConfig = {
+  apiKey: "AIzaSyBTnfeDaDYQlk3ugUHzc3SXB_b7dMrv3Qg",
+  authDomain: "esp32-ecdcf.firebaseapp.com",
+  databaseURL: "https://esp32-ecdcf-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "esp32-ecdcf",
+  storageBucket: "esp32-ecdcf.firebasestorage.app",
+  messagingSenderId: "436852778640",
+  appId: "1:436852778640:web:7a7e1f2cb1c42973921a15"
+};
+
+// Inicializar Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// Escuchar cambios del ESP32 en tiempo real
+// SOLO si estamos en la página que tiene el mapa de estacionamiento
+if (document.querySelector(".mapa-estacionamiento")) {
+    db.ref("/estacionamiento").on("value", (snapshot) => {
+        const datos = snapshot.val();
+        if (!datos) return;
+
+        let cajones = [
+            document.querySelector(".cajon1"),
+            document.querySelector(".cajon2"),
+            document.querySelector(".cajon3"),
+            document.querySelector(".cajon4"),
+            document.querySelector(".cajon5")
+        ];
+
+        // Mapeo directo de tus variables de Firebase
+        const estados = [datos.cajon1, datos.cajon2, datos.cajon3, datos.cajon4, datos.cajon5];
         
-        // Actualizamos los cajones usando tus clases
-        for (let i = 1; i <= 5; i++) {
-            const cajon = document.querySelector(`.cajon${i}`);
-            if (cajon) {
-                if (raw[i - 1] === "1") {
-                    cajon.classList.remove("ocupado");
-                    cajon.classList.add("libre");
-                } else {
-                    cajon.classList.remove("libre");
-                    cajon.classList.add("ocupado");
+        let ocupados = 0;
+        let libres = 0;
+
+        for(let i = 0; i < 5; i++) {
+            if (cajones[i]) {
+                if (estados[i] == 0) { // 0 = Ocupado (Rojo)
+                    cajones[i].classList.remove("libre");
+                    cajones[i].classList.add("ocupado");
+                    ocupados++;
+                } else { // 1 = Libre (Verde)
+                    cajones[i].classList.remove("ocupado");
+                    cajones[i].classList.add("libre");
+                    libres++;
                 }
             }
         }
+
+        // Actualizar contadores visuales
+        const numVerde = document.querySelector(".numero-verde");
+        const numRojo = document.querySelector(".numero-rojo");
         
-        // Actualizamos tus contadores
-        const libres = (raw.match(/1/g) || []).length;
-        const ocupados = (raw.match(/0/g) || []).length;
-        const elV = document.querySelector(".numero-verde");
-        const elR = document.querySelector(".numero-rojo");
-        if(elV) elV.innerText = libres.toString().padStart(3, '0');
-        if(elR) elR.innerText = ocupados.toString().padStart(3, '0');
+        if(numVerde) numVerde.innerText = libres.toString().padStart(3, '0');
+        if(numRojo) numRojo.innerText = ocupados.toString().padStart(3, '0');
     });
 }
 
-/* ========================= */
-/* 2. TU LÓGICA DE MENÚ      */
-/* ========================= */
+/* ======================================================== */
+/* 2. MENÚ LATERAL Y NOTIFICACIONES                         */
+/* ======================================================== */
+
 function abrirMenu(){
     document.getElementById("menuLateral").classList.add("activo");
     document.getElementById("overlay").classList.add("activo");
@@ -46,18 +74,15 @@ function cerrarMenu(){
     document.getElementById("overlay").classList.remove("activo");
 }
 
-/* ========================= */
-/* 3. TU PANEL DE NOTIFICACIONES */
-/* ========================= */
 function toggleNotificaciones(){
     const panel = document.getElementById("panelNotificaciones");
-    panel.classList.toggle("activo");
+    if(panel) panel.classList.toggle("activo");
 }
 
 document.addEventListener("click", function(e){
     const panel = document.getElementById("panelNotificaciones");
     const container = document.querySelector(".notificaciones-container");
-    if(container && !container.contains(e.target)){
+    if(panel && container && !container.contains(e.target)){
         panel.classList.remove("activo");
     }
 });
@@ -69,9 +94,10 @@ function toggleSeccion(id){
     if(flecha) flecha.classList.toggle("rotar");
 }
 
-/* ========================= */
-/* 4. TU AYUDANTE DINO       */
-/* ========================= */
+/* ======================================================== */
+/* 3. ASISTENTE VIRTUAL DINO (CHATBOT)                      */
+/* ======================================================== */
+
 function abrirAyuda(){
     const overlay = document.getElementById("overlayAyuda");
     const titulo = document.getElementById("tituloAyuda");
@@ -81,13 +107,15 @@ function abrirAyuda(){
     const chatContenedor = document.querySelector(".chat-contenedor");
     const chat = document.getElementById("chatArea");
 
+    if(!overlay) return;
+
     overlay.classList.add("activo");
     titulo.innerHTML = ""; texto.innerHTML = ""; chat.innerHTML = "";
     chatContenedor.classList.remove("activo");
     imagenCentral.classList.remove("monito-desaparece");
     mensajeAyuda.classList.remove("monito-desaparece");
-    imagenCentral.style.display = "block";
-    mensajeAyuda.style.display = "block";
+    imagenCentral.style.display="block";
+    mensajeAyuda.style.display="block";
 
     escribirTexto("¡Hola!", titulo, 50, () => {
         escribirTexto("Soy tu asistente virtual EXSOS", texto, 30, () => {
@@ -111,7 +139,8 @@ function abrirAyuda(){
 }
 
 function cerrarAyuda(){
-    document.getElementById("overlayAyuda").classList.remove("activo");
+    const overlay = document.getElementById("overlayAyuda");
+    if(overlay) overlay.classList.remove("activo");
 }
 
 function escribirTexto(textoCompleto, elemento, velocidad, callback){
@@ -130,6 +159,8 @@ function escribirTexto(textoCompleto, elemento, velocidad, callback){
 function enviarMensaje(){
     const input = document.getElementById("inputUsuario");
     const chat = document.getElementById("chatArea");
+    if(!input || !chat) return;
+    
     const textoUsuario = input.value.trim();
     if(textoUsuario === "") return;
 
@@ -138,22 +169,39 @@ function enviarMensaje(){
         <div class="burbuja">${textoUsuario}</div>
         <img src="https://i.postimg.cc/3NzGy63L/Dina.png" class="avatar usuario-avatar">
     </div>`;
-
     input.value="";
     chat.scrollTop = chat.scrollHeight;
 
+    const pensando = document.createElement("div");
+    pensando.classList.add("mensaje","bot");
+    pensando.innerHTML = `<img src="https://i.postimg.cc/WpxqwBv1/Feliz.png" class="avatar"><div class="burbuja pensando">Escribiendo...</div>`;
+    chat.appendChild(pensando);
+
     setTimeout(()=>{
+        pensando.remove();
+        const respuesta = generarRespuesta(textoUsuario);
         const mensajeBot = document.createElement("div");
         mensajeBot.classList.add("mensaje","bot");
-        mensajeBot.innerHTML = `<img src="https://i.postimg.cc/WpxqwBv1/Feliz.png" class="avatar"><div class="burbuja">Entendido, estoy procesando tu duda...</div>`;
+        mensajeBot.innerHTML = `<img src="https://i.postimg.cc/WpxqwBv1/Feliz.png" class="avatar"><div class="burbuja"></div>`;
         chat.appendChild(mensajeBot);
+        escribirTexto(respuesta, mensajeBot.querySelector(".burbuja"), 20);
         chat.scrollTop = chat.scrollHeight;
     },1000);
 }
 
-/* ========================= */
-/* 5. TU CALENDARIO (CSV)    */
-/* ========================= */
+function generarRespuesta(texto){
+    texto = texto.toLowerCase();
+    if(texto.includes("verde")) return "El color verde indica que el lugar está disponible.";
+    if(texto.includes("rojo")) return "El color rojo indica que el cajón está ocupado.";
+    if(texto.includes("tu nombre")) return "Mi nombre es Dino, asistente de EXSOS.";
+    if(texto.includes("tiempo real")) return "Sí, el sistema se actualiza automáticamente con sensores.";
+    return "Lo siento, aún estoy aprendiendo. Pregúntame sobre colores o disponibilidad.";
+}
+
+/* ======================================================== */
+/* 4. CALENDARIO Y PARTIDOS (LECTURA CSV)                   */
+/* ======================================================== */
+
 let partidos = {};
 
 async function cargarPartidos(){
@@ -175,7 +223,7 @@ async function cargarPartidos(){
         activarClicks();
         revisarPartidosHoy();
         revisarPartidosAnteriores();
-    } catch(e) { console.error("Error al cargar el CSV"); }
+    } catch(e) { console.error("No se pudo cargar partidos.csv"); }
 }
 
 function marcarPartidos(){
@@ -203,6 +251,9 @@ function activarClicks(){
 
 function mostrarPopup(listaPartidos){
     const popup = document.getElementById("popup");
+    const rivalArea = document.getElementById("popup-rival");
+    if(!popup || !rivalArea) return;
+    
     popup.style.display="flex";
     let contenido = "";
     listaPartidos.forEach(p => {
@@ -217,7 +268,7 @@ function mostrarPopup(listaPartidos){
             <div class="barra-color"></div>
         </div>`;
     });
-    document.getElementById("popup-rival").innerHTML = contenido;
+    rivalArea.innerHTML = contenido;
 }
 
 function cerrarPopup(){ document.getElementById("popup").style.display="none"; }
@@ -258,9 +309,26 @@ function revisarPartidosAnteriores(){
             });
         }
     });
-    if(document.getElementById("estadoVacioAnteriores")) 
-        document.getElementById("estadoVacioAnteriores").style.display = hayEventos ? "none" : "flex";
+    const vacio = document.getElementById("estadoVacioAnteriores");
+    if(vacio) vacio.style.display = hayEventos ? "none" : "flex";
     actualizarNumeroCampana();
+}
+
+function corregirInicioMeses(){
+    const year = 2026;
+    document.querySelectorAll(".mes").forEach((mesDiv, index) => {
+        const diasContainer = mesDiv.querySelector(".dias");
+        if(!diasContainer) return;
+        diasContainer.querySelectorAll(".vacio").forEach(e => e.remove());
+        const primerDia = new Date(year, index, 1).getDay();
+        let offset = primerDia - 1;
+        if(offset < 0) offset = 6;
+        for(let i = 0; i < offset; i++){
+            const espacio = document.createElement("span");
+            espacio.classList.add("vacio");
+            diasContainer.prepend(espacio);
+        }
+    });
 }
 
 function actualizarNumeroCampana(){
@@ -272,23 +340,12 @@ function actualizarNumeroCampana(){
     }
 }
 
-/* ========================= */
-/* 6. INICIALIZACIÓN         */
-/* ========================= */
+/* ======================================================== */
+/* 5. INICIALIZACIÓN                                        */
+/* ======================================================== */
 document.addEventListener("DOMContentLoaded", () => {
-    // Alinear meses
-    document.querySelectorAll(".mes").forEach((mesDiv, index) => {
-        const diasContainer = mesDiv.querySelector(".dias");
-        if(diasContainer) {
-            diasContainer.querySelectorAll(".vacio").forEach(e => e.remove());
-            let offset = new Date(2026, index, 1).getDay() - 1;
-            if (offset < 0) offset = 6;
-            for (let i = 0; i < offset; i++) {
-                const span = document.createElement("span");
-                span.className = "vacio";
-                diasContainer.prepend(span);
-            }
-        }
-    });
+    corregirInicioMeses();
     cargarPartidos();
+    const input = document.getElementById("inputUsuario");
+    if(input) input.addEventListener("keypress", (e) => { if(e.key === "Enter") enviarMensaje(); });
 });
