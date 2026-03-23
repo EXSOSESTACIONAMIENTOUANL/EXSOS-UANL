@@ -88,147 +88,142 @@ function escribirTexto(t, el, v, cb) {
     }, v);
 }
 
-/* ======================================================== */
-/* 4. CALENDARIO Y NOTIFICACIONES (CSV) - CORREGIDO         */
-/* ======================================================== */
-/* ======================================================== */
-/* 4. CALENDARIO Y NOTIFICACIONES (CSV) - REPARADO          */
-/* ======================================================== */
-let partidosGlobal = {};
+let partidos = {};
 
-async function cargarPartidos() {
-    try {
-        const res = await fetch("partidos.csv");
-        const texto = await res.text();
-        const lineas = texto.split("\n").slice(1);
+async function cargarPartidos(){
+    const respuesta = await fetch("partidos.csv");
+    const texto = await respuesta.text();
+    const lineas = texto.split("\n");
+    lineas.shift();
 
-        partidosGlobal = {}; 
-        lineas.forEach(l => {
-            const d = l.split(",");
-            if (d.length < 5) return;
-            const clave = `${parseInt(d[0])}-${parseInt(d[1])}`; 
-            if (!partidosGlobal[clave]) partidosGlobal[clave] = [];
-            partidosGlobal[clave].push({ 
-                local: d[2].trim(), 
-                rival: d[3].trim(), 
-                hora: d[4].trim() 
+    lineas.forEach(linea => {
+        const datos = linea.split(",");
+        if(datos.length < 5) return;
+        const clave = datos[0] + "-" + datos[1]; // Mes-Dia
+        if(!partidos[clave]) partidos[clave] = [];
+        partidos[clave].push({ rival:datos[3], local:datos[2], hora:datos[4], logoLocal:datos[5], logoRival:datos[6] });
+    });
+
+    marcarPartidos();
+    activarClicks();
+    revisarPartidosHoy();
+    revisarPartidosAnteriores();
+}
+
+function marcarPartidos(){
+    const meses = document.querySelectorAll(".mes");
+    meses.forEach((mesDiv, index) => {
+        const mesNumero = index + 1;
+        mesDiv.querySelectorAll(".dias span").forEach(dia => {
+            if(partidos[mesNumero + "-" + dia.dataset.dia]) dia.classList.add("partido");
+        });
+    });
+}
+
+function activarClicks(){
+    const meses = document.querySelectorAll(".mes");
+    meses.forEach((mesDiv, index) => {
+        const mesNumero = index + 1;
+        mesDiv.querySelectorAll(".dias span").forEach(dia => {
+            dia.addEventListener("click", function(){
+                const clave = mesNumero + "-" + this.dataset.dia;
+                if(partidos[clave]) mostrarPopup(partidos[clave]);
             });
         });
-
-        revisarNotificacionesCompleto();
-        if(document.querySelector(".mes")) marcarDias();
-    } catch (e) { 
-        console.warn("Archivo CSV no detectado o error de red."); 
-    }
-}
-
-function marcarDias() {
-    document.querySelectorAll(".mes").forEach((mesDiv, i) => {
-        const mesNum = i + 1;
-        mesDiv.querySelectorAll(".dias span").forEach(dia => {
-            const numDia = parseInt(dia.dataset.dia);
-            const clave = `${mesNum}-${numDia}`;
-            if (partidosGlobal[clave]) {
-                dia.classList.add("partido");
-                dia.onclick = () => mostrarPopup(partidosGlobal[clave]);
-            }
-        });
     });
 }
 
-function revisarNotificacionesCompleto() {
-    const hoy = new Date();
-    const mesHoy = hoy.getMonth() + 1;
-    const diaHoy = hoy.getDate();
-    
-    const contHoy = document.getElementById("hoy");
-    const contAnt = document.getElementById("anteriores");
-    if (!contHoy || !contAnt) return;
-
-    contHoy.innerHTML = ""; 
-    contAnt.innerHTML = "";
-
-    let hayHoy = false, hayAnt = false;
-
-    Object.keys(partidosGlobal).forEach(clave => {
-        const [m, d] = clave.split("-").map(Number);
-        
-        partidosGlobal[clave].forEach(p => {
-            const card = document.createElement("div");
-            card.className = "notificacion-card";
-            
-            // RESTAURADO: Estructura original para que el CSS funcione
-            card.innerHTML = `
-                <div class="noti-icono">⚽</div>
-                <div class="noti-texto">
-                    <div class="noti-titulo">Partido hoy</div>
-                    <div class="noti-mensaje">
-                        Hoy hay partido a las ${p.hora}. Se recomienda salir temprano.
-                    </div>
-                </div>`;
-
-            if (m === mesHoy && d === diaHoy) {
-                contHoy.appendChild(card);
-                hayHoy = true;
-            } else if (m < mesHoy || (m === mesHoy && d < diaHoy)) {
-                // Ajuste para partidos anteriores
-                card.querySelector(".noti-icono").innerText = "📅";
-                card.querySelector(".noti-titulo").innerText = `${p.local} vs ${p.rival}`;
-                card.querySelector(".noti-mensaje").innerText = `${d}/${m}/26 - ${p.hora}`;
-                contAnt.appendChild(card);
-                hayAnt = true;
-            }
-        });
-    });
-
-    document.getElementById("estadoVacioHoy").style.display = hayHoy ? "none" : "flex";
-    document.getElementById("estadoVacioAnteriores").style.display = hayAnt ? "none" : "flex";
-    
-    actualizarBadge();
-}
-
-function mostrarPopup(lista) {
+function mostrarPopup(listaPartidos){
     const popup = document.getElementById("popup");
-    const rivalArea = document.getElementById("popup-rival");
-    if (!popup || !rivalArea) return;
-
-    popup.style.display = "flex";
-    let html = "";
-    
-    lista.forEach(p => {
-        // RESTAURADO: Estructura de tarjeta para el POPUP (Captura 2)
-        html += `
+    popup.style.display="flex";
+    let contenido = "";
+    listaPartidos.forEach(p => {
+        contenido += `
         <div class="partido-card">
             <div class="partido-info">
-                <div class="equipo">
-                    <span class="nombre-equipo">${p.local}</span>
-                </div>
+                <div class="equipo"><span class="nombre-equipo">${p.local}</span></div>
                 <div class="vs">VS</div>
-                <div class="equipo">
-                    <span class="nombre-equipo">${p.rival}</span>
-                </div>
-                <div class="info-partido">
-                    <div class="hora">🕒 ${p.hora}</div>
-                </div>
+                <div class="equipo"><span class="nombre-equipo">${p.rival}</span></div>
+                <div class="info-partido"><div class="hora">🕒 ${p.hora}</div></div>
             </div>
             <div class="barra-color"></div>
         </div>`;
     });
-    rivalArea.innerHTML = html;
+    document.getElementById("popup-rival").innerHTML = contenido;
 }
 
-function cerrarPopup() { 
-    document.getElementById("popup").style.display = "none"; 
+function cerrarPopup(){ document.getElementById("popup").style.display="none"; }
+
+function revisarPartidosHoy(){
+    const hoy = new Date();
+    const clave = (hoy.getMonth() + 1) + "-" + hoy.getDate();
+    const contenedor = document.getElementById("hoy");
+    if(partidos[clave]){
+        document.getElementById("estadoVacioHoy").style.display = "none";
+        partidos[clave].forEach(p => {
+            const aviso = document.createElement("div");
+            aviso.classList.add("notificacion-card");
+            aviso.innerHTML = `<div class=\"noti-icono\">⚽</div><div class=\"noti-texto\"><b>Partido hoy</b><br>A las ${p.hora}</div>`;
+            contenedor.appendChild(aviso);
+        });
+    }
+    actualizarNumeroCampana();
 }
 
-function actualizarBadge() {
-    const n = document.querySelectorAll(".notificacion-card").length;
+function revisarPartidosAnteriores(){
+    const hoy = new Date();
+    const mesAct = hoy.getMonth() + 1;
+    const diaAct = hoy.getDate();
+    const contenedor = document.getElementById("anteriores");
+    let hayEventos = false;
+
+    Object.keys(partidos).forEach(clave => {
+        const [m, d] = clave.split("-").map(Number);
+        if(m < mesAct || (m === mesAct && d < diaAct)){
+            partidos[clave].forEach(p => {
+                const aviso = document.createElement("div");
+                aviso.classList.add("notificacion-card");
+                aviso.innerHTML = `<div class=\"noti-icono\">📅</div><div class=\"noti-texto\"><b>${p.local} vs ${p.rival}</b><br>${d}/${m}/26</div>`;
+                contenedor.appendChild(aviso);
+                hayEventos = true;
+            });
+        }
+    });
+    document.getElementById("estadoVacioAnteriores").style.display = hayEventos ? "none" : "flex";
+    actualizarNumeroCampana();
+}
+
+function corregirInicioMeses(){
+    document.querySelectorAll(".mes").forEach((mesDiv, index) => {
+        const diasContainer = mesDiv.querySelector(".dias");
+        diasContainer.querySelectorAll(".vacio").forEach(e => e.remove());
+        const primerDia = new Date(2026, index, 1).getDay();
+        let offset = primerDia - 1;
+        if(offset < 0) offset = 6;
+        for(let i = 0; i < offset; i++){
+            const espacio = document.createElement("span");
+            espacio.classList.add("vacio");
+            diasContainer.prepend(espacio);
+        }
+    });
+}
+
+function actualizarNumeroCampana(){
+    const total = document.querySelectorAll(".notificacion-card").length;
     const badge = document.getElementById("badgeNoti");
-    if (badge) {
-        badge.textContent = n;
-        badge.style.backgroundColor = (n === 0) ? "#00c800" : "red";
+    if(badge){
+        badge.textContent = total;
+        badge.style.backgroundColor = (total === 0) ? "#00c800" : "red";
     }
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    corregirInicioMeses();
+    cargarPartidos();
+    const input = document.getElementById("inputUsuario");
+    if(input) input.addEventListener("keypress", (e) => { if(e.key === "Enter") enviarMensaje(); });
+});
+
 
 /* ======================================================== */
 /* 5. INICIALIZACIÓN                                        */
