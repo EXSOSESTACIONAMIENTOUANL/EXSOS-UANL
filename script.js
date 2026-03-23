@@ -1,213 +1,324 @@
-/* ========================= */
-/* CONFIGURACIÓN Y SELECTORES CACHEADOS */
-/* ========================= */
+/* ========================================== */
+/* 1. CONFIGURACIÓN Y SELECTORES (CACHE)      */
+/* ========================================== */
 const dbRef = firebase.database().ref('/estacionamiento/raw');
-let partidos = {};
+let partidos = {}; 
 
-// Cachear elementos del DOM para evitar buscarlos en cada actualización
+// Guardamos los elementos una sola vez para que sea rápido
 const dom = {
-    cajones: Array.from({ length: 5 }, (_, i) => document.querySelector(`.cajon${i + 1}`)),
+    cajones: Array.from({length: 5}, (_, i) => document.querySelector(`.cajon${i+1}`)),
     numLibres: document.querySelector(".numero-verde"),
     numOcupados: document.querySelector(".numero-rojo"),
-    badge: document.getElementById("badgeNoti"),
+    menu: document.getElementById("menuLateral"),
+    overlay: document.getElementById("overlay"),
     input: document.getElementById("inputUsuario"),
     chat: document.getElementById("chatArea")
 };
 
-/* ========================= */
-/* MOTOR REAL-TIME ULTRA-RÁPIDO */
-/* ========================= */
+/* ========================================== */
+/* 2. MOTOR REAL-TIME (SEÑALES)               */
+/* ========================================== */
 dbRef.on('value', (snapshot) => {
-    const raw = snapshot.val(); // Recibe "10110"
-    if (!raw) return;
+    const raw = snapshot.val(); // Recibe "01101" del ESP32
+    if (!raw) {
+        console.warn("Esperando datos de Firebase en /estacionamiento/raw...");
+        return;
+    }
 
-    let libres = 0, ocupados = 0;
+    let libres = 0;
+    let ocupados = 0;
 
-    // Actualización atómica de cajones
     dom.cajones.forEach((cajon, i) => {
         if (!cajon) return;
-        const estaLibre = raw[i] === "1";
         
-        // Solo aplicar cambios si el estado es diferente al actual (Evita lag visual)
+        // raw[i] es el caracter '1' (libre) o '0' (ocupado)
+        const estaLibre = raw[i] === "1";
+
         if (estaLibre) {
-            if (cajon.classList.contains("ocupado")) cajon.classList.replace("ocupado", "libre");
+            if (cajon.classList.contains("ocupado")) {
+                cajon.classList.replace("ocupado", "libre");
+            }
             libres++;
         } else {
-            if (cajon.classList.contains("libre")) cajon.classList.replace("libre", "ocupado");
+            if (cajon.classList.contains("libre")) {
+                cajon.classList.replace("libre", "ocupado");
+            }
             ocupados++;
         }
     });
 
-    // Sincronizar con el refresco de pantalla del monitor (60fps)
+    // Actualizar números suavemente
     requestAnimationFrame(() => {
-        if (dom.numLibres) dom.numLibres.innerText = libres.toString().padStart(3, '0');
-        if (dom.numOcupados) dom.numOcupados.innerText = ocupados.toString().padStart(3, '0');
+        if(dom.numLibres) dom.numLibres.innerText = libres.toString().padStart(3, '0');
+        if(dom.numOcupados) dom.numOcupados.innerText = ocupados.toString().padStart(3, '0');
     });
 });
 
-/* ========================= */
-/* INTERFAZ Y NAVEGACIÓN */
-/* ========================= */
-const abrirMenu = () => {
-    document.getElementById("menuLateral").classList.add("activo");
-    document.getElementById("overlay").classList.add("activo");
-};
+/* ========================================== */
+/* 3. FUNCIONES DEL MENÚ (LA BARRA)           */
+/* ========================================== */
+function abrirMenu() {
+    dom.menu.classList.add("activo");
+    dom.overlay.classList.add("activo");
+}
 
-const cerrarMenu = () => {
-    document.getElementById("menuLateral").classList.remove("activo");
-    document.getElementById("overlay").classList.remove("activo");
-};
+function cerrarMenu() {
+    dom.menu.classList.remove("activo");
+    dom.overlay.classList.remove("activo");
+}
 
-const toggleNotificaciones = () => document.getElementById("panelNotificaciones").classList.toggle("activo");
+// Para las notificaciones
+function toggleNotificaciones() {
+    document.getElementById("panelNotificaciones").classList.toggle("activo");
+}
 
-document.addEventListener("click", (e) => {
-    const container = document.querySelector(".notificaciones-container");
-    if (container && !container.contains(e.target)) {
-        document.getElementById("panelNotificaciones").classList.remove("activo");
-    }
-});
-
-const toggleSeccion = (id) => {
+function toggleSeccion(id) {
     document.getElementById(id)?.classList.toggle("activo");
-    document.getElementById(`flecha-${id}`)?.classList.toggle("rotar");
-};
+    document.getElementById("flecha-" + id)?.classList.toggle("rotar");
+}
 
-/* ========================= */
-/* ASISTENTE VIRTUAL (DINO) */
-/* ========================= */
-function abrirAyuda() {
-    const el = {
-        overlay: document.getElementById("overlayAyuda"),
-        titulo: document.getElementById("tituloAyuda"),
-        texto: document.getElementById("textoAyuda"),
-        msj: document.getElementById("mensajeAyuda"),
-        img: document.getElementById("imagenCentral"),
-        chatCont: document.querySelector(".chat-contenedor")
-    };
+/* ========================================== */
+/* 4. ASISTENTE DINO Y CALENDARIO             */
+/* ========================================== */
+// (Aquí van tus funciones de enviarMensaje, abrirAyuda y cargarPartidos)
+// Asegúrate de NO borrarlas al pegar.
 
-    el.overlay.classList.add("activo");
-    el.titulo.innerHTML = el.texto.innerHTML = dom.chat.innerHTML = "";
-    el.chatCont.classList.remove("activo");
-    el.img.classList.remove("monito-desaparece");
-    el.msj.classList.remove("monito-desaparece");
-    el.img.style.display = el.msj.style.display = "block";
 
-    escribirTexto("¡Hola!", el.titulo, 30, () => {
-        escribirTexto("Soy tu asistente virtual EXSOS", el.texto, 20, () => {
-            setTimeout(() => {
-                el.img.classList.add("monito-desaparece");
-                el.msj.classList.add("monito-desaparece");
-                setTimeout(() => {
-                    el.img.style.display = el.msj.style.display = "none";
-                    el.chatCont.classList.add("activo");
-                    dom.chat.innerHTML = `<div class="mensaje bot"><img src="https://i.postimg.cc/WpxqwBv1/Feliz.png" class="avatar"><div class="burbuja">¿En qué puedo ayudarte?</div></div>`;
-                }, 400);
-            }, 1000);
+function abrirAyuda(){
+    const overlay = document.getElementById("overlayAyuda");
+    const titulo = document.getElementById("tituloAyuda");
+    const texto = document.getElementById("textoAyuda");
+    const mensajeAyuda = document.getElementById("mensajeAyuda");
+    const imagenCentral = document.getElementById("imagenCentral");
+    const chatContenedor = document.querySelector(".chat-contenedor");
+    const chat = document.getElementById("chatArea");
+
+    overlay.classList.add("activo");
+    titulo.innerHTML = ""; texto.innerHTML = ""; chat.innerHTML = "";
+    chatContenedor.classList.remove("activo");
+
+    imagenCentral.classList.remove("monito-desaparece");
+    mensajeAyuda.classList.remove("monito-desaparece");
+
+    escribirTexto("¡Hola!", titulo, 50, () => {
+        escribirTexto("Soy tu asistente virtual EXSOS", texto, 30, () => {
+            setTimeout(()=>{
+                imagenCentral.classList.add("monito-desaparece");
+                mensajeAyuda.classList.add("monito-desaparece");
+                setTimeout(()=>{
+                    imagenCentral.style.display="none";
+                    mensajeAyuda.style.display="none";
+                    chatContenedor.classList.add("activo");
+                    chat.innerHTML += `
+                    <div class="mensaje bot">
+                        <img src="https://i.postimg.cc/WpxqwBv1/Feliz.png" class="avatar">
+                        <div class="burbuja">¿En qué puedo ayudarte?</div>
+                    </div>`;
+                    chat.scrollTop = chat.scrollHeight;
+                },500);
+            },1500);
         });
     });
 }
 
-function escribirTexto(texto, elemento, velocidad, callback) {
+function cerrarAyuda(){
+    const overlay = document.getElementById("overlayAyuda");
+    overlay.classList.remove("activo");
+}
+
+function escribirTexto(textoCompleto, elemento, velocidad, callback){
     let i = 0;
     elemento.innerHTML = "";
-    const intervalo = setInterval(() => {
-        elemento.innerHTML += texto.charAt(i++);
-        if (i >= texto.length) {
+    const intervalo = setInterval(()=>{
+        elemento.innerHTML += textoCompleto.charAt(i);
+        i++;
+        if(i >= textoCompleto.length){
             clearInterval(intervalo);
-            if (callback) callback();
+            if(callback) callback();
         }
     }, velocidad);
 }
 
-function enviarMensaje() {
-    const texto = dom.input.value.trim();
-    if (!texto) return;
+function enviarMensaje(){
+    const input = document.getElementById("inputUsuario");
+    const chat = document.getElementById("chatArea");
+    const textoUsuario = input.value.trim();
+    if(textoUsuario === "") return;
 
-    dom.chat.innerHTML += `<div class="mensaje usuario"><div class="burbuja">${texto}</div><img src="${obtenerAvatarUsuario(texto)}" class="avatar usuario-avatar"></div>`;
-    dom.input.value = "";
-    dom.chat.scrollTop = dom.chat.scrollHeight;
+    chat.innerHTML += `
+    <div class="mensaje usuario">
+        <div class="burbuja">${textoUsuario}</div>
+        <img src="${obtenerAvatarUsuario(textoUsuario)}" class="avatar usuario-avatar">
+    </div>`;
+    input.value="";
+    chat.scrollTop = chat.scrollHeight;
 
-    setTimeout(() => {
-        const msgBot = document.createElement("div");
-        msgBot.className = "mensaje bot";
-        msgBot.innerHTML = `<img src="${obtenerAvatarBot(texto)}" class="avatar"><div class="burbuja"></div>`;
-        dom.chat.appendChild(msgBot);
-        escribirTexto(generarRespuesta(texto), msgBot.querySelector(".burbuja"), 15);
-        dom.chat.scrollTop = dom.chat.scrollHeight;
-    }, 600);
+    const pensando = document.createElement("div");
+    pensando.classList.add("mensaje","bot");
+    pensando.innerHTML = `<img src="https://i.postimg.cc/WpxqwBv1/Feliz.png" class="avatar"><div class="burbuja pensando">Escribiendo...</div>`;
+    chat.appendChild(pensando);
+
+    setTimeout(()=>{
+        pensando.remove();
+        const respuesta = generarRespuesta(textoUsuario);
+        const mensajeBot = document.createElement("div");
+        mensajeBot.classList.add("mensaje","bot");
+        mensajeBot.innerHTML = `<img src="${obtenerAvatarBot(textoUsuario)}" class="avatar"><div class="burbuja"></div>`;
+        chat.appendChild(mensajeBot);
+        escribirTexto(respuesta, mensajeBot.querySelector(".burbuja"), 20);
+        chat.scrollTop = chat.scrollHeight;
+    },1000);
 }
 
-/* ========================= */
-/* LÓGICA DE CALENDARIO */
-/* ========================= */
-async function cargarPartidos() {
-    try {
-        const res = await fetch("partidos.csv");
-        const data = await res.text();
-        data.split("\n").slice(1).forEach(linea => {
-            const [m, d, loc, riv, h, lL, lR] = linea.split(",");
-            if (!m) return;
-            const clave = `${m}-${d}`;
-            if (!partidos[clave]) partidos[clave] = [];
-            partidos[clave].push({ rival: riv, local: loc, hora: h, logoLocal: lL, logoRival: lR });
-        });
-        marcarPartidos();
-        revisarEventos();
-    } catch (e) { console.error("Error CSV"); }
+// Aquí permanecen tus funciones de obtenerAvatarUsuario, obtenerAvatarBot y generarRespuesta tal cual las tienes...
+function generarRespuesta(texto){
+    texto = texto.toLowerCase();
+    if(texto.includes("verde")) return "El color verde indica que el lugar está disponible.";
+    if(texto.includes("rojo")) return "El color rojo indica que el cajón está ocupado.";
+    if(texto.includes("tu nombre")) return "Mi nombre es Dino, asistente de EXSOS.";
+    if(texto.includes("tiempo real")) return "Sí, el sistema se actualiza automáticamente con sensores.";
+    return "Lo siento, aún estoy aprendiendo. Pregúntame sobre colores o disponibilidad.";
 }
 
-function marcarPartidos() {
-    document.querySelectorAll(".mes").forEach((mesDiv, i) => {
+function obtenerAvatarBot(t){ return "https://i.postimg.cc/WpxqwBv1/Feliz.png"; }
+function obtenerAvatarUsuario(t){ return "https://i.postimg.cc/3NzGy63L/Dina.png"; }
+
+/* ======================================================== */
+/* 5. CALENDARIO Y PARTIDOS (LECTURA CSV)                   */
+/* ======================================================== */
+
+let partidos = {};
+
+async function cargarPartidos(){
+    const respuesta = await fetch("partidos.csv");
+    const texto = await respuesta.text();
+    const lineas = texto.split("\n");
+    lineas.shift();
+
+    lineas.forEach(linea => {
+        const datos = linea.split(",");
+        if(datos.length < 5) return;
+        const clave = datos[0] + "-" + datos[1]; // Mes-Dia
+        if(!partidos[clave]) partidos[clave] = [];
+        partidos[clave].push({ rival:datos[3], local:datos[2], hora:datos[4], logoLocal:datos[5], logoRival:datos[6] });
+    });
+
+    marcarPartidos();
+    activarClicks();
+    revisarPartidosHoy();
+    revisarPartidosAnteriores();
+}
+
+function marcarPartidos(){
+    const meses = document.querySelectorAll(".mes");
+    meses.forEach((mesDiv, index) => {
+        const mesNumero = index + 1;
         mesDiv.querySelectorAll(".dias span").forEach(dia => {
-            const clave = `${i + 1}-${dia.dataset.dia}`;
-            if (partidos[clave]) {
-                dia.classList.add("partido");
-                dia.onclick = () => mostrarPopup(partidos[clave]);
-            }
+            if(partidos[mesNumero + "-" + dia.dataset.dia]) dia.classList.add("partido");
         });
     });
 }
 
-function revisarEventos() {
-    const hoy = new Date(), mHoy = hoy.getMonth() + 1, dHoy = hoy.getDate();
-    const cHoy = document.getElementById("hoy"), cAnt = document.getElementById("anteriores");
-    
-    if (partidos[`${mHoy}-${dHoy}`]) {
+function activarClicks(){
+    const meses = document.querySelectorAll(".mes");
+    meses.forEach((mesDiv, index) => {
+        const mesNumero = index + 1;
+        mesDiv.querySelectorAll(".dias span").forEach(dia => {
+            dia.addEventListener("click", function(){
+                const clave = mesNumero + "-" + this.dataset.dia;
+                if(partidos[clave]) mostrarPopup(partidos[clave]);
+            });
+        });
+    });
+}
+
+function mostrarPopup(listaPartidos){
+    const popup = document.getElementById("popup");
+    popup.style.display="flex";
+    let contenido = "";
+    listaPartidos.forEach(p => {
+        contenido += `
+        <div class="partido-card">
+            <div class="partido-info">
+                <div class="equipo"><span class="nombre-equipo">${p.local}</span></div>
+                <div class="vs">VS</div>
+                <div class="equipo"><span class="nombre-equipo">${p.rival}</span></div>
+                <div class="info-partido"><div class="hora">🕒 ${p.hora}</div></div>
+            </div>
+            <div class="barra-color"></div>
+        </div>`;
+    });
+    document.getElementById("popup-rival").innerHTML = contenido;
+}
+
+function cerrarPopup(){ document.getElementById("popup").style.display="none"; }
+
+function revisarPartidosHoy(){
+    const hoy = new Date();
+    const clave = (hoy.getMonth() + 1) + "-" + hoy.getDate();
+    const contenedor = document.getElementById("hoy");
+    if(partidos[clave]){
         document.getElementById("estadoVacioHoy").style.display = "none";
-        partidos[`${mHoy}-${dHoy}`].forEach(p => {
-            cHoy.innerHTML += `<div class="notificacion-card"><div class="noti-icono">⚽</div><div class="noti-texto"><div class="noti-titulo">Partido hoy</div><div class="noti-mensaje">Inicia a las ${p.hora}</div></div></div>`;
+        partidos[clave].forEach(p => {
+            const aviso = document.createElement("div");
+            aviso.classList.add("notificacion-card");
+            aviso.innerHTML = `<div class=\"noti-icono\">⚽</div><div class=\"noti-texto\"><b>Partido hoy</b><br>A las ${p.hora}</div>`;
+            contenedor.appendChild(aviso);
         });
     }
-    actualizarCampana();
+    actualizarNumeroCampana();
 }
 
-function actualizarCampana() {
-    const total = document.querySelectorAll(".notificacion-card").length;
-    if (dom.badge) {
-        dom.badge.textContent = total;
-        dom.badge.style.backgroundColor = total === 0 ? "#00c800" : "red";
-    }
+function revisarPartidosAnteriores(){
+    const hoy = new Date();
+    const mesAct = hoy.getMonth() + 1;
+    const diaAct = hoy.getDate();
+    const contenedor = document.getElementById("anteriores");
+    let hayEventos = false;
+
+    Object.keys(partidos).forEach(clave => {
+        const [m, d] = clave.split("-").map(Number);
+        if(m < mesAct || (m === mesAct && d < diaAct)){
+            partidos[clave].forEach(p => {
+                const aviso = document.createElement("div");
+                aviso.classList.add("notificacion-card");
+                aviso.innerHTML = `<div class=\"noti-icono\">📅</div><div class=\"noti-texto\"><b>${p.local} vs ${p.rival}</b><br>${d}/${m}/26</div>`;
+                contenedor.appendChild(aviso);
+                hayEventos = true;
+            });
+        }
+    });
+    document.getElementById("estadoVacioAnteriores").style.display = hayEventos ? "none" : "flex";
+    actualizarNumeroCampana();
 }
 
-/* ========================= */
-/* INICIALIZACIÓN */
-/* ========================= */
-document.addEventListener("DOMContentLoaded", () => {
-    corregirInicioMeses();
-    cargarPartidos();
-    dom.input?.addEventListener("keypress", (e) => e.key === "Enter" && enviarMensaje());
-});
-
-function corregirInicioMeses() {
+function corregirInicioMeses(){
     document.querySelectorAll(".mes").forEach((mesDiv, index) => {
-        const container = mesDiv.querySelector(".dias");
-        container.querySelectorAll(".vacio").forEach(v => v.remove());
-        let offset = new Date(2026, index, 1).getDay() - 1;
-        if (offset < 0) offset = 6;
-        for (let i = 0; i < offset; i++) {
-            const span = document.createElement("span");
-            span.className = "vacio";
-            container.prepend(span);
+        const diasContainer = mesDiv.querySelector(".dias");
+        diasContainer.querySelectorAll(".vacio").forEach(e => e.remove());
+        const primerDia = new Date(2026, index, 1).getDay();
+        let offset = primerDia - 1;
+        if(offset < 0) offset = 6;
+        for(let i = 0; i < offset; i++){
+            const espacio = document.createElement("span");
+            espacio.classList.add("vacio");
+            diasContainer.prepend(espacio);
         }
     });
 }
+
+function actualizarNumeroCampana(){
+    const total = document.querySelectorAll(".notificacion-card").length;
+    const badge = document.getElementById("badgeNoti");
+    if(badge){
+        badge.textContent = total;
+        badge.style.backgroundColor = (total === 0) ? "#00c800" : "red";
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    corregirInicioMeses();
+    cargarPartidos();
+    const input = document.getElementById("inputUsuario");
+    if(input) input.addEventListener("keypress", (e) => { if(e.key === "Enter") enviarMensaje(); });
+});
