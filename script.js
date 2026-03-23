@@ -91,6 +91,9 @@ function escribirTexto(t, el, v, cb) {
 /* ======================================================== */
 /* 4. CALENDARIO Y NOTIFICACIONES (CSV) - CORREGIDO         */
 /* ======================================================== */
+/* ======================================================== */
+/* 4. CALENDARIO Y NOTIFICACIONES (CSV) - REPARADO          */
+/* ======================================================== */
 let partidosGlobal = {};
 
 async function cargarPartidos() {
@@ -99,19 +102,24 @@ async function cargarPartidos() {
         const texto = await res.text();
         const lineas = texto.split("\n").slice(1);
 
-        partidosGlobal = {}; // Limpiar
+        partidosGlobal = {}; 
         lineas.forEach(l => {
             const d = l.split(",");
             if (d.length < 5) return;
-            const clave = `${parseInt(d[0])}-${parseInt(d[1])}`; // Asegurar números limpios
+            const clave = `${parseInt(d[0])}-${parseInt(d[1])}`; 
             if (!partidosGlobal[clave]) partidosGlobal[clave] = [];
-            partidosGlobal[clave].push({ local: d[2], rival: d[3], hora: d[4] });
+            partidosGlobal[clave].push({ 
+                local: d[2].trim(), 
+                rival: d[3].trim(), 
+                hora: d[4].trim() 
+            });
         });
 
-        // IMPORTANTE: Ejecutar esto SOLO después de que cargue el CSV
         revisarNotificacionesCompleto();
         if(document.querySelector(".mes")) marcarDias();
-    } catch (e) { console.warn("Archivo CSV no detectado o error de red."); }
+    } catch (e) { 
+        console.warn("Archivo CSV no detectado o error de red."); 
+    }
 }
 
 function marcarDias() {
@@ -137,7 +145,7 @@ function revisarNotificacionesCompleto() {
     const contAnt = document.getElementById("anteriores");
     if (!contHoy || !contAnt) return;
 
-    contHoy.innerHTML = ""; // Limpiar
+    contHoy.innerHTML = ""; 
     contAnt.innerHTML = "";
 
     let hayHoy = false, hayAnt = false;
@@ -148,18 +156,25 @@ function revisarNotificacionesCompleto() {
         partidosGlobal[clave].forEach(p => {
             const card = document.createElement("div");
             card.className = "notificacion-card";
-            // Usamos el baloncito de tu imagen
+            
+            // RESTAURADO: Estructura original para que el CSS funcione
             card.innerHTML = `
-                <img src="https://i.imgur.com/gANyK8b.png" class="noti-icono-balon" style="width:30px; height:30px; margin-right:10px;">
+                <div class="noti-icono">⚽</div>
                 <div class="noti-texto">
-                    <div class="noti-titulo"><b>${m === mesHoy && d === diaHoy ? "Partido hoy" : p.local + " vs " + p.rival}</b></div>
-                    <div class="noti-mensaje">${m === mesHoy && d === diaHoy ? "Hoy hay partido a las " + p.hora : d + "/" + m + "/26 - " + p.hora}</div>
+                    <div class="noti-titulo">Partido hoy</div>
+                    <div class="noti-mensaje">
+                        Hoy hay partido a las ${p.hora}. Se recomienda salir temprano.
+                    </div>
                 </div>`;
 
             if (m === mesHoy && d === diaHoy) {
                 contHoy.appendChild(card);
                 hayHoy = true;
             } else if (m < mesHoy || (m === mesHoy && d < diaHoy)) {
+                // Ajuste para partidos anteriores
+                card.querySelector(".noti-icono").innerText = "📅";
+                card.querySelector(".noti-titulo").innerText = `${p.local} vs ${p.rival}`;
+                card.querySelector(".noti-mensaje").innerText = `${d}/${m}/26 - ${p.hora}`;
                 contAnt.appendChild(card);
                 hayAnt = true;
             }
@@ -173,19 +188,45 @@ function revisarNotificacionesCompleto() {
 }
 
 function mostrarPopup(lista) {
-    document.getElementById("popup").style.display = "flex";
+    const popup = document.getElementById("popup");
+    const rivalArea = document.getElementById("popup-rival");
+    if (!popup || !rivalArea) return;
+
+    popup.style.display = "flex";
     let html = "";
-    lista.forEach(p => html += `<div class="partido-card"><b>${p.local} vs ${p.rival}</b><br>🕒 ${p.hora}</div>`);
-    document.getElementById("popup-rival").innerHTML = html;
+    
+    lista.forEach(p => {
+        // RESTAURADO: Estructura de tarjeta para el POPUP (Captura 2)
+        html += `
+        <div class="partido-card">
+            <div class="partido-info">
+                <div class="equipo">
+                    <span class="nombre-equipo">${p.local}</span>
+                </div>
+                <div class="vs">VS</div>
+                <div class="equipo">
+                    <span class="nombre-equipo">${p.rival}</span>
+                </div>
+                <div class="info-partido">
+                    <div class="hora">🕒 ${p.hora}</div>
+                </div>
+            </div>
+            <div class="barra-color"></div>
+        </div>`;
+    });
+    rivalArea.innerHTML = html;
 }
-function cerrarPopup() { document.getElementById("popup").style.display = "none"; }
+
+function cerrarPopup() { 
+    document.getElementById("popup").style.display = "none"; 
+}
 
 function actualizarBadge() {
     const n = document.querySelectorAll(".notificacion-card").length;
     const badge = document.getElementById("badgeNoti");
     if (badge) {
         badge.textContent = n;
-        badge.style.backgroundColor = n === 0 ? "#00c800" : "red";
+        badge.style.backgroundColor = (n === 0) ? "#00c800" : "red";
     }
 }
 
