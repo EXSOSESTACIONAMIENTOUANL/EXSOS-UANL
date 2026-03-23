@@ -8,13 +8,13 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
+// 🔥 ESCUCHA TODA LA RAMA
 db.ref("/estacionamiento").on("value", (snapshot) => {
 
     let data = snapshot.val();
     if(!data) return;
 
-    // 🔥 USAMOS RAW SI EXISTE
-    let estados = data.raw ? data.raw.split("") : [
+    let estados = [
         data.cajon1,
         data.cajon2,
         data.cajon3,
@@ -35,7 +35,7 @@ db.ref("/estacionamiento").on("value", (snapshot) => {
 
     for(let i=0;i<5;i++){
 
-        if(estados[i] == 0 || estados[i] == "0"){
+        if(estados[i] == 0){
 
             cajones[i].classList.remove("libre");
             cajones[i].classList.add("ocupado");
@@ -57,6 +57,7 @@ db.ref("/estacionamiento").on("value", (snapshot) => {
 });
 
 });
+
 
 function cambiarEstadoCajon(numero, estado){
 
