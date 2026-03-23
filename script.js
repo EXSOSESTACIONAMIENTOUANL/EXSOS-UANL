@@ -3,33 +3,26 @@
 /* ======================================================== */
 const pathRaw = '/estacionamiento/raw';
 
-// Verificamos si Firebase está cargado y si estamos en el Home (donde está el mapa)
 if (typeof firebase !== 'undefined' && document.querySelector(".mapa-estacionamiento")) {
     firebase.database().ref(pathRaw).on('value', (snapshot) => {
         const raw = snapshot.val(); 
         if (!raw) return;
-
-        let libres = 0, ocupados = 0;
         for (let i = 1; i <= 5; i++) {
             const cajon = document.querySelector(`.cajon${i}`);
             if (!cajon) continue;
             const estaLibre = raw[i - 1] === "1";
-
             if (estaLibre) {
                 if (cajon.classList.contains("ocupado")) cajon.classList.replace("ocupado", "libre");
-                libres++;
             } else {
                 if (cajon.classList.contains("libre")) cajon.classList.replace("libre", "ocupado");
-                ocupados++;
             }
         }
-
-        // Actualización fluida de números
+        // Actualización de contadores
+        const libres = (raw.match(/1/g) || []).length;
+        const ocupados = (raw.match(/0/g) || []).length;
         requestAnimationFrame(() => {
-            const elLibres = document.querySelector(".numero-verde");
-            const elOcupados = document.querySelector(".numero-rojo");
-            if(elLibres) elLibres.innerText = libres.toString().padStart(3, '0');
-            if(elOcupados) elOcupados.innerText = ocupados.toString().padStart(3, '0');
+            document.querySelector(".numero-verde") && (document.querySelector(".numero-verde").innerText = libres.toString().padStart(3, '0'));
+            document.querySelector(".numero-rojo") && (document.querySelector(".numero-rojo").innerText = ocupados.toString().padStart(3, '0'));
         });
     });
 }
@@ -41,32 +34,20 @@ function abrirMenu() {
     document.getElementById("menuLateral").classList.add("activo");
     document.getElementById("overlay").classList.add("activo");
 }
-
 function cerrarMenu() {
     document.getElementById("menuLateral").classList.remove("activo");
     document.getElementById("overlay").classList.remove("activo");
 }
-
 function toggleNotificaciones() {
     document.getElementById("panelNotificaciones").classList.toggle("activo");
 }
-
 function toggleSeccion(id) {
     document.getElementById(id)?.classList.toggle("activo");
     document.getElementById("flecha-" + id)?.classList.toggle("rotar");
 }
 
-// Cerrar al hacer clic fuera
-document.addEventListener("click", (e) => {
-    const panel = document.getElementById("panelNotificaciones");
-    const btn = document.querySelector(".campana-wrapper");
-    if (panel?.classList.contains("activo") && !panel.contains(e.target) && !btn.contains(e.target)) {
-        panel.classList.remove("activo");
-    }
-});
-
 /* ======================================================== */
-/* 3. ASISTENTE DINO (AYUDA) - REPARADO                     */
+/* 3. ASISTENTE DINO (AYUDA)                                */
 /* ======================================================== */
 function abrirAyuda() {
     const overlay = document.getElementById("overlayAyuda");
@@ -77,7 +58,6 @@ function abrirAyuda() {
     const msjAyuda = document.getElementById("mensajeAyuda");
 
     if(!overlay) return;
-    
     overlay.classList.add("activo");
     img.style.display = "block";
     msjAyuda.style.display = "block";
@@ -99,9 +79,7 @@ function abrirAyuda() {
         });
     });
 }
-
 function cerrarAyuda() { document.getElementById("overlayAyuda").classList.remove("activo"); }
-
 function escribirTexto(t, el, v, cb) {
     let i = 0; el.innerHTML = "";
     const timer = setInterval(() => {
@@ -110,17 +88,8 @@ function escribirTexto(t, el, v, cb) {
     }, v);
 }
 
-function enviarMensaje() {
-    const input = document.getElementById("inputUsuario");
-    const chat = document.getElementById("chatArea");
-    if (!input.value.trim()) return;
-    chat.innerHTML += `<div class="mensaje usuario"><div class="burbuja">${input.value}</div><img src="https://i.postimg.cc/3NzGy63L/Dina.png" class="avatar"></div>`;
-    input.value = "";
-    chat.scrollTop = chat.scrollHeight;
-}
-
 /* ======================================================== */
-/* 4. NOTIFICACIONES (BALONCITO) Y CALENDARIO               */
+/* 4. CALENDARIO Y NOTIFICACIONES (CSV) - CORREGIDO         */
 /* ======================================================== */
 let partidosGlobal = {};
 
@@ -130,51 +99,77 @@ async function cargarPartidos() {
         const texto = await res.text();
         const lineas = texto.split("\n").slice(1);
 
+        partidosGlobal = {}; // Limpiar
         lineas.forEach(l => {
             const d = l.split(",");
             if (d.length < 5) return;
-            const clave = `${d[0].trim()}-${d[1].trim()}`;
+            const clave = `${parseInt(d[0])}-${parseInt(d[1])}`; // Asegurar números limpios
             if (!partidosGlobal[clave]) partidosGlobal[clave] = [];
             partidosGlobal[clave].push({ local: d[2], rival: d[3], hora: d[4] });
         });
 
-        revisarHoy();
-        if(document.querySelector(".calendario")) marcarDias();
-    } catch (e) { console.warn("Archivo CSV no detectado."); }
-}
-
-function revisarHoy() {
-    const hoy = new Date();
-    const clave = `${hoy.getMonth() + 1}-${hoy.getDate()}`;
-    const contenedor = document.getElementById("hoy");
-    if (!contenedor) return;
-
-    if (partidosGlobal[clave]) {
-        document.getElementById("estadoVacioHoy").style.display = "none";
-        contenedor.innerHTML = "";
-        partidosGlobal[clave].forEach(p => {
-            contenedor.innerHTML += `
-                <div class="notificacion-card">
-                    <img src="https://i.imgur.com/gANyK8b.png" class="noti-icono-balon" style="width:30px; height:30px;">
-                    <div class="noti-texto">
-                        <div class="noti-titulo"><b>Partido hoy</b></div>
-                        <div class="noti-mensaje">${p.local} vs ${p.rival} a las ${p.hora}</div>
-                    </div>
-                </div>`;
-        });
-    }
-    actualizarBadge();
+        // IMPORTANTE: Ejecutar esto SOLO después de que cargue el CSV
+        revisarNotificacionesCompleto();
+        if(document.querySelector(".mes")) marcarDias();
+    } catch (e) { console.warn("Archivo CSV no detectado o error de red."); }
 }
 
 function marcarDias() {
     document.querySelectorAll(".mes").forEach((mesDiv, i) => {
+        const mesNum = i + 1;
         mesDiv.querySelectorAll(".dias span").forEach(dia => {
-            if (partidosGlobal[`${i + 1}-${dia.dataset.dia}`]) {
+            const numDia = parseInt(dia.dataset.dia);
+            const clave = `${mesNum}-${numDia}`;
+            if (partidosGlobal[clave]) {
                 dia.classList.add("partido");
-                dia.onclick = () => mostrarPopup(partidosGlobal[`${i + 1}-${dia.dataset.dia}`]);
+                dia.onclick = () => mostrarPopup(partidosGlobal[clave]);
             }
         });
     });
+}
+
+function revisarNotificacionesCompleto() {
+    const hoy = new Date();
+    const mesHoy = hoy.getMonth() + 1;
+    const diaHoy = hoy.getDate();
+    
+    const contHoy = document.getElementById("hoy");
+    const contAnt = document.getElementById("anteriores");
+    if (!contHoy || !contAnt) return;
+
+    contHoy.innerHTML = ""; // Limpiar
+    contAnt.innerHTML = "";
+
+    let hayHoy = false, hayAnt = false;
+
+    Object.keys(partidosGlobal).forEach(clave => {
+        const [m, d] = clave.split("-").map(Number);
+        
+        partidosGlobal[clave].forEach(p => {
+            const card = document.createElement("div");
+            card.className = "notificacion-card";
+            // Usamos el baloncito de tu imagen
+            card.innerHTML = `
+                <img src="https://i.imgur.com/gANyK8b.png" class="noti-icono-balon" style="width:30px; height:30px; margin-right:10px;">
+                <div class="noti-texto">
+                    <div class="noti-titulo"><b>${m === mesHoy && d === diaHoy ? "Partido hoy" : p.local + " vs " + p.rival}</b></div>
+                    <div class="noti-mensaje">${m === mesHoy && d === diaHoy ? "Hoy hay partido a las " + p.hora : d + "/" + m + "/26 - " + p.hora}</div>
+                </div>`;
+
+            if (m === mesHoy && d === diaHoy) {
+                contHoy.appendChild(card);
+                hayHoy = true;
+            } else if (m < mesHoy || (m === mesHoy && d < diaHoy)) {
+                contAnt.appendChild(card);
+                hayAnt = true;
+            }
+        });
+    });
+
+    document.getElementById("estadoVacioHoy").style.display = hayHoy ? "none" : "flex";
+    document.getElementById("estadoVacioAnteriores").style.display = hayAnt ? "none" : "flex";
+    
+    actualizarBadge();
 }
 
 function mostrarPopup(lista) {
@@ -183,7 +178,6 @@ function mostrarPopup(lista) {
     lista.forEach(p => html += `<div class="partido-card"><b>${p.local} vs ${p.rival}</b><br>🕒 ${p.hora}</div>`);
     document.getElementById("popup-rival").innerHTML = html;
 }
-
 function cerrarPopup() { document.getElementById("popup").style.display = "none"; }
 
 function actualizarBadge() {
@@ -199,11 +193,13 @@ function actualizarBadge() {
 /* 5. INICIALIZACIÓN                                        */
 /* ======================================================== */
 document.addEventListener("DOMContentLoaded", () => {
-    cargarPartidos();
-    // Alinear meses
+    cargarPartidos(); // Carga datos y luego dispara calendario/campana
+    
     if(document.querySelector(".mes")) {
         document.querySelectorAll(".mes").forEach((mesDiv, index) => {
             const container = mesDiv.querySelector(".dias");
+            if (!container) return;
+            container.querySelectorAll(".vacio").forEach(v => v.remove());
             let offset = new Date(2026, index, 1).getDay() - 1;
             if (offset < 0) offset = 6;
             for (let i = 0; i < offset; i++) {
@@ -213,4 +209,8 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+    
+    document.getElementById("inputUsuario")?.addEventListener("keypress", (e) => {
+        if(e.key === "Enter") enviarMensaje();
+    });
 });
