@@ -1,48 +1,53 @@
-setInterval(function(){
+// 🔥 CONFIG FIREBASE
+const firebaseConfig = {
+    apiKey: "AIzaSyBTnfeDaDYQlk3ugUHzc3SXB_b7dMrv3Qg",
+    databaseURL: "https://esp32-ecdcf-default-rtdb.asia-southeast1.firebasedatabase.app"
+};
 
-fetch("/datos")
-.then(response => response.text())
-.then(data => {
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+// 🔥 TIEMPO REAL DESDE FIREBASE
+db.ref("/estacionamiento/raw").on("value", (snapshot) => {
 
-let estados = data.split(",")
+    let data = snapshot.val();
 
-let cajones = [
-document.querySelector(".cajon1"),
-document.querySelector(".cajon2"),
-document.querySelector(".cajon3"),
-document.querySelector(".cajon4"),
-document.querySelector(".cajon5")
-]
+    if(!data) return;
 
-let ocupados = 0
-let libres = 0
+    let estados = data.split(""); // "01101"
 
-for(let i=0;i<5;i++){
+    let cajones = [
+        document.querySelector(".cajon1"),
+        document.querySelector(".cajon2"),
+        document.querySelector(".cajon3"),
+        document.querySelector(".cajon4"),
+        document.querySelector(".cajon5")
+    ];
 
-    if(estados[i] == "0"){ // ocupado
+    let ocupados = 0;
+    let libres = 0;
 
-        cajones[i].classList.remove("libre")
-        cajones[i].classList.add("ocupado")
+    for(let i=0;i<5;i++){
 
-        ocupados++
+        if(estados[i] == "0"){ // ocupado
 
-    }else{ // libre
+            cajones[i].classList.remove("libre");
+            cajones[i].classList.add("ocupado");
+            ocupados++;
 
-        cajones[i].classList.remove("ocupado")
-        cajones[i].classList.add("libre")
+        }else{ // libre
 
-        libres++
+            cajones[i].classList.remove("ocupado");
+            cajones[i].classList.add("libre");
+            libres++;
+
+        }
 
     }
 
-}
+    document.querySelector(".numero-verde").innerText = libres.toString().padStart(3,'0');
+    document.querySelector(".numero-rojo").innerText = ocupados.toString().padStart(3,'0');
 
-document.querySelector(".numero-verde").innerText = libres.toString().padStart(3,'0')
-document.querySelector(".numero-rojo").innerText = ocupados.toString().padStart(3,'0')
-
-})
-
-},500)
+});
 
 
 function cambiarEstadoCajon(numero, estado){
