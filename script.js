@@ -1,3 +1,5 @@
+document.addEventListener("DOMContentLoaded", function(){
+
 // 🔥 CONFIG FIREBASE
 const firebaseConfig = {
     apiKey: "AIzaSyBTnfeDaDYQlk3ugUHzc3SXB_b7dMrv3Qg",
@@ -7,14 +9,13 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// 🔥 TIEMPO REAL DESDE FIREBASE
+// 🔥 TIEMPO REAL
 db.ref("/estacionamiento/raw").on("value", (snapshot) => {
 
     let data = snapshot.val();
-
     if(!data) return;
 
-    let estados = data.split(""); // "01101"
+    let estados = data.split("");
 
     let cajones = [
         document.querySelector(".cajon1"),
@@ -29,18 +30,14 @@ db.ref("/estacionamiento/raw").on("value", (snapshot) => {
 
     for(let i=0;i<5;i++){
 
-        if(estados[i] == "0"){ // ocupado
-
+        if(estados[i] == "0"){
             cajones[i].classList.remove("libre");
             cajones[i].classList.add("ocupado");
             ocupados++;
-
-        }else{ // libre
-
+        }else{
             cajones[i].classList.remove("ocupado");
             cajones[i].classList.add("libre");
             libres++;
-
         }
 
     }
