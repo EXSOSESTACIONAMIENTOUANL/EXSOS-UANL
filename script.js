@@ -46,7 +46,7 @@ db.ref("/estacionamiento/raw").on("value", (snapshot) => {
     document.querySelector(".numero-rojo").innerText = ocupados.toString().padStart(3,'0');
 
 });
-
+});
 
 function cambiarEstadoCajon(numero, estado){
 
