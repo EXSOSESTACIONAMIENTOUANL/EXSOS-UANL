@@ -1,3 +1,34 @@
+/* ========================= */
+/* BOTÓN SOLICITAR ACCESO    */
+/* ========================= */
+function verificarYEnviar() {
+    // IMPORTANTE: Cambia 'estacionamiento/sensor_entrada' por la ruta real de tu sensor en la base de datos
+    const rutaSensor = 'estacionamiento/sensor_entrada'; 
+    // IMPORTANTE: Cambia esta ruta por el lugar exacto donde quieres que se mande el "1"
+    const rutaMandarUno = 'estacionamiento/boton_app'; 
+
+    db.ref(rutaSensor).once('value').then((snapshot) => {
+        let valorSensor = snapshot.val();
+
+        if (valorSensor == 0) {
+            // Si hay un cero, sale la alerta
+            alert("Posiciónate en la entrada del estacionamiento.");
+            
+            // OJO: Me comentaste "O manda el uno en todos los casos, pero si hay un cero que ponga el mensaje".
+            // Si quieres que a pesar del mensaje de alerta como quiera mande el 1 a la base de datos, 
+            // solo quítale las diagonales a la siguiente línea:
+            // db.ref(rutaMandarUno).set(1);
+            
+        } else {
+            // Si no es 0, manda el 1 de inmediato
+            db.ref(rutaMandarUno).set(1);
+            // alert("Acceso solicitado / 1 enviado."); // Opcional por si quieres confirmar que sí se mandó
+        }
+    }).catch((error) => {
+        console.error("Error al leer el sensor en Firebase:", error);
+    });
+}
+
 document.addEventListener("DOMContentLoaded", function(){
 
 const firebaseConfig = {
