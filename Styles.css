@@ -20,6 +20,22 @@ body{
     background-color: #e5c100;
 }
 
+.btn-cerrar-amarillo {
+    background-color: #FFD400; /* Amarillo UANL */
+    color: #152191;            /* Azul */
+    border: none;
+    padding: 10px 20px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    float: right;
+    margin-bottom: 10px;
+}
+
+.btn-cerrar-amarillo:hover {
+    filter: brightness(0.9);
+}
+
 /* Ajuste de la caja de alerta */
 .alerta-acceso {
     position: fixed;
