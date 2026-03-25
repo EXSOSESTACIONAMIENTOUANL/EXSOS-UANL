@@ -2,13 +2,13 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <script>
-// 🔥 CONFIGURACIÓN CON TUS DATOS
+//  CONFIGURACIÓN CON TUS DATOS
 const firebaseConfig = {
     apiKey: "AIzaSyBTnfeDaDYQlk3ugUHzc3SXB_b7dMrv3Qg",
     databaseURL: "https://esp32-ecdcf-default-rtdb.asia-southeast1.firebasedatabase.app"
 };
 
-// 🚀 INICIALIZAR FIREBASE
+//  INICIALIZAR FIREBASE
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
@@ -16,7 +16,7 @@ console.log("🔥 Conectado a Firebase");
 
 
 // =======================================
-// 🚗 CAJONES (SENSORES)
+//    CAJONES (SENSORES)
 // =======================================
 
 const cajones = [
@@ -48,7 +48,7 @@ cajones.forEach(c => {
 
 
 // =======================================
-// 🚧 PLUMA (ACCESO)
+//     PLUMA (ACCESO)
 // =======================================
 
 db.ref("estacionamiento/pluma").on("value", snapshot => {
@@ -72,40 +72,44 @@ db.ref("estacionamiento/pluma").on("value", snapshot => {
 // =======================================
 
 function solicitarApertura() {
-    console.log("🔘 Intentando abrir pluma...");
+    // 1. Leemos el sensor de presión en la base de datos
+    db.ref("estacionamiento/sensor_presion").once("value").then(snapshot => {
+        const hayCarro = snapshot.val();
 
-    // Consultamos el sensor de presión una sola vez
-    db.ref("estacionamiento/sensor_presion").once("value")
-    .then(snapshot => {
-        const sensor = snapshot.val();
-        console.log("Valor del sensor de presión:", sensor);
+        const alertaDiv = document.getElementById("contenedorAlerta");
 
-        if (sensor == 0) {
-            // CASO 0: No hay carro. No enviamos datos a Firebase.
-            mostrarAlerta(
-                "Acceso denegado", 
-                "Por favor, colócate en la entrada del estacionamiento para detectar tu vehículo."
-            );
-        } 
-        else if (sensor == 1) {
-            // CASO 1: Hay carro. Escribimos 1 en la pluma.
+        if (hayCarro == 1) {
+            // ✅ CASO: HAY CARRO (Escribimos en la DB)
             db.ref("estacionamiento/pluma").set(1);
+            
+            alertaDiv.innerHTML = `
+                <div class="alerta-contenido">
+                    <button class="btn-cerrar-amarillo" onclick="cerrarAlerta()">Cerrar</button>
+                    <h2>¡Bienvenido!</h2>
+                    <p>Acceso autorizado. La pluma se está abriendo.</p>
+                </div>
+            `;
+            alertaDiv.classList.add("visible");
 
-            mostrarAlerta(
-                "¡Bienvenido!", 
-                "Acceso autorizado. La pluma se está abriendo ahora mismo."
-            );
+            // Opcional: Cerrar pluma automáticamente tras 5 segundos
+            setTimeout(() => { db.ref("estacionamiento/pluma").set(0); }, 5000);
 
-            // ⏱️ Opcional: Cerrar la pluma automáticamente tras 5 segundos
-            setTimeout(() => {
-                db.ref("estacionamiento/pluma").set(0);
-                console.log("Pluma cerrada automáticamente");
-            }, 5000);
+        } else {
+            // ❌ CASO: NO HAY CARRO (No enviamos nada a la DB)
+            alertaDiv.innerHTML = `
+                <div class="alerta-contenido">
+                    <button class="btn-cerrar-amarillo" onclick="cerrarAlerta()">Cerrar</button>
+                    <h2>Acceso Denegado</h2>
+                    <p>Por favor, colócate en la entrada del estacionamiento.</p>
+                </div>
+            `;
+            alertaDiv.classList.add("visible");
         }
-    })
-    .catch(error => {
-        console.error("Error al leer Firebase:", error);
     });
+}
+
+function cerrarAlerta() {
+    document.getElementById("contenedorAlerta").classList.remove("visible");
 }
 
 // =======================================
