@@ -97,59 +97,51 @@ cajon.classList.add("ocupado");
 /* ========================= */
 async function solicitarApertura() {
     try {
-        const rutaSensor = 'estacionamiento/sensor';  // 🔥 CORRECTO
-        const rutaPluma = 'estacionamiento/pluma';    // 🔥 CORRECTO
-
-        const snapshot = await db.ref(rutaSensor).once('value');
+        // 1. Referencia a los datos en Firebase
+        const refEstacionamiento = db.ref('estacionamiento');
+        
+        // 2. Consultar el valor del sensor una sola vez
+        const snapshot = await refEstacionamiento.child('sensor_presion').once('value');
         const valorSensor = snapshot.val();
 
-        // 🚫 SI NO HAY CARRO
-        if (valorSensor == 0) {
-
-            mostrarAlertaAcceso(
-                "🚫 Acceso no permitido",
-                "Por favor, posiciónate correctamente frente a la entrada del estacionamiento (línea verde) para poder abrir la pluma."
-            );
-
-            return; // ⛔ IMPORTANTE: NO abre la pluma
+        // 3. Lógica de validación
+        if (valorSensor === 0) {
+            // No hay carro detectado
+            mostrarMensajeAcceso("🚫 Posiciónate correctamente en la entrada (línea verde) para abrir.");
+        } else {
+            // Hay carro -> Mandamos un 1 a la pluma
+            await refEstacionamiento.child('pluma').set(1);
+            mostrarMensajeAcceso("✅ Acceso autorizado. Abriendo pluma...", "#00c800");
+            
+            // Opcional: Volver a cerrar la pluma automáticamente tras 5 segundos
+            setTimeout(() => {
+                refEstacionamiento.child('pluma').set(0);
+            }, 5000);
         }
-
-        // ✅ SI HAY CARRO → ABRE
-        await db.ref(rutaPluma).set(1);
-
-        mostrarAlertaAcceso(
-            "✅ Acceso autorizado",
-            "Pluma activada. Puedes ingresar al estacionamiento."
-        );
-
     } catch (error) {
-        console.error("Error:", error);
+        console.error("Error al conectar con Firebase:", error);
     }
 }
 
-function mostrarAlertaAcceso(titulo, mensaje) {
-
-    const alerta = document.createElement("div");
-    alerta.classList.add("alerta-acceso");
-
-    alerta.innerHTML = `
-        <div class="alerta-contenido">
-            <h2>${titulo}</h2>
-            <p>${mensaje}</p>
-        </div>
-    `;
-
-    document.body.appendChild(alerta);
-
-    setTimeout(() => {
-        alerta.classList.add("visible");
-    }, 10);
+// Función para mostrar alertas visuales en la pantalla
+function mostrarMensajeAcceso(texto, color = "#ff3333") {
+    let alerta = document.querySelector(".alerta-acceso");
+    if (!alerta) {
+        alerta = document.createElement("div");
+        alerta.className = "alerta-acceso";
+        document.body.appendChild(alerta);
+    }
+    
+    alerta.innerText = texto;
+    alerta.style.backgroundColor = color;
+    alerta.classList.add("show");
 
     setTimeout(() => {
-        alerta.classList.remove("visible");
-        setTimeout(() => alerta.remove(), 300);
-    }, 3000);
+        alerta.classList.remove("show");
+    }, 3500);
 }
+
+
 
 
 /* ========================= */
