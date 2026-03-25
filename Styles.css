@@ -2,39 +2,65 @@ body{
     margin: 0;
 }
 
-/* Contenedor para centrar el botón */
+
+/* Contenedor con más espacio */
 .contenedor-boton-acceso {
     display: flex;
     justify-content: center;
-    margin: 40px 0;
+    margin: 50px 0; /* Más separación del mapa */
 }
 
-/* Estilo Moderno del Botón */
+/* Botón Versión "Gigante" */
 .boton-premium {
     background: linear-gradient(135deg, #152191 0%, #0c1661 100%);
     color: white;
-    border: none;
-    padding: 18px 35px;
-    font-size: 1.2rem;
+    border: 3px solid #ead228; /* Borde amarillo UANL para resaltar */
+    
+    /* Tamaño aumentado */
+    padding: 25px 60px; 
+    font-size: 2rem; /* Texto mucho más grande */
+    
     font-family: 'Gill Sans', sans-serif;
-    font-weight: bold;
-    border-radius: 50px;
+    font-weight: 800;
+    text-transform: uppercase;
+    border-radius: 100px; /* Bordes totalmente ovalados */
     cursor: pointer;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-    transition: all 0.3s ease;
+    
+    /* Sombra más profunda para dar profundidad */
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 20px;
 }
 
+/* Efectos de interacción */
 .boton-premium:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 15px 25px rgba(0,0,0,0.4);
+    transform: scale(1.05); /* Se agranda un poco al pasar el mouse */
     background: linear-gradient(135deg, #1d2dbd 0%, #152191 100%);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
 }
 
 .boton-premium:active {
-    transform: translateY(1px);
+    transform: scale(0.95); /* Efecto de hundimiento al presionar */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+/* Icono dentro del botón */
+.boton-premium::before {
+    content: "🚗";
+    font-size: 2.5rem;
+}
+
+/* Ajuste para pantallas pequeñas (Móviles) */
+@media (max-width: 600px) {
+    .boton-premium {
+        padding: 20px 40px;
+        font-size: 1.5rem;
+        width: 90%; /* Casi todo el ancho del cel */
+        justify-content: center;
+    }
 }
 
 /* Estilo para el mensaje de alerta (Toast) */
