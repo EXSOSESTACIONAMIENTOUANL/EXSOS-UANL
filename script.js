@@ -55,7 +55,7 @@ db.ref("estacionamiento/pluma").on("value", snapshot => {
     const estado = snapshot.val();
     console.log("Pluma:", estado);
 
-    const btn = document.querySelector(".btn-acceso");
+    const btn = document.getElementById("btnAbrirPluma");
 
     if (!btn) return;
 
