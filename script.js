@@ -1,150 +1,74 @@
+document.addEventListener("DOMContentLoaded", function(){
 
-//  CONFIGURACIÓN CON TUS DATOS
 const firebaseConfig = {
     apiKey: "AIzaSyBTnfeDaDYQlk3ugUHzc3SXB_b7dMrv3Qg",
     databaseURL: "https://esp32-ecdcf-default-rtdb.asia-southeast1.firebasedatabase.app"
 };
 
-//  INICIALIZAR FIREBASE
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-console.log("🔥 Conectado a Firebase");
-
-
-// =======================================
-//    CAJONES (SENSORES)
-// =======================================
-
+// 🔥 GUARDAR ELEMENTOS UNA SOLA VEZ
 const cajones = [
-    { path: "cajones/cajon1", clase: ".cajon1" },
-    { path: "cajones/cajon2", clase: ".cajon2" },
-    { path: "cajones/cajon3", clase: ".cajon3" },
-    { path: "cajones/cajon4", clase: ".cajon4" },
-    { path: "cajones/cajon5", clase: ".cajon5" }
+    document.querySelector(".cajon1"),
+    document.querySelector(".cajon2"),
+    document.querySelector(".cajon3"),
+    document.querySelector(".cajon4"),
+    document.querySelector(".cajon5")
 ];
 
-cajones.forEach(c => {
-    db.ref(c.path).on("value", snapshot => {
-        const estado = snapshot.val();
-        const el = document.querySelector(c.clase);
+const numeroVerde = document.querySelector(".numero-verde");
+const numeroRojo = document.querySelector(".numero-rojo");
 
-        if (!el) return;
+let estados = [1,1,1,1,1];
 
-        if (estado == 1) {
-            el.classList.remove("libre");
-            el.classList.add("ocupado");
-        } else {
-            el.classList.remove("ocupado");
-            el.classList.add("libre");
+// 🔥 SOLO ACTUALIZA EL CAJÓN QUE CAMBIA
+function actualizarCajon(i){
+
+    if(estados[i] == 0){
+        cajones[i].classList.remove("libre");
+        cajones[i].classList.add("ocupado");
+    }else{
+        cajones[i].classList.remove("ocupado");
+        cajones[i].classList.add("libre");
+    }
+
+    actualizarContador();
+}
+
+// 🔥 CONTADOR OPTIMIZADO
+function actualizarContador(){
+
+    let ocupados = estados.filter(e => e == 0).length;
+    let libres = 5 - ocupados;
+
+    numeroVerde.innerText = libres.toString().padStart(3,'0');
+    numeroRojo.innerText = ocupados.toString().padStart(3,'0');
+}
+
+// 🔥 ESCUCHA INDIVIDUAL (ULTRA FLUIDO)
+for(let i=1;i<=5;i++){
+
+    db.ref("/estacionamiento/cajon" + i).on("value", (snapshot) => {
+
+        if(snapshot.exists()){
+
+            let nuevo = snapshot.val();
+
+            // 🚀 SOLO SI CAMBIA
+            if(estados[i-1] !== nuevo){
+
+                estados[i-1] = nuevo;
+                actualizarCajon(i-1);
+
+            }
         }
 
-        console.log(c.path, estado);
     });
+
+}
+
 });
-
-
-// =======================================
-//     PLUMA (ACCESO)
-// =======================================
-
-db.ref("estacionamiento/pluma").on("value", snapshot => {
-    const estado = snapshot.val();
-    console.log("Pluma:", estado);
-
-    const btn = document.getElementById("btnAbrirPluma");
-
-    if (!btn) return;
-
-    if (estado == 1) {
-        btn.style.background = "green";
-    } else {
-        btn.style.background = "#FFD400";
-    }
-});
-
-
-// =======================================
-// 🔘 BOTÓN ABRIR ENTRADA (Lógica Corregida)
-// =======================================
-
-function solicitarApertura() {
-    // 1. Leemos el sensor de presión en la base de datos
-    db.ref("estacionamiento/sensor_presion").once("value").then(snapshot => {
-        const hayCarro = snapshot.val();
-
-        const alertaDiv = document.getElementById("contenedorAlerta");
-
-        if (hayCarro == 1) {
-            // ✅ CASO: HAY CARRO (Escribimos en la DB)
-            db.ref("estacionamiento/pluma").set(1);
-            
-            alertaDiv.innerHTML = `
-                <div class="alerta-contenido">
-                    <button class="btn-cerrar-amarillo" onclick="cerrarAlerta()">Cerrar</button>
-                    <h2>¡Bienvenido!</h2>
-                    <p>Acceso autorizado. La pluma se está abriendo.</p>
-                </div>
-            `;
-            alertaDiv.classList.add("visible");
-
-            // Opcional: Cerrar pluma automáticamente tras 5 segundos
-            setTimeout(() => { db.ref("estacionamiento/pluma").set(0); }, 5000);
-
-        } else {
-            // ❌ CASO: NO HAY CARRO (No enviamos nada a la DB)
-            alertaDiv.innerHTML = `
-                <div class="alerta-contenido">
-                    <button class="btn-cerrar-amarillo" onclick="cerrarAlerta()">Cerrar</button>
-                    <h2>Acceso Denegado</h2>
-                    <p>Por favor, colócate en la entrada del estacionamiento.</p>
-                </div>
-            `;
-            alertaDiv.classList.add("visible");
-        }
-    });
-}
-
-function cerrarAlerta() {
-    document.getElementById("contenedorAlerta").classList.remove("visible");
-}
-
-// =======================================
-// 🔔 ALERTA CON BOTÓN CERRAR (Estilo Imagen 2)
-// =======================================
-
-function mostrarAlerta(titulo, mensaje) {
-    // Buscamos el contenedor. Si no existe en tu HTML, lo creamos dinámicamente.
-    let alerta = document.querySelector(".alerta-acceso");
-    
-    if (!alerta) {
-        alerta = document.createElement("div");
-        alerta.className = "alerta-acceso";
-        document.body.appendChild(alerta);
-    }
-
-    // Insertamos el contenido con el botón "Cerrar" amarillo
-    alerta.innerHTML = `
-        <div class="alerta-contenido">
-            <button class="btn-cerrar-alerta" onclick="cerrarAlertaManual()">Cerrar</button>
-            <h2>${titulo}</h2>
-            <p>${mensaje}</p>
-        </div>
-    `;
-
-    alerta.classList.add("visible");
-}
-
-// Función para el botón amarillo de la alerta
-function cerrarAlertaManual() {
-    const alerta = document.querySelector(".alerta-acceso");
-    if (alerta) {
-        alerta.classList.remove("visible");
-    }
-}
-
-
-//Cajones
 
 function cambiarEstadoCajon(numero, estado){
 
@@ -159,6 +83,8 @@ cajon.classList.add("libre");
 
 cajon.classList.remove("libre");
 cajon.classList.add("ocupado");
+
+}
 
 }
 
@@ -856,4 +782,3 @@ badge.style.backgroundColor = "red"; // rojo
 }
 
 }
-
