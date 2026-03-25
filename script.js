@@ -1,22 +1,22 @@
-// 1. VARIABLES GLOBALES (Fundamentales para que el botón las vea)
+// 1. VARIABLE GLOBAL
 let db; 
 
 document.addEventListener("DOMContentLoaded", function() {
-    // Configuración de tu Firebase
+    // Configuración Completa
     const firebaseConfig = {
         apiKey: "AIzaSyBTnfeDaDYQlk3ugUHzc3SXB_b7dMrv3Qg",
         databaseURL: "https://esp32-ecdcf-default-rtdb.asia-southeast1.firebasedatabase.app"
     };
 
-    // 2. INICIALIZACIÓN ÚNICA
+    // 2. INICIALIZACIÓN ÚNICA (Evita el error de "app already exists")
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
     }
     db = firebase.database(); 
 
-    console.log("🔥 Firebase conectado correctamente");
+    console.log("🔥 Firebase conectado y listo para el botón");
 
-    // --- LÓGICA DE LOS CAJONES (ESTACIONAMIENTO) ---
+    // --- LÓGICA DE LOS CAJONES ---
     const cajones = [
         document.querySelector(".cajon1"),
         document.querySelector(".cajon2"),
@@ -36,30 +36,31 @@ document.addEventListener("DOMContentLoaded", function() {
         if(numeroRojo) numeroRojo.innerText = ocupados.toString().padStart(3, '0');
     }
 
-    // Escuchar cambios en los cajones
-    for (let i = 1; i <= 5; i++) {
-        db.ref("/estacionamiento/cajon" + i).on("value", (snapshot) => {
-            if (snapshot.exists()) {
-                let nuevo = snapshot.val();
-                estados[i - 1] = nuevo;
-                
-                if (cajones[i - 1]) {
-                    if (nuevo == 0) { // Ocupado
-                        cajones[i - 1].classList.remove("libre");
-                        cajones[i - 1].classList.add("ocupado");
+    // Escuchar cambios en los cajones (Actualiza el mapa en tiempo real)
+    db.ref("/estacionamiento").on("value", (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            // Actualizamos el array local de estados
+            estados = [data.cajon1, data.cajon2, data.cajon3, data.cajon4, data.cajon5];
+            
+            estados.forEach((valor, i) => {
+                if (cajones[i]) {
+                    if (valor == 0) { // Ocupado
+                        cajones[i].classList.remove("libre");
+                        cajones[i].classList.add("ocupado");
                     } else { // Libre
-                        cajones[i - 1].classList.remove("ocupado");
-                        cajones[i - 1].classList.add("libre");
+                        cajones[i].classList.remove("ocupado");
+                        cajones[i].classList.add("libre");
                     }
                 }
-                actualizarContador();
-            }
-        });
-    }
+            });
+            actualizarContador();
+        }
+    });
 
-    // Cargar otras funciones (Calendario, etc.)
-    corregirInicioMeses();
-    cargarPartidos();
+    // Cargar otras funciones de la página
+    if (typeof corregirInicioMeses === 'function') corregirInicioMeses();
+    if (typeof cargarPartidos === 'function') cargarPartidos();
 });
 
 /* ========================= */
@@ -67,38 +68,37 @@ document.addEventListener("DOMContentLoaded", function() {
 /* ========================= */
 async function solicitarApertura() {
     if (!db) {
-        mostrarMensajeAcceso("⚠️ Error: Base de datos no conectada.");
+        alert("Base de datos no conectada");
         return;
     }
 
     try {
-        // Obtenemos el valor de sensor_presion
+        // Obtenemos el sensor de presión (asegúrate que el nombre sea exacto en Firebase)
         const snapshot = await db.ref('estacionamiento/sensor_presion').once('value');
         const valorSensor = snapshot.val();
 
-        console.log("Revisando sensor:", valorSensor);
+        console.log("Valor del sensor en DB:", valorSensor);
 
         if (valorSensor === 0) {
-            // El carro NO está en la entrada
+            // Si el sensor es 0, el carro no está ahí
             mostrarMensajeAcceso("🚫 Posiciónate correctamente en la entrada para abrir.", "#ff3333");
         } else {
-            // El carro SÍ está -> Abrimos pluma
+            // Si el sensor es diferente de 0, abrimos
             await db.ref('estacionamiento/pluma').set(1);
             mostrarMensajeAcceso("✅ Acceso autorizado. Abriendo pluma...", "#00c800");
             
-            // Auto-cerrar en 5 segundos
+            // Cerrar pluma automáticamente después de 5 segundos
             setTimeout(() => {
                 db.ref('estacionamiento/pluma').set(0);
             }, 5000);
         }
     } catch (error) {
-        console.error("Error:", error);
-        mostrarMensajeAcceso("⚠️ Error de comunicación.");
+        console.error("Error al interactuar con Firebase:", error);
+        mostrarMensajeAcceso("⚠️ Error de conexión.");
     }
 }
 
-
-// Función para mostrar alertas visuales en la pantalla
+// Función para mostrar alertas en pantalla
 function mostrarMensajeAcceso(texto, color = "#ff3333") {
     let alerta = document.querySelector(".alerta-acceso");
     if (!alerta) {
@@ -109,11 +109,6 @@ function mostrarMensajeAcceso(texto, color = "#ff3333") {
     
     alerta.innerText = texto;
     alerta.style.backgroundColor = color;
-    alerta.style.fontSize = "1.5rem"; // Texto de alerta grande
-    alerta.style.fontWeight = "bold";
-    alerta.style.textAlign = "center";
-    alerta.style.width = "80%";
-    
     alerta.classList.add("show");
 
     setTimeout(() => {
