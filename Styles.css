@@ -16,46 +16,57 @@ body{
     width: 70%;
     
 }
-/* ---------- NUEVO BOTÓN DE ACCESO TEMÁTICO ---------- */
 
-/* Contenedor para centrar el botón */
+
+/* ---------- BOTÓN DE ACCESO TEMÁTICO (AHORA MÁS GRANDE) ---------- */
+
+/* Mantenemos el contenedor igual para asegurar el centrado horizontal */
 .contenedor-boton-acceso {
     display: flex;
     justify-content: center; /* Centrado horizontal */
     width: 100%;
-    margin-top: 30px; /* Separación de arriba (del mapa) */
-    margin-bottom: 30px; /* Separación de abajo (del footer) */
+    margin-top: 30px; /* Separación del mapa */
+    margin-bottom: 30px; /* Separación del footer */
 }
 
-/* Estilo del botón (Colores Temática EXSOS) */
+/* Estilo del botón (Colores Temática EXSOS, TAMAÑO AUMENTADO) */
 .boton-acceso {
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     background-color: #FFD400; /* Amarillo temático (como el calendario) */
     color: #152191; /* Azul oscuro temático (letras) */
     border: none;
-    padding: 15px 35px; /* Tamaño del botón */
-    border-radius: 50px; /* Bordes muy redondeados (estilo moderno) */
-    font-size: clamp(20px, 4vw, 24px); /* Responsive font size */
+
+    /* --- CAMBIO: TAMAÑO AUMENTADO (Interior del botón) --- */
+    /* Antes: 15px 35px. Ahora: 20px 45px */
+    padding: 20px 45px;
+
+    /* --- CAMBIO: TAMAÑO AUMENTADO (Texto del botón) --- */
+    /* Antes: clamp(20px, 4vw, 24px). Ahora: clamp(24px, 5vw, 28px) */
+    font-size: clamp(24px, 5vw, 28px); /* Responsive font size más grande */
+
+    /* --- CAMBIO: Bordes más redondeados acorde al nuevo tamaño --- */
+    border-radius: 60px; /* Bordes redondeados modernos y más grandes */
+
     font-weight: bold;
     cursor: pointer;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3); /* Sombra para resaltar */
-    transition: transform 0.1s ease, background-color 0.2s ease;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.3); /* Sombra un poco más grande acorde al tamaño */
+    transition: transform 0.1s ease, background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Efecto al pasar el mouse (temática) */
+/* Efecto al pasar el mouse (temática, actualizado para hover) */
 .boton-acceso:hover {
     background-color: #e6bf00; /* Un amarillo un poco más oscuro al hover */
+    box-shadow: 0 8px 22px rgba(0,0,0,0.4); /* Resalta más al hover */
 }
 
-/* Efecto al darle clic (presionado) */
+/* Efecto al darle clic (presionado, actualizado) */
 .boton-acceso:active {
-    transform: translateY(2px); /* Se hunde tantito */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3); /* Baja la sombra */
+    transform: translateY(3px); /* Se hunde un poco más */
+    box-shadow: 0 3px 8px rgba(0,0,0,0.3); /* Baja la sombra acorde al hundimiento */
 }
-.btn-acceso:hover {
-    transform: scale(1.05);
-    background-color: #ffd400; 
-}
+
+
+
 
 /*          Campanita             */
 
