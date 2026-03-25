@@ -13,11 +13,7 @@ function verificarYEnviar() {
         if (valorSensor == 0) {
             // Si hay un cero, sale la alerta
             alert("Posiciónate en la entrada del estacionamiento.");
-            
-            // OJO: Me comentaste "O manda el uno en todos los casos, pero si hay un cero que ponga el mensaje".
-            // Si quieres que a pesar del mensaje de alerta como quiera mande el 1 a la base de datos, 
-            // solo quítale las diagonales a la siguiente línea:
-            // db.ref(rutaMandarUno).set(1);
+
             
         } else {
             // Si no es 0, manda el 1 de inmediato
