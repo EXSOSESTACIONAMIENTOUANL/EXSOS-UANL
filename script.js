@@ -97,28 +97,59 @@ cajon.classList.add("ocupado");
 /* ========================= */
 async function solicitarApertura() {
     try {
-        // Rutas EXACTAS de tu Firebase basadas en tu screenshot
-        const rutaSensor = 'estacionamiento/sensor_presion'; 
-        const rutaPluma = 'estacionamiento/pluma'; 
+        const rutaSensor = 'estacionamiento/sensor';  // 🔥 CORRECTO
+        const rutaPluma = 'estacionamiento/pluma';    // 🔥 CORRECTO
 
-        // 1. Leemos el sensor primero
         const snapshot = await db.ref(rutaSensor).once('value');
         const valorSensor = snapshot.val();
 
+        // 🚫 SI NO HAY CARRO
         if (valorSensor == 0) {
-            // Si el sensor está en 0 (no hay carro detectado), mostramos la alerta
-            alert("Por favor, posiciónate correctamente en la entrada central (línea verde) para abrir la barrera.");
-        } 
-        
-        // 2. En TODOS LOS CASOS, mandamos el "1" a la pluma para intentar abrir
+
+            mostrarAlertaAcceso(
+                "🚫 Acceso no permitido",
+                "Por favor, posiciónate correctamente frente a la entrada del estacionamiento (línea verde) para poder abrir la pluma."
+            );
+
+            return; // ⛔ IMPORTANTE: NO abre la pluma
+        }
+
+        // ✅ SI HAY CARRO → ABRE
         await db.ref(rutaPluma).set(1);
-        console.log("Comando de apertura '1' enviado a Firebase.");
-        
+
+        mostrarAlertaAcceso(
+            "✅ Acceso autorizado",
+            "Pluma activada. Puedes ingresar al estacionamiento."
+        );
+
     } catch (error) {
-        console.error("Error al conectar con Firebase:", error);
+        console.error("Error:", error);
     }
 }
 
+function mostrarAlertaAcceso(titulo, mensaje) {
+
+    const alerta = document.createElement("div");
+    alerta.classList.add("alerta-acceso");
+
+    alerta.innerHTML = `
+        <div class="alerta-contenido">
+            <h2>${titulo}</h2>
+            <p>${mensaje}</p>
+        </div>
+    `;
+
+    document.body.appendChild(alerta);
+
+    setTimeout(() => {
+        alerta.classList.add("visible");
+    }, 10);
+
+    setTimeout(() => {
+        alerta.classList.remove("visible");
+        setTimeout(() => alerta.remove(), 300);
+    }, 3000);
+}
 
 
 /* ========================= */
