@@ -92,36 +92,63 @@ cajon.classList.add("ocupado");
 }
 
 
+// 1. DECLARACIÓN GLOBAL (Afuera de todo)
+let db; 
+
+document.addEventListener("DOMContentLoaded", function() {
+    const firebaseConfig = {
+        apiKey: "AIzaSyBTnfeDaDYQlk3ugUHzc3SXB_b7dMrv3Qg",
+        databaseURL: "https://esp32-ecdcf-default-rtdb.asia-southeast1.firebasedatabase.app"
+    };
+
+    // Inicializar solo si no se ha hecho
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    
+    db = firebase.database(); // Asignamos a la variable global
+
+    // ... (aquí va el resto de tu código de los cajones que ya tienes)
+});
+
 /* ========================= */
-/* LÓGICA DEL BOTÓN (ACTUALIZADA) */
+/* LÓGICA DEL BOTÓN (FIJADA)  */
 /* ========================= */
 async function solicitarApertura() {
+    // Verificamos que la DB esté lista
+    if (!db) {
+        console.error("Firebase no ha cargado todavía");
+        return;
+    }
+
     try {
-        // 1. Referencia a los datos en Firebase
         const refEstacionamiento = db.ref('estacionamiento');
         
-        // 2. Consultar el valor del sensor una sola vez
+        // Obtenemos el valor del sensor
         const snapshot = await refEstacionamiento.child('sensor_presion').once('value');
         const valorSensor = snapshot.val();
 
-        // 3. Lógica de validación
+        console.log("Valor del sensor detectado:", valorSensor);
+
         if (valorSensor === 0) {
-            // No hay carro detectado
-            mostrarMensajeAcceso("🚫 Posiciónate correctamente en la entrada (línea verde) para abrir.");
+            // MOSTRAR ERROR (Rojo)
+            mostrarMensajeAcceso("🚫 Posiciónate correctamente en la entrada para abrir.", "#ff3333");
         } else {
-            // Hay carro -> Mandamos un 1 a la pluma
+            // ÉXITO: Mandamos 1 a la pluma
             await refEstacionamiento.child('pluma').set(1);
             mostrarMensajeAcceso("✅ Acceso autorizado. Abriendo pluma...", "#00c800");
             
-            // Opcional: Volver a cerrar la pluma automáticamente tras 5 segundos
+            // Auto-cerrar en 5 segundos
             setTimeout(() => {
                 refEstacionamiento.child('pluma').set(0);
             }, 5000);
         }
     } catch (error) {
-        console.error("Error al conectar con Firebase:", error);
+        console.error("Error en la solicitud:", error);
+        mostrarMensajeAcceso("⚠️ Error de conexión con la base de datos.");
     }
 }
+
 
 // Función para mostrar alertas visuales en la pantalla
 function mostrarMensajeAcceso(texto, color = "#ff3333") {
