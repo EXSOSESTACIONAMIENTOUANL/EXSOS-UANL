@@ -5,9 +5,7 @@ body{
 /* ESTILOS DE LA ALERTA (TOAST)              */
 /* ========================================= */
 
-/* ========================================= */
-/* ESTILOS DE LA ALERTA (TAMAÑO MÁXIMO)      */
-/* ========================================= */
+
 .alerta-acceso {
     position: fixed;
     /* Centramos la alerta vertical y horizontalmente */
