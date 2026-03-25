@@ -1,14 +1,33 @@
 document.addEventListener("DOMContentLoaded", function(){
 
-const firebaseConfig = {
+/* ========================= */
+/* 🔥 CONFIGURACIÓN FIREBASE */
+/* ========================= */
+
+// 🔵 BASE 1 → CAJONES
+const configCajones = {
     apiKey: "AIzaSyBTnfeDaDYQlk3ugUHzc3SXB_b7dMrv3Qg",
     databaseURL: "https://esp32-ecdcf-default-rtdb.asia-southeast1.firebasedatabase.app"
 };
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+// 🟢 BASE 2 → PLUMA Y SENSOR
+const configPluma = {
+    apiKey: "AIzaSyDTEJ3mfhPKsC2gsp4VNutoCcZ-4naQNTs",
+    databaseURL: "https://estacionamientouanl-default-rtdb.firebaseio.com"
+};
 
-// 🔥 GUARDAR ELEMENTOS UNA SOLA VEZ
+// 🔥 INICIALIZAR LAS DOS APPS
+const appCajones = firebase.initializeApp(configCajones, "cajonesApp");
+const appPluma = firebase.initializeApp(configPluma, "plumaApp");
+
+// 🔥 REFERENCIAS A BASES
+const dbCajones = appCajones.database();
+const dbPluma = appPluma.database();
+
+/* ========================= */
+/* 🚗 CAJONES */
+/* ========================= */
+
 const cajones = [
     document.querySelector(".cajon1"),
     document.querySelector(".cajon2"),
@@ -22,7 +41,6 @@ const numeroRojo = document.querySelector(".numero-rojo");
 
 let estados = [1,1,1,1,1];
 
-// 🔥 SOLO ACTUALIZA EL CAJÓN QUE CAMBIA
 function actualizarCajon(i){
 
     if(estados[i] == 0){
@@ -36,7 +54,6 @@ function actualizarCajon(i){
     actualizarContador();
 }
 
-// 🔥 CONTADOR OPTIMIZADO
 function actualizarContador(){
 
     let ocupados = estados.filter(e => e == 0).length;
@@ -46,27 +63,76 @@ function actualizarContador(){
     numeroRojo.innerText = ocupados.toString().padStart(3,'0');
 }
 
-// 🔥 ESCUCHA INDIVIDUAL (ULTRA FLUIDO)
+// 🔥 ESCUCHA CAJONES (BASE 1)
 for(let i=1;i<=5;i++){
 
-    db.ref("/estacionamiento/cajon" + i).on("value", (snapshot) => {
+    dbCajones.ref("/estacionamiento/cajon" + i).on("value", (snapshot) => {
 
         if(snapshot.exists()){
 
             let nuevo = snapshot.val();
 
-            // 🚀 SOLO SI CAMBIA
             if(estados[i-1] !== nuevo){
-
                 estados[i-1] = nuevo;
                 actualizarCajon(i-1);
-
             }
         }
 
     });
 
 }
+
+/* ========================= */
+/* 🚧 SENSOR + PLUMA */
+/* ========================= */
+
+let estadoSensorActual = 0;
+
+const refSensor = dbPluma.ref("estacionamiento/sensor_presion");
+const refPluma = dbPluma.ref("estacionamiento/pluma");
+
+// 🔥 ESCUCHAR SENSOR (BASE 2)
+refSensor.on("value", (snapshot) => {
+
+    if(snapshot.exists()){
+        estadoSensorActual = snapshot.val();
+        console.log("Sensor:", estadoSensorActual);
+    }
+
+});
+
+// 🔥 BOTÓN PLUMA
+window.solicitarApertura = function(){
+
+    const alerta = document.getElementById("contenedorAlerta");
+
+    if(estadoSensorActual == 0){
+
+        alerta.innerHTML = "⚠️ Posiciónese en la entrada";
+        alerta.style.background = "#ff3b3b";
+        alerta.style.display = "block";
+
+        setTimeout(()=>{
+            alerta.style.display = "none";
+        }, 3000);
+
+        return;
+    }
+
+    if(estadoSensorActual == 1){
+
+        refPluma.set(1);
+
+        alerta.innerHTML = "✅ Bienvenido";
+        alerta.style.background = "#00c853";
+        alerta.style.display = "block";
+
+        setTimeout(()=>{
+            alerta.style.display = "none";
+        }, 3000);
+    }
+
+};
 
 });
 
