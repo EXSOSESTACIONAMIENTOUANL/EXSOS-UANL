@@ -1,152 +1,108 @@
 #include <Arduino.h>
 #include <WiFi.h>
-#include <WebServer.h>
-#include <SPIFFS.h>
+#include <FirebaseESP32.h>
 
-const char* ssid = "Totalplay-5BB1";
-const char* password = "5BB13C41hajvn9Au";
+// WIFI
+const char* ssid = "12";
+const char* password = "05040522";
+//const char* ssid = "Totalplay-5BB1";
+//const char* password = "5BB13C41hajvn9Au";
 
-WebServer server(80);
+// FIREBASE
+#define FIREBASE_HOST "esp32-ecdcf-default-rtdb.asia-southeast1.firebasedatabase.app"
+#define FIREBASE_AUTH "AIzaSyBTnfeDaDYQlk3ugUHzc3SXB_b7dMrv3Qg"
+
+FirebaseData fbdo;
+FirebaseConfig config;
+FirebaseAuth auth;
 
 // LEDS
-int led1R = 23;
-int led1V = 14;
-int led2R = 4;
-int led2V = 18;
-int led3R = 25;
-int led3V = 33;
-int led4R = 27;
-int led4V = 26;
-int led5R = 19;
-int led5V = 22;
+int ledR[5] = {23, 4, 33, 27, 22};
+int ledV[5] = {14, 18, 25, 26, 19};
 
 // SENSORES
-int sensor1 = 34;
-int sensor2 = 35;
-int sensor3 = 32;
-int sensor4 = 39;
-int sensor5 = 36;
+int sensores[5] = {34, 35, 32, 39, 36};
+int umbral[5] = {2000, 2000, 2000, 2500, 2000};
 
-int valor1, valor2, valor3, valor4, valor5;
-int valorP1, valorP2, valorP3, valorP4, valorP5;
+int estadoAnterior[5] = {9,9,9,9,9};
 
-String enviarEstados()
-{
-  return String(valorP1) + "," +
-         String(valorP2) + "," +
-         String(valorP3) + "," +
-         String(valorP4) + "," +
-         String(valorP5);
+int leerSensorEstable(int pin){
+  int suma = 0;
+  for(int i=0;i<3;i++){
+    suma += analogRead(pin);
+  }
+  return suma / 3;
 }
 
-void setup()
-{
+void setup() {
   Serial.begin(115200);
 
-  pinMode(led1R, OUTPUT);
-  pinMode(led1V, OUTPUT);
-  pinMode(led2R, OUTPUT);
-  pinMode(led2V, OUTPUT);
-  pinMode(led3R, OUTPUT);
-  pinMode(led3V, OUTPUT);
-  pinMode(led4R, OUTPUT);
-  pinMode(led4V, OUTPUT);
-  pinMode(led5R, OUTPUT);
-  pinMode(led5V, OUTPUT);
+  for(int i=0;i<5;i++){
+    pinMode(ledR[i], OUTPUT);
+    pinMode(ledV[i], OUTPUT);
+  }
 
   WiFi.begin(ssid, password);
-
-  Serial.print("Conectando WiFi");
-
-  while (WiFi.status() != WL_CONNECTED)
-  {
-    delay(500);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(100);
     Serial.print(".");
   }
+  Serial.println("\nWiFi conectado");
 
-  Serial.println("");
-  Serial.println("WiFi conectado");
-  Serial.println(WiFi.localIP());
+  config.host = FIREBASE_HOST;
+  config.signer.tokens.legacy_token = FIREBASE_AUTH;
 
-  SPIFFS.begin(true);
+  Firebase.begin(&config, &auth);
+  Firebase.reconnectWiFi(true);
 
-  // PAGINA PRINCIPAL
-  server.on("/", []()
-  {
-    File file = SPIFFS.open("/Home.html", "r");
-    server.streamFile(file, "text/html");
-    file.close();
-  });
-
-  // ENVIO DE DATOS
-  server.on("/datos", []()
-  {
-    server.send(200, "text/plain", enviarEstados());
-  });
-
-  // PERMITE USAR JS, CSS, IMAGENES
-  server.serveStatic("/", SPIFFS, "/");
-
-  server.begin();
+  Firebase.setwriteSizeLimit(fbdo, "small");
 }
 
-void loop()
-{
-  server.handleClient();
+void loop() {
 
-  valor1 = analogRead(sensor1);
-  valor2 = analogRead(sensor2);
-  valor3 = analogRead(sensor3);
-  valor4 = analogRead(sensor4);
-  valor5 = analogRead(sensor5);
+  int estados[5];
 
-  if(valor1 < 3000){
-    digitalWrite(led1R, HIGH);
-    digitalWrite(led1V, LOW);
-    valorP1 = 0;
-  }else{
-    digitalWrite(led1V, HIGH);
-    digitalWrite(led1R, LOW);
-    valorP1 = 1;
+  // LEER SENSORES RÁPIDO Y ESTABLE
+  for(int i=0;i<5;i++){
+    int valor = leerSensorEstable(sensores[i]);
+    estados[i] = (valor < umbral[i]) ? 0 : 1;
+
+    digitalWrite(ledR[i], estados[i] == 0);
+    digitalWrite(ledV[i], estados[i] == 1);
   }
 
-  if(valor2 < 700){
-    digitalWrite(led2R, HIGH);
-    digitalWrite(led2V, LOW);
-    valorP2 = 0;
-  }else{
-    digitalWrite(led2V, HIGH);
-    digitalWrite(led2R, LOW);
-    valorP2 = 1;
+  // DETECTAR CAMBIO GLOBAL
+  bool cambio = false;
+  for(int i=0;i<5;i++){
+    if(estados[i] != estadoAnterior[i]){
+      cambio = true;
+      break;
+    }
   }
 
-  if(valor3 < 2000){
-    digitalWrite(led3R, HIGH);
-    digitalWrite(led3V, LOW);
-    valorP3 = 0;
-  }else{
-    digitalWrite(led3V, HIGH);
-    digitalWrite(led3R, LOW);
-    valorP3 = 1;
+  // ENVÍO EN BLOQUE (CLAVE)
+  if(cambio && Firebase.ready()){
+
+    FirebaseJson json;
+
+    json.set("cajon1", estados[0]);
+    json.set("cajon2", estados[1]);
+    json.set("cajon3", estados[2]);
+    json.set("cajon4", estados[3]);
+    json.set("cajon5", estados[4]);
+
+    if(Firebase.updateNode(fbdo, "/estacionamiento", json)){
+      Serial.println("Actualización global");
+
+      for(int i=0;i<5;i++){
+        estadoAnterior[i] = estados[i];
+      }
+
+    }else{
+      Serial.println(fbdo.errorReason());
+    }
+
   }
 
-  if(valor4 < 2500){
-    digitalWrite(led4R, HIGH);
-    digitalWrite(led4V, LOW);
-    valorP4 = 0;
-  }else{
-    digitalWrite(led4V, HIGH);
-    digitalWrite(led4R, LOW);
-    valorP4 = 1;
-  }
 
-  if(valor5 < 1700){
-    digitalWrite(led5R, HIGH);
-    digitalWrite(led5V, LOW);
-    valorP5 = 0;
-  }else{
-    digitalWrite(led5V, HIGH);
-    digitalWrite(led5R, LOW);
-    valorP5 = 1;
-  }
-}
+} 
