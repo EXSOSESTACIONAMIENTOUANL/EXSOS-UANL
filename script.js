@@ -787,46 +787,41 @@ badge.style.backgroundColor = "red"; // rojo
 /* CONTROL DE ACCESO (PLUMA) */
 /* ========================= */
 
-// 1. Escuchar el sensor de presión en tiempo real para mostrar mensajes
+// 1. Escuchar el sensor de presión para mostrar el mensaje
 db.ref("/estacionamiento/sensor_presion").on("value", (snapshot) => {
     const alertaDiv = document.getElementById("contenedorAlerta");
     const sensor = snapshot.val();
 
     if (sensor === 1) {
         alertaDiv.innerHTML = `
-            <div style="background: #d4edda; color: #155724; padding: 15px; border-radius: 8px; border: 1px solid #c3e6cb; margin: 10px 0; font-weight: bold;">
+            <div style="background: #d4edda; color: #155724; padding: 15px; border-radius: 8px; border: 1px solid #c3e6cb; margin: 10px 0; font-weight: bold; text-align: center;">
                 ✅ Vehículo detectado. ¡Bienvenido!
             </div>`;
+        alertaDiv.classList.add("visible");
     } else {
         alertaDiv.innerHTML = `
-            <div style="background: #fff3cd; color: #856404; padding: 15px; border-radius: 8px; border: 1px solid #ffeeba; margin: 10px 0; font-weight: bold;">
+            <div style="background: #fff3cd; color: #856404; padding: 15px; border-radius: 8px; border: 1px solid #ffeeba; margin: 10px 0; font-weight: bold; text-align: center;">
                 ⚠️ Posiciónate en la entrada para acceder.
             </div>`;
+        alertaDiv.classList.add("visible");
+        // Si el carro se quita, cerramos la pluma por seguridad
+        db.ref("/estacionamiento/pluma").set(0);
     }
 });
 
-// 2. Función que activa el botón "Abrir Entrada"
+// 2. Función para el botón "Abrir Entrada"
 function solicitarApertura() {
-    // Primero revisamos si el sensor de presión está activo (en 1)
     db.ref("/estacionamiento/sensor_presion").once("value").then((snapshot) => {
         const sensorStatus = snapshot.val();
 
         if (sensorStatus === 1) {
-            // Si hay un carro, mandamos el 1 a la pluma
-            db.ref("/estacionamiento/pluma").set(1)
-                .then(() => {
-                    console.log("Pluma abierta correctamente");
-                    // Opcional: Cerrar la pluma automáticamente después de 5 segundos
-                    setTimeout(() => {
-                        db.ref("/estacionamiento/pluma").set(0);
-                    }, 5000);
-                })
-                .catch((error) => {
-                    console.error("Error al abrir pluma:", error);
-                });
+            // Si hay carro (1), abrimos pluma
+            db.ref("/estacionamiento/pluma").set(1).then(() => {
+                alert("Abriendo pluma... ¡Bienvenido a la UANL!");
+            });
         } else {
-            // Si no hay carro, avisamos al usuario
-            alert("No puedes abrir la pluma si no hay un vehículo en el sensor de entrada.");
+            // Si no hay carro (0), no abre y avisa
+            alert("No se detecta vehículo. Favor de posicionarse en la entrada.");
         }
     });
 }
