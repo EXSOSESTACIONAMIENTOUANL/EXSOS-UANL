@@ -782,3 +782,43 @@ badge.style.backgroundColor = "red"; // rojo
 }
 
 }
+
+// ESCUCHA DEL SENSOR DE PRESIÓN Y CONTROL DE PLUMA
+db.ref("/estacionamiento/sensor_presion").on("value", (snapshot) => {
+    const alertaDiv = document.getElementById("contenedorAlerta");
+    const sensorActivo = snapshot.val(); // 1 si hay auto, 0 si no
+
+    if (sensorActivo === 1) {
+        // 1. Mostrar mensaje de bienvenida
+        alertaDiv.innerHTML = `
+            <div style="background-color: #d4edda; color: #155724; padding: 15px; border-radius: 5px; border: 1px solid #c3e6cb; margin-bottom: 10px;">
+                <strong>¡Bienvenido!</strong> El sensor te ha detectado. Abriendo pluma...
+            </div>
+        `;
+        
+        // 2. Mandar un 1 a la variable pluma en Firebase
+        db.ref("/estacionamiento/pluma").set(1);
+
+    } else {
+        // 3. Mostrar mensaje de instrucción si no hay nadie
+        alertaDiv.innerHTML = `
+            <div style="background-color: #fff3cd; color: #856404; padding: 15px; border-radius: 5px; border: 1px solid #ffeeba; margin-bottom: 10px;">
+                <strong>Aviso:</strong> Favor de posicionarse en la entrada para acceder.
+            </div>
+        `;
+        
+        // Opcional: Cerrar la pluma automáticamente si el sensor vuelve a 0
+        db.ref("/estacionamiento/pluma").set(0);
+    }
+});
+
+// Función para el botón manual (si deseas que el botón también intente abrir)
+function solicitarApertura() {
+    db.ref("/estacionamiento/sensor_presion").once("value").then((snapshot) => {
+        if (snapshot.val() === 0) {
+            alert("No se detecta vehículo. Por favor, posiciónate en la entrada.");
+        } else {
+            db.ref("/estacionamiento/pluma").set(1);
+        }
+    });
+}
