@@ -783,42 +783,50 @@ badge.style.backgroundColor = "red"; // rojo
 
 }
 
-// ESCUCHA DEL SENSOR DE PRESIÓN Y CONTROL DE PLUMA
+/* ========================= */
+/* CONTROL DE ACCESO (PLUMA) */
+/* ========================= */
+
+// 1. Escuchar el sensor de presión en tiempo real para mostrar mensajes
 db.ref("/estacionamiento/sensor_presion").on("value", (snapshot) => {
     const alertaDiv = document.getElementById("contenedorAlerta");
-    const sensorActivo = snapshot.val(); // 1 si hay auto, 0 si no
+    const sensor = snapshot.val();
 
-    if (sensorActivo === 1) {
-        // 1. Mostrar mensaje de bienvenida
+    if (sensor === 1) {
         alertaDiv.innerHTML = `
-            <div style="background-color: #d4edda; color: #155724; padding: 15px; border-radius: 5px; border: 1px solid #c3e6cb; margin-bottom: 10px;">
-                <strong>¡Bienvenido!</strong> El sensor te ha detectado. Abriendo pluma...
-            </div>
-        `;
-        
-        // 2. Mandar un 1 a la variable pluma en Firebase
-        db.ref("/estacionamiento/pluma").set(1);
-
+            <div style="background: #d4edda; color: #155724; padding: 15px; border-radius: 8px; border: 1px solid #c3e6cb; margin: 10px 0; font-weight: bold;">
+                ✅ Vehículo detectado. ¡Bienvenido!
+            </div>`;
     } else {
-        // 3. Mostrar mensaje de instrucción si no hay nadie
         alertaDiv.innerHTML = `
-            <div style="background-color: #fff3cd; color: #856404; padding: 15px; border-radius: 5px; border: 1px solid #ffeeba; margin-bottom: 10px;">
-                <strong>Aviso:</strong> Favor de posicionarse en la entrada para acceder.
-            </div>
-        `;
-        
-        // Opcional: Cerrar la pluma automáticamente si el sensor vuelve a 0
-        db.ref("/estacionamiento/pluma").set(0);
+            <div style="background: #fff3cd; color: #856404; padding: 15px; border-radius: 8px; border: 1px solid #ffeeba; margin: 10px 0; font-weight: bold;">
+                ⚠️ Posiciónate en la entrada para acceder.
+            </div>`;
     }
 });
 
-// Función para el botón manual (si deseas que el botón también intente abrir)
+// 2. Función que activa el botón "Abrir Entrada"
 function solicitarApertura() {
+    // Primero revisamos si el sensor de presión está activo (en 1)
     db.ref("/estacionamiento/sensor_presion").once("value").then((snapshot) => {
-        if (snapshot.val() === 0) {
-            alert("No se detecta vehículo. Por favor, posiciónate en la entrada.");
+        const sensorStatus = snapshot.val();
+
+        if (sensorStatus === 1) {
+            // Si hay un carro, mandamos el 1 a la pluma
+            db.ref("/estacionamiento/pluma").set(1)
+                .then(() => {
+                    console.log("Pluma abierta correctamente");
+                    // Opcional: Cerrar la pluma automáticamente después de 5 segundos
+                    setTimeout(() => {
+                        db.ref("/estacionamiento/pluma").set(0);
+                    }, 5000);
+                })
+                .catch((error) => {
+                    console.error("Error al abrir pluma:", error);
+                });
         } else {
-            db.ref("/estacionamiento/pluma").set(1);
+            // Si no hay carro, avisamos al usuario
+            alert("No puedes abrir la pluma si no hay un vehículo en el sensor de entrada.");
         }
     });
 }
