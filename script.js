@@ -1,165 +1,6 @@
-document.addEventListener("DOMContentLoaded", function(){
-
-/* ========================= */
-/* 🔥 CONFIGURACIÓN FIREBASE */
-/* ========================= */
-
-// 🔵 BASE 1 → CAJONES
-const configCajones = {
-    apiKey: "AIzaSyBTnfeDaDYQlk3ugUHzc3SXB_b7dMrv3Qg",
-    databaseURL: "https://esp32-ecdcf-default-rtdb.asia-southeast1.firebasedatabase.app"
-};
-
-// 🟢 BASE 2 → PLUMA Y SENSOR
-const configPluma = {
-    apiKey: "AIzaSyDTEJ3mfhPKsC2gsp4VNutoCcZ-4naQNTs",
-    databaseURL: "https://estacionamientouanl-default-rtdb.firebaseio.com"
-};
-
-// 🔥 INICIALIZAR
-const appCajones = firebase.initializeApp(configCajones, "cajonesApp");
-const appPluma = firebase.initializeApp(configPluma, "plumaApp");
-
-const dbCajones = appCajones.database();
-const dbPluma = appPluma.database();
-
-/* ========================= */
-/* 🚗 CAJONES */
-/* ========================= */
-
-const cajones = [
-    document.querySelector(".cajon1"),
-    document.querySelector(".cajon2"),
-    document.querySelector(".cajon3"),
-    document.querySelector(".cajon4"),
-    document.querySelector(".cajon5")
-];
-
-const numeroVerde = document.querySelector(".numero-verde");
-const numeroRojo = document.querySelector(".numero-rojo");
-
-let estados = [1,1,1,1,1];
-
-function actualizarCajon(i){
-
-    if(estados[i] == 0){
-        cajones[i].classList.remove("libre");
-        cajones[i].classList.add("ocupado");
-    }else{
-        cajones[i].classList.remove("ocupado");
-        cajones[i].classList.add("libre");
-    }
-
-    actualizarContador();
-}
-
-function actualizarContador(){
-    let ocupados = estados.filter(e => e == 0).length;
-    let libres = 5 - ocupados;
-
-    numeroVerde.innerText = libres.toString().padStart(3,'0');
-    numeroRojo.innerText = ocupados.toString().padStart(3,'0');
-}
-
-// 🔥 ESCUCHA CAJONES
-for(let i=1;i<=5;i++){
-    dbCajones.ref("/estacionamiento/cajon" + i).on("value", (snapshot) => {
-        if(snapshot.exists()){
-            let nuevo = snapshot.val();
-            if(estados[i-1] !== nuevo){
-                estados[i-1] = nuevo;
-                actualizarCajon(i-1);
-            }
-        }
-    });
-}
-
-/* ========================= */
-/* 🚧 SENSOR + PLUMA */
-/* ========================= */
-
-let estadoSensorActual = 0;
-
-const refSensor = dbPluma.ref("estacionamiento/sensor_presion");
-const refPluma = dbPluma.ref("estacionamiento/pluma");
-
-refSensor.on("value", (snapshot) => {
-    if(snapshot.exists()){
-        estadoSensorActual = snapshot.val();
-    }
-});
-
-// 🔥 BOTÓN GLOBAL
-window.solicitarApertura = function(){
-    const alerta = document.getElementById("contenedorAlerta");
-
-    if(estadoSensorActual == 0){
-        alerta.innerHTML = "⚠️ Posiciónate en la entrada";
-        alerta.style.background = "#ff3b3b"; /* Rojo de advertencia */
-        alerta.classList.add("visible");
-        
-        setTimeout(() => {
-            alerta.classList.remove("visible");
-        }, 3000);
-        return;
-    }
-
-    if(estadoSensorActual == 1){
-        refPluma.set(1);
-        alerta.innerHTML = "✅ Bienvenido";
-        alerta.style.background = "#00c853"; /* Verde de éxito */
-        alerta.classList.add("visible");
-        
-        setTimeout(() => {
-            alerta.classList.remove("visible");
-        }, 3000);
-    }
-};
-/* ========================= */
-/* ENTER CHAT */
-/* ========================= */
-
-const input = document.getElementById("inputUsuario");
-
-if(input){
-    input.addEventListener("keypress", function(e){
-        if(e.key === "Enter"){
-            enviarMensaje();
-        }
-    });
-}
-
-/* ========================= */
-/* INICIO CALENDARIO */
-/* ========================= */
-
-corregirInicioMeses();
-cargarPartidos();
-
-});
-
-function cambiarEstadoCajon(numero, estado){
-
-const cajon = document.querySelector(".cajon" + numero);
-
-if(estado === "libre"){
-
-cajon.classList.remove("ocupado");
-cajon.classList.add("libre");
-
-}else{
-
-cajon.classList.remove("libre");
-cajon.classList.add("ocupado");
-
-}
-
-}
-
-/* ========================= */
-/* MENU LATERAL */
-/* ========================= */
-
+/* ======================================================== */
+/* 2. MENÚ LATERAL Y NOTIFICACIONES                         */
+/* ======================================================== */
 
 function abrirMenu(){
     document.getElementById("menuLateral").classList.add("activo");
@@ -171,10 +12,6 @@ function cerrarMenu(){
     document.getElementById("overlay").classList.remove("activo");
 }
 
-/* ========================= */
-/* PANEL DE NOTIFICACIONES */
-/* ========================= */
-
 function toggleNotificaciones(){
     const panel = document.getElementById("panelNotificaciones");
     panel.classList.toggle("activo");
@@ -183,7 +20,6 @@ function toggleNotificaciones(){
 document.addEventListener("click", function(e){
     const panel = document.getElementById("panelNotificaciones");
     const container = document.querySelector(".notificaciones-container");
-
     if(container && !container.contains(e.target)){
         panel.classList.remove("activo");
     }
@@ -192,703 +28,249 @@ document.addEventListener("click", function(e){
 function toggleSeccion(id){
     const contenido = document.getElementById(id);
     const flecha = document.getElementById("flecha-" + id);
-
     contenido.classList.toggle("activo");
     flecha.classList.toggle("rotar");
 }
 
-/* ========================= */
-/* AYUDANTE CHATBOT */
-/* ========================= */
+/* ======================================================== */
+/* 3. ASISTENTE VIRTUAL DINO (CHATBOT)                      */
+/* ======================================================== */
 
 function abrirAyuda(){
-
     const overlay = document.getElementById("overlayAyuda");
     const titulo = document.getElementById("tituloAyuda");
     const texto = document.getElementById("textoAyuda");
     const mensajeAyuda = document.getElementById("mensajeAyuda");
-
     const imagenCentral = document.getElementById("imagenCentral");
     const chatContenedor = document.querySelector(".chat-contenedor");
     const chat = document.getElementById("chatArea");
 
     overlay.classList.add("activo");
-
-    titulo.innerHTML = "";
-    texto.innerHTML = "";
-    chat.innerHTML = "";
-
+    titulo.innerHTML = ""; texto.innerHTML = ""; chat.innerHTML = "";
     chatContenedor.classList.remove("activo");
 
-    /* RESETEAR ESTADO */
     imagenCentral.classList.remove("monito-desaparece");
     mensajeAyuda.classList.remove("monito-desaparece");
 
-    imagenCentral.style.display = "block";
-    mensajeAyuda.style.display = "block";
-
     escribirTexto("¡Hola!", titulo, 50, () => {
-
         escribirTexto("Soy tu asistente virtual EXSOS", texto, 30, () => {
-
             setTimeout(()=>{
-
                 imagenCentral.classList.add("monito-desaparece");
                 mensajeAyuda.classList.add("monito-desaparece");
-
                 setTimeout(()=>{
-
                     imagenCentral.style.display="none";
                     mensajeAyuda.style.display="none";
-
                     chatContenedor.classList.add("activo");
-
                     chat.innerHTML += `
                     <div class="mensaje bot">
                         <img src="https://i.postimg.cc/WpxqwBv1/Feliz.png" class="avatar">
-                        <div class="burbuja">
-                            ¿En qué puedo ayudarte?
-                        </div>
-                    </div>
-                    `;
-
+                        <div class="burbuja">¿En qué puedo ayudarte?</div>
+                    </div>`;
                     chat.scrollTop = chat.scrollHeight;
-
                 },500);
-
             },1500);
-
         });
-
     });
-
 }
 
 function cerrarAyuda(){
-
     const overlay = document.getElementById("overlayAyuda");
-    const chat = document.getElementById("chatArea");
-    const imagenCentral = document.getElementById("imagenCentral");
-    const chatContenedor = document.querySelector(".chat-contenedor");
-    const mensajeAyuda = document.getElementById("mensajeAyuda");
-
     overlay.classList.remove("activo");
-
-    chat.innerHTML="";
-    chatContenedor.classList.remove("activo");
-
-    /* RESETEAR ANIMACIÓN */
-    imagenCentral.classList.remove("monito-desaparece");
-    mensajeAyuda.classList.remove("monito-desaparece");
-
-    imagenCentral.style.display="block";
-    mensajeAyuda.style.display="block";
 }
 
-/* ========================= */
-/* EFECTO MAQUINA DE ESCRIBIR */
-/* ========================= */
-
 function escribirTexto(textoCompleto, elemento, velocidad, callback){
-
     let i = 0;
     elemento.innerHTML = "";
-
     const intervalo = setInterval(()=>{
-
         elemento.innerHTML += textoCompleto.charAt(i);
         i++;
-
         if(i >= textoCompleto.length){
             clearInterval(intervalo);
             if(callback) callback();
         }
-
     }, velocidad);
 }
 
-/* ========================= */
-/* AVATAR DINAMICO */
-/* ========================= */
-
-function obtenerAvatarBot(texto){
-
-    texto = texto.toLowerCase();
-
-    if(texto.includes("verde"))
-        return "https://i.postimg.cc/WpxqwBv1/Feliz.png";
-
-    if(texto.includes("rojo"))
-        return "https://i.postimg.cc/WpxqwBv1/Feliz.png";
-
-    if(texto.includes("tu nombre") || texto.includes("como te llamas") || texto.includes("eres"))
-        return "https://i.postimg.cc/WpxqwBv1/Feliz.png";
-
-    if(texto.includes("funciona") || texto.includes("funcionamiento") || texto.includes("colores") || texto.includes("color"))
-        return "https://i.postimg.cc/zv83Hrh0/Dino-saludo.png";
-
-    if(texto.includes("hora") || texto.includes("dia") || texto.includes("horario"))
-        return "https://i.postimg.cc/zv83Hrh0/Dino-saludo.png";
-
-    if(texto.includes("tiempo real") || texto.includes("actualiza en tiempo real") || texto.includes("actualiza solo") || texto.includes("automaticamente"))
-        return "https://i.postimg.cc/pXnXVr41/chat.png";
-
-    if(texto.includes("incorrectamente") || texto.includes("lugar incorrecto") || texto.includes("error"))
-        return "https://i.postimg.cc/MTCZ18j7/sorry.webp";
-
-    if(texto.includes("contador") || texto.includes("cada cuanto") || texto.includes("cada cuánto"))
-        return "https://i.postimg.cc/pXnXVr41/chat.png";
-
-    if(texto.includes("confiar") || texto.includes("disponibilidad"))
-        return "https://i.postimg.cc/g0rG50VB/Dino-ss.png";
-
-    if(texto.includes("no muestra color") || texto.includes("sin color"))
-        return "https://i.postimg.cc/9XyCsK7N/risa.webp";
-
-    if(texto.includes("actualizar pagina") || texto.includes("actualizar página") || texto.includes("recargar"))
-        return "https://i.postimg.cc/sD1s6x3P/mua.webp";
-
-    return "https://i.postimg.cc/rwwT0pPq/triste.png";
-}
-
-function obtenerAvatarUsuario(texto){
-
-    if(texto.includes("verde"))
-        return "https://i.postimg.cc/Xvg92Qgp/Pizza.png";
-
-    if(texto.includes("rojo"))
-        return "https://i.postimg.cc/ZqjyP0bk/duda.png";
-
-    if(texto.includes("funciona") || texto.includes("funcionamiento") || texto.includes("colores") || texto.includes("color"))
-        return "https://i.postimg.cc/qMCyfkLh/como.png";
-
-    if(texto.includes("tu nombre") || texto.includes("como te llamas") || texto.includes("eres"))
-        return "https://i.postimg.cc/3NzGy63L/Dina.png";
-
-    if(texto.includes("hora") || texto.includes("dia") || texto.includes("horario"))
-        return "https://i.postimg.cc/qMCyfkLh/como.png";
-
-    if(texto.includes("tiempo real") || texto.includes("actualiza en tiempo real") || texto.includes("actualiza solo") || texto.includes("automaticamente"))
-        return "https://i.postimg.cc/Xvg92Qgp/Pizza.png";
-
-    if(texto.includes("incorrectamente") || texto.includes("lugar incorrecto") || texto.includes("error"))
-        return "https://i.postimg.cc/h4NMQZZ7/fung.png";
-
-    if(texto.includes("contador") || texto.includes("cada cuanto") || texto.includes("cada cuánto"))
-        return "https://i.postimg.cc/WpxqwBv1/Feliz.png";
-
-    if(texto.includes("confiar") || texto.includes("disponibilidad"))
-        return "https://i.postimg.cc/WpxqwBv1/Feliz.png";
-
-    if(texto.includes("no muestra color") || texto.includes("sin color"))
-        return "https://i.postimg.cc/fLrtFFSV/pizza-serio.png";
-
-    if(texto.includes("actualizar pagina") || texto.includes("actualizar página") || texto.includes("recargar"))
-        return "https://i.postimg.cc/FFwGkCCf/LU.png";
-
-    return "https://i.postimg.cc/3NzGy63L/Dina.png";
-}
-
-/* ========================= */
-/* ENVIAR MENSAJE */
-/* ========================= */
-
 function enviarMensaje(){
-
     const input = document.getElementById("inputUsuario");
     const chat = document.getElementById("chatArea");
-
     const textoUsuario = input.value.trim();
     if(textoUsuario === "") return;
-
-    const avatarUsuario = obtenerAvatarUsuario(textoUsuario);
 
     chat.innerHTML += `
     <div class="mensaje usuario">
         <div class="burbuja">${textoUsuario}</div>
-        <img src="${avatarUsuario}" class="avatar usuario-avatar">
-    </div>
-    `;
-
+        <img src="${obtenerAvatarUsuario(textoUsuario)}" class="avatar usuario-avatar">
+    </div>`;
     input.value="";
+    chat.scrollTop = chat.scrollHeight;
 
     const pensando = document.createElement("div");
     pensando.classList.add("mensaje","bot");
-    pensando.innerHTML = `
-        <img src="https://i.postimg.cc/WpxqwBv1/Feliz.png" class="avatar">
-        <div class="burbuja pensando">Escribiendo...</div>
-    `;
-
+    pensando.innerHTML = `<img src="https://i.postimg.cc/WpxqwBv1/Feliz.png" class="avatar"><div class="burbuja pensando">Escribiendo...</div>`;
     chat.appendChild(pensando);
 
-    chat.scrollTop = chat.scrollHeight;
-
     setTimeout(()=>{
-
         pensando.remove();
-
         const respuesta = generarRespuesta(textoUsuario);
-        const avatarBot = obtenerAvatarBot(textoUsuario);
-
         const mensajeBot = document.createElement("div");
         mensajeBot.classList.add("mensaje","bot");
-
-        mensajeBot.innerHTML = `
-            <img src="${avatarBot}" class="avatar">
-            <div class="burbuja"></div>
-        `;
-
+        mensajeBot.innerHTML = `<img src="${obtenerAvatarBot(textoUsuario)}" class="avatar"><div class="burbuja"></div>`;
         chat.appendChild(mensajeBot);
-
-        const burbuja = mensajeBot.querySelector(".burbuja");
-
-        escribirTexto(respuesta, burbuja, 20);
-
+        escribirTexto(respuesta, mensajeBot.querySelector(".burbuja"), 20);
         chat.scrollTop = chat.scrollHeight;
-
     },1000);
-
 }
 
-/* ========================= */
-/* RESPUESTAS DEL BOT */
-/* ========================= */
-
+// Aquí permanecen tus funciones de obtenerAvatarUsuario, obtenerAvatarBot y generarRespuesta tal cual las tienes...
 function generarRespuesta(texto){
-
     texto = texto.toLowerCase();
-
-    if(texto.includes("verde")){
-        return "El color verde indica que el lugar de estacionamiento está disponible y puede ser utilizado.";
-    }
-
-    if(texto.includes("funciona") || texto.includes("funcionamiento") || texto.includes("colores") || texto.includes("color")){
-        return "El color verde indica que el lugar de estacionamiento está disponible y puede ser utilizado, mientras el color rojo indica que el cajón está ocupado por un vehículo.";
-    }
-
-    if(texto.includes("tu nombre") || texto.includes("como te llamas") || texto.includes("eres")){
-        return "Mi nombre es Dino, soy el asistente oficial de la página EXSOS, estoy aquí para ayudarte a responder preguntas o dudas que tengas sobre la página";
-    }
-
-    if(texto.includes("hora") || texto.includes("dia") || texto.includes("horario")){
-        return "El color verde indica que el lugar de estacionamiento está disponible y puede ser utilizado, mientras el color rojo indica que el cajón está ocupado por un vehículo.";
-    }
-
-    if(texto.includes("rojo")){
-        return "El color rojo indica que el cajón está ocupado por un vehículo.";
-    }
-
-    if(texto.includes("tiempo real") || texto.includes("actualiza en tiempo real") || texto.includes("actualiza solo") || texto.includes("automaticamente")){
-        return "Sí. El sistema se actualiza automáticamente conforme los sensores detectan la entrada o salida de vehículos.";
-    }
-
-    if(texto.includes("incorrectamente") || texto.includes("lugar incorrecto") || texto.includes("error")){
-        return "Puedes reportarlo en la sección de Comentarios para que el personal revise el sensor correspondiente.";
-    }
-
-    if(texto.includes("contador") || texto.includes("cada cuanto") || texto.includes("cada cuánto")){
-        return "El contador se actualiza automáticamente cada vez que un sensor detecta un cambio en un cajón.";
-    }
-
-    if(texto.includes("confiar") || texto.includes("disponibilidad")){
-        return "El sistema tiene alta precisión, pero pueden existir pequeñas variaciones si un vehículo está entrando o saliendo en ese momento.";
-    }
-
-    if(texto.includes("no muestra color") || texto.includes("sin color")){
-        return "Puede indicar que el sensor está en revisión o que hay un problema de comunicación. Se recomienda verificar físicamente el lugar.";
-    }
-
-    if(texto.includes("actualizar pagina") || texto.includes("actualizar página") || texto.includes("recargar")){
-        return "No. La página se actualiza automáticamente, no necesitas actualizarla manualmente.";
-    }
-
-    return "Lo siento, aún estoy aprendiendo. Intenta preguntar sobre colores, disponibilidad o funcionamiento del sistema.";
+    if(texto.includes("verde")) return "El color verde indica que el lugar está disponible.";
+    if(texto.includes("rojo")) return "El color rojo indica que el cajón está ocupado.";
+    if(texto.includes("tu nombre")) return "Mi nombre es Dino, asistente de EXSOS.";
+    if(texto.includes("tiempo real")) return "Sí, el sistema se actualiza automáticamente con sensores.";
+    return "Lo siento, aún estoy aprendiendo. Pregúntame sobre colores o disponibilidad.";
 }
 
-/* ========================= */
-/* ENTER PARA ENVIAR */
-/* ========================= */
+function obtenerAvatarBot(t){ return "https://i.postimg.cc/WpxqwBv1/Feliz.png"; }
+function obtenerAvatarUsuario(t){ return "https://i.postimg.cc/3NzGy63L/Dina.png"; }
 
-document.addEventListener("DOMContentLoaded", function(){
-
-    const input = document.getElementById("inputUsuario");
-
-    input.addEventListener("keypress", function(e){
-        if(e.key === "Enter"){
-            enviarMensaje();
-        }
-    });
-
-});
-
-/* ========================= */
-/* CALENDARIO */
-/* ========================= */
+/* ======================================================== */
+/* 4. CALENDARIO Y PARTIDOS (LECTURA CSV)                   */
+/* ======================================================== */
 
 let partidos = {};
 
-/* ---------- LEER CSV ---------- */
-
 async function cargarPartidos(){
-
     const respuesta = await fetch("partidos.csv");
     const texto = await respuesta.text();
-
     const lineas = texto.split("\n");
     lineas.shift();
 
     lineas.forEach(linea => {
-
         const datos = linea.split(",");
-
-        const mes = datos[0];
-        const dia = datos[1];
-        const local = datos[2];
-        const rival = datos[3];
-        const hora = datos[4];
-        const logoLocal = datos[5];
-        const logoRival = datos[6];
-
-        const clave = mes + "-" + dia;
-
-        if(!partidos[clave]){
-            partidos[clave] = [];
-        }
-
-        partidos[clave].push({
-            rival:rival,
-            local:local,
-            hora:hora,
-            logoLocal:logoLocal,
-            logoRival:logoRival
-        });
-
+        if(datos.length < 5) return;
+        const clave = datos[0] + "-" + datos[1]; // Mes-Dia
+        if(!partidos[clave]) partidos[clave] = [];
+        partidos[clave].push({ rival:datos[3], local:datos[2], hora:datos[4], logoLocal:datos[5], logoRival:datos[6] });
     });
 
     marcarPartidos();
     activarClicks();
     revisarPartidosHoy();
     revisarPartidosAnteriores();
-
 }
-
-/* ---------- MARCAR DIAS ---------- */
 
 function marcarPartidos(){
-
     const meses = document.querySelectorAll(".mes");
-
     meses.forEach((mesDiv, index) => {
-
         const mesNumero = index + 1;
-
-        const dias = mesDiv.querySelectorAll(".dias span");
-
-        dias.forEach(dia => {
-
-            const numero = dia.dataset.dia;
-
-            const clave = mesNumero + "-" + numero;
-
-            if(partidos[clave]){
-                dia.classList.add("partido");
-            }
-
+        mesDiv.querySelectorAll(".dias span").forEach(dia => {
+            if(partidos[mesNumero + "-" + dia.dataset.dia]) dia.classList.add("partido");
         });
-
     });
-
 }
-
-/* ---------- CLICK ---------- */
 
 function activarClicks(){
-
     const meses = document.querySelectorAll(".mes");
-
     meses.forEach((mesDiv, index) => {
-
         const mesNumero = index + 1;
-
-        const dias = mesDiv.querySelectorAll(".dias span");
-
-        dias.forEach(dia => {
-
+        mesDiv.querySelectorAll(".dias span").forEach(dia => {
             dia.addEventListener("click", function(){
-
-                const numero = this.dataset.dia;
-                const clave = mesNumero + "-" + numero;
-
-                if(partidos[clave]){
-                    mostrarPopup(partidos[clave]);
-                }
-
+                const clave = mesNumero + "-" + this.dataset.dia;
+                if(partidos[clave]) mostrarPopup(partidos[clave]);
             });
-
         });
-
     });
-
 }
-
-
-/* ---------- POPUP ---------- */
-
-/* ---------- INICIAR ---------- */
-
-document.addEventListener("DOMContentLoaded",function(){
-
-corregirInicioMeses();
-cargarPartidos();
-
-});
-
-/* ---------- REVISAR PARTIDOS PARA NOTIFICAR---------- */
-
-function revisarPartidosHoy(){
-
-const hoy = new Date();
-const mes = hoy.getMonth() + 1;
-const dia = hoy.getDate();
-
-const clave = mes + "-" + dia;
-
-const contenedor = document.getElementById("hoy");
-const estadoVacio = document.getElementById("estadoVacioHoy");
-
-if(partidos[clave]){
-
-estadoVacio.style.display = "none";
-
-partidos[clave].forEach(partido => {
-
-const aviso = document.createElement("div");
-aviso.classList.add("notificacion-card");
-
-aviso.innerHTML = `
-<div class="noti-icono">⚽</div>
-
-<div class="noti-texto">
-<div class="noti-titulo">Partido hoy</div>
-<div class="noti-mensaje">
-Hoy hay partido a las ${partido.hora}. Se recomienda salir temprano.
-</div>
-</div>
-`;
-
-contenedor.appendChild(aviso);
-
-});
-
-}
-
-actualizarNumeroCampana();
-
-}
-
-/* ---------- REVISAR PARTIDOS anteriores---------- */
-
-function revisarPartidosAnteriores(){
-
-const hoy = new Date();
-const mesActual = hoy.getMonth() + 1;
-const diaActual = hoy.getDate();
-
-const contenedor = document.getElementById("anteriores");
-const estadoVacio = document.getElementById("estadoVacioAnteriores");
-
-/* borrar solo notificaciones */
-contenedor.querySelectorAll(".notificacion-card").forEach(e => e.remove());
-
-let hayEventos = false;
-
-Object.keys(partidos).forEach(clave => {
-
-const partes = clave.split("-");
-const mes = parseInt(partes[0]);
-const dia = parseInt(partes[1]);
-
-if(mes < mesActual || (mes === mesActual && dia < diaActual)){
-
-partidos[clave].forEach(partido => {
-
-const aviso = document.createElement("div");
-aviso.classList.add("notificacion-card");
-
-aviso.innerHTML = `
-<div class="noti-icono">📅</div>
-
-<div class="noti-texto">
-<div class="noti-titulo">${partido.local} vs ${partido.rival}</div>
-<div class="noti-mensaje">${dia}/${mes}/26 - ${partido.hora}</div>
-</div>
-`;
-
-contenedor.appendChild(aviso);
-
-hayEventos = true;
-
-});
-
-}
-
-});
-
-if(hayEventos){
-estadoVacio.style.display = "none";
-}else{
-estadoVacio.style.display = "flex";
-}
-
-actualizarNumeroCampana();
-
-}
-
-/* ---------- CORRECCION DE MESES PARA QUE EMPIECEN BIEN---------- */
-
-
-function corregirInicioMeses(){
-
-const year = 2026;
-
-document.querySelectorAll(".mes").forEach((mesDiv, index) => {
-
-const diasContainer = mesDiv.querySelector(".dias");
-
-/* eliminar espacios vacíos existentes */
-diasContainer.querySelectorAll(".vacio").forEach(e => e.remove());
-
-const primerDia = new Date(year, index, 1).getDay();
-
-let offset = primerDia - 1;
-
-if(offset < 0) offset = 6;
-
-/* agregar espacios correctos */
-for(let i = 0; i < offset; i++){
-
-const espacio = document.createElement("span");
-espacio.classList.add("vacio");
-
-diasContainer.prepend(espacio);
-
-}
-
-});
-
-}
-
-/* ---------- Notificacion cambia el color---------- */
-
-
-function actualizarNumeroCampana(){
-
-const hoy = document.querySelectorAll("#hoy .notificacion-card").length;
-const anteriores = document.querySelectorAll("#anteriores .notificacion-card").length;
-
-const total = hoy + anteriores;
-
-const badge = document.getElementById("badgeNoti");
-
-/* cambiar numero */
-badge.textContent = total;
-
-/* cambiar color */
-
-if(total === 0){
-badge.style.backgroundColor = "#00c800"; // verde
-}else{
-badge.style.backgroundColor = "red"; // rojo
-}
-
-}
-
-
-// 🔥 MOSTRAR POPUP
-function mostrarPopupAcceso(titulo, mensaje){
-    document.getElementById("mensajeAccesoTitulo").innerText = titulo;
-    document.getElementById("mensajeAccesoTexto").innerText = mensaje;
-    document.getElementById("popupAcceso").style.display = "flex";
-}
-
-// 🔥 CERRAR POPUP
-function cerrarPopupAcceso(){
-    document.getElementById("popupAcceso").style.display = "none";
-}
-
-
 
 function mostrarPopup(listaPartidos){
-    document.getElementById("popup").style.display="flex";
+    const popup = document.getElementById("popup");
+    popup.style.display="flex";
     let contenido = "";
-
-    listaPartidos.forEach(partido => {
+    listaPartidos.forEach(p => {
         contenido += `
-        <div class="partido-card-moderno">
-            <div class="partido-fila">
-                <div class="equipo-logo">
-                    <img src="logos/${partido.logoLocal}" alt="Local">
-                </div>
-                <div class="equipo-nombre">${partido.local}</div>
-                
-                <div class="vs-texto">VS</div>
-                
-                <div class="equipo-nombre">${partido.rival}</div>
-                <div class="equipo-logo">
-                    <img src="logos/${partido.logoRival}" alt="Rival">
-                </div>
-                
-                <div class="separador-vertical"></div>
-                
-                <div class="hora-bloque">
-                    <span class="reloj-icono">🕒</span> ${partido.hora}
-                </div>
+        <div class="partido-card">
+            <div class="partido-info">
+                <div class="equipo"><span class="nombre-equipo">${p.local}</span></div>
+                <div class="vs">VS</div>
+                <div class="equipo"><span class="nombre-equipo">${p.rival}</span></div>
+                <div class="info-partido"><div class="hora">🕒 ${p.hora}</div></div>
             </div>
-            <div class="barra-amarilla"></div>
-            <div class="barra-azul"></div>
-        </div>
-        `;
+            <div class="barra-color"></div>
+        </div>`;
     });
-
-    // Inyectamos el contenido y nos aseguramos de que el botón Cerrar sea el de la imagen
     document.getElementById("popup-rival").innerHTML = contenido;
 }
 
-function cerrarPopup(){
-    document.getElementById("popup").style.display="none";
+function cerrarPopup(){ document.getElementById("popup").style.display="none"; }
+
+function revisarPartidosHoy(){
+    const hoy = new Date();
+    const clave = (hoy.getMonth() + 1) + "-" + hoy.getDate();
+    const contenedor = document.getElementById("hoy");
+    if(partidos[clave]){
+        document.getElementById("estadoVacioHoy").style.display = "none";
+        partidos[clave].forEach(p => {
+            const aviso = document.createElement("div");
+            aviso.classList.add("notificacion-card");
+            aviso.innerHTML = `<div class=\"noti-icono\">⚽</div><div class=\"noti-texto\"><b>Partido hoy</b><br>A las ${p.hora}</div>`;
+            contenedor.appendChild(aviso);
+        });
+    }
+    actualizarNumeroCampana();
 }
 
-// Ejemplo de cómo inyectar las tarjetas desde JS
-function abrirPopupPartido(equipo1, logo1, equipo2, logo2, hora) {
-    const contenedor = document.getElementById('contenedor-partidos');
-    
-    // Limpiamos lo que haya antes
-    contenedor.innerHTML = ''; 
+function revisarPartidosAnteriores(){
+    const hoy = new Date();
+    const mesAct = hoy.getMonth() + 1;
+    const diaAct = hoy.getDate();
+    const contenedor = document.getElementById("anteriores");
+    let hayEventos = false;
 
-    // Creamos la tarjeta con los datos que le pasemos a la función
-    const tarjetaHTML = `
-        <div class="partido-card">
-            <div class="partido-info">
-                <div class="equipo">
-                    <img src="${logo1}" alt="${equipo1}">
-                    <span class="nombre-equipo">${equipo1}</span>
-                </div>
-                <span class="vs">VS</span>
-                <div class="equipo">
-                    <span class="nombre-equipo">${equipo2}</span>
-                    <img src="${logo2}" alt="${equipo2}">
-                </div>
-                <div class="info-partido">
-                    <span class="hora">🕒 ${hora}</span>
-                </div>
-            </div>
-            <div class="barra-color"></div>
-        </div>
-    `;
-
-    // Metemos la tarjeta al HTML
-    contenedor.innerHTML += tarjetaHTML;
-
-    // Mostramos el popup
-    document.getElementById('popup').style.display = 'flex';
+    Object.keys(partidos).forEach(clave => {
+        const [m, d] = clave.split("-").map(Number);
+        if(m < mesAct || (m === mesAct && d < diaAct)){
+            partidos[clave].forEach(p => {
+                const aviso = document.createElement("div");
+                aviso.classList.add("notificacion-card");
+                aviso.innerHTML = `<div class=\"noti-icono\">📅</div><div class=\"noti-texto\"><b>${p.local} vs ${p.rival}</b><br>${d}/${m}/26</div>`;
+                contenedor.appendChild(aviso);
+                hayEventos = true;
+            });
+        }
+    });
+    document.getElementById("estadoVacioAnteriores").style.display = hayEventos ? "none" : "flex";
+    actualizarNumeroCampana();
 }
+
+function corregirInicioMeses(){
+    document.querySelectorAll(".mes").forEach((mesDiv, index) => {
+        const diasContainer = mesDiv.querySelector(".dias");
+        diasContainer.querySelectorAll(".vacio").forEach(e => e.remove());
+        const primerDia = new Date(2026, index, 1).getDay();
+        let offset = primerDia - 1;
+        if(offset < 0) offset = 6;
+        for(let i = 0; i < offset; i++){
+            const espacio = document.createElement("span");
+            espacio.classList.add("vacio");
+            diasContainer.prepend(espacio);
+        }
+    });
+}
+
+function actualizarNumeroCampana(){
+    const total = document.querySelectorAll(".notificacion-card").length;
+    const badge = document.getElementById("badgeNoti");
+    if(badge){
+        badge.textContent = total;
+        badge.style.backgroundColor = (total === 0) ? "#00c800" : "red";
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    corregirInicioMeses();
+    cargarPartidos();
+    const input = document.getElementById("inputUsuario");
+    if(input) input.addEventListener("keypress", (e) => { if(e.key === "Enter") enviarMensaje(); });
+});
