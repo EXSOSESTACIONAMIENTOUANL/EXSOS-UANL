@@ -1389,11 +1389,9 @@ margin-bottom:6%;
     background: rgba(0,0,0,0.6);
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* Lo manda hacia la parte superior */
-    padding-top: 15vh; /* Empuja el popup un poco hacia abajo desde el techo. Ajusta este número si lo quieres más arriba o abajo */
+    align-items: center; /* Esto lo pone exactamente en el centro */
     z-index: 9999;
 }
-
 /* Fondo blanco y sombra para la tarjeta del partido */
 .partido-card {
     width: 100%;
