@@ -193,15 +193,15 @@ function mostrarPopup(listaPartidos){
         contenido += `
         <div class="partido-card">
             <div class="partido-info">
-                <div class="equipo">
-                    <img src="${p.logoLocal}" alt="${p.local}">
-                    <span class="nombre-equipo">${p.local}</span>
-                </div>
-                <div class="vs">VS</div>
-                <div class="equipo">
-                    <span class="nombre-equipo">${p.rival}</span>
-                    <img src="${p.logoRival}" alt="${p.rival}">
-                </div>
+               <div class="equipo">
+    <img src="logos/${p.logoLocal}" alt="${p.local}">
+    <span class="nombre-equipo">${p.local}</span>
+</div>
+<div class="vs">VS</div>
+<div class="equipo">
+    <span class="nombre-equipo">${p.rival}</span>
+    <img src="logos/${p.logoRival}" alt="${p.rival}">
+</div>
                 <div class="info-partido">
                     <div class="hora">🕒 ${p.hora}</div>
                 </div>
