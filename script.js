@@ -188,18 +188,28 @@ function mostrarPopup(listaPartidos){
     const popup = document.getElementById("popup");
     popup.style.display="flex";
     let contenido = "";
+    
     listaPartidos.forEach(p => {
         contenido += `
         <div class="partido-card">
             <div class="partido-info">
-                <div class="equipo"><span class="nombre-equipo">${p.local}</span></div>
+                <div class="equipo">
+                    <img src="${p.logoLocal}" alt="${p.local}">
+                    <span class="nombre-equipo">${p.local}</span>
+                </div>
                 <div class="vs">VS</div>
-                <div class="equipo"><span class="nombre-equipo">${p.rival}</span></div>
-                <div class="info-partido"><div class="hora">🕒 ${p.hora}</div></div>
+                <div class="equipo">
+                    <span class="nombre-equipo">${p.rival}</span>
+                    <img src="${p.logoRival}" alt="${p.rival}">
+                </div>
+                <div class="info-partido">
+                    <div class="hora">🕒 ${p.hora}</div>
+                </div>
             </div>
             <div class="barra-color"></div>
         </div>`;
     });
+    
     document.getElementById("popup-rival").innerHTML = contenido;
 }
 
