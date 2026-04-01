@@ -11,14 +11,16 @@
     <body>
     
     <!--    ----------------         Aqui esta para el menu despegable               ------------------   -->
-                <div class="header">
-                    <div class="menu-btn" onclick="abrirMenu()">☰</div>
+               <div class="header">
+                    <div class="menu-btn" id="btnMenu">☰</div>
+                    <div id="overlayMenu" class="overlay-menu"></div>
+                    
                     <div class="imagen-exsos">
-                            <img src="https://i.imgur.com/lXxOiO5.png" alt="EXSOS" class="posicion-logo">
+                            <img src="/data/perfil/EXSOS.png" alt="EXSOS" class="posicion-logo">
                     </div>
                     <div class="notificaciones-container">
-                        <div class="campana-wrapper" onclick="toggleNotificaciones()">
-                        <img src="https://i.imgur.com/gANyK8b.png" class="bell" alt="bell">
+                        <div class="campana-wrapper" id="btnNotificaciones">
+                        <img src="/data/perfil/bell.png" class="bell" alt="bell">
                         <span class="badge" id="badgeNoti">0</span>
                         </div>
 
@@ -28,7 +30,7 @@
 
                                     <!-- HOY -->
                                         <div class="bloque-noti">
-                                            <div class="cabecera-noti" onclick="toggleSeccion('hoy')">
+                                            <div class="cabecera-noti" data-seccion="hoy">
                                                 <span>Hoy</span>
                                                 <span class="flecha" id="flecha-hoy">▼</span>
                                             </div>
@@ -45,7 +47,7 @@
 
                                     
                                         <div class="bloque-noti">
-                                            <div class="cabecera-noti" onclick="toggleSeccion('anteriores')">
+                                            <div class="cabecera-noti" data-seccion="anteriores">
                                                 <span>Anteriores</span>
                                                 <span class="flecha" id="flecha-anteriores">▼</span>
                                             </div>
@@ -69,18 +71,31 @@
                 <div id="menuLateral" class="menu-lateral">
 
                     <div class="menu-top">
-                            <div class="menu-icon">☰</div>
-                            </div>
+
+    <div class="banner-menu" id="bannerMenu">
+        <div class="editar-banner" id="btnEditarPerfil">🖉</div>
+    </div>
+
+    <div class="perfil-menu">
+        <img id="fotoPerfil" src="perfil/user.png" class="foto-perfil">
+    </div>
+
+    <div class="info-perfil">
+        <span id="nombreUsuario">Usuario</span>
+        <span id="correoUsuario">correo@email.com</span>
+    </div>
+
+</div>
 
                     <div class="menu-body">
                     <a href="index.html">Home</a>
-                    <a href="#" onclick="abrirAyuda()">Ayuda</a>
+                    <a href="#" id="btnAbrirAyuda">Ayuda</a>
                     <a href="Calendario.html">Calendario</a>
                     </div>
 
                 </div>
 
-                <div id="overlay" class="overlay" onclick="cerrarMenu()"></div>
+                <div id="overlay" class="overlay"></div>
 
     <!--    ----------------         Aqui termina  el menu despegable               ------------------   -->
 
@@ -112,7 +127,7 @@
 
 <!--    ----------------         Aqui termina  el pie de pagina               ------------------   --> 
         
-        
+ 
 <div id="overlayAyuda">
 
 <div class="contenedor-ayudante">
@@ -149,19 +164,272 @@ Asistente virtual Exsos
 
 <div class="input-chat">
 <input type="text" id="inputUsuario" placeholder="Escribe tu pregunta...">
-<button class="boton-enviar" onclick="enviarMensaje()">➤</button>
+<button class="boton-enviar" id="btnEnviarMensaje">➤</button>
 </div>
 
 </div>
 
-    <button class="btn-cerrar" onclick="cerrarAyuda()">Cerrar</button>
+    <button class="btn-cerrar" id="btnCerrarAyuda">Cerrar</button>
 
 </div>
 
 </div>
+      
+
+
+    <!-- MODAL PERFIL FULL SCREEN -->
+
+<div id="modalPerfil" class="modal-perfil-full">
+
+  <div class="card-perfil">
+
+    <!-- IZQUIERDA -->
+    <div class="perfil-form">
+
+      <div class="perfil-header">
+         <button id="btnCerrarPerfil" class="btn-salir">⨉</button>
+        <h2>Editar perfil</h2>
+        <span id="btnGuardarPerfil" class="guardar-btn">Guardar</span>
+      </div>
+
+      <div class="perfil-body">
+
+        <div id="mensajePerfil"></div>
+
+        <div class="perfil-foto-container">
+            <img id="previewFoto" src="perfil/user.png">
+            <input type="file" id="inputFoto" accept="image/*">
+        </div>
+
+        <div class="perfil-campo">
+            <label>Nombre</label>
+            <input type="text" id="nuevoNombre" placeholder="Nombre de Usuario">
+        </div>
+
+        <div class="perfil-campo">
+            <label>Correo</label>
+            <input type="email" id="correoPerfil" placeholder="Institucional o personal">
+        </div>
+
+        <div class="perfil-campo">
+            <label>Matrícula</label>
+            <input type="text" id="matriculaPerfil" placeholder="En caso de ser estudiante o docente">
+        </div>
+
+        <div class="perfil-campo">
+            <label>Placas del auto</label>
+            <input type="text" id="placasPerfil" placeholder="Registre su auto">
+        </div>
+
+        <button id="btnCerrarSesion" class="btn-cerrar-sesion">Cerrar sesión</button>
+
+        </div>
+    </div>
+
+    <!-- DERECHA (PREVIEW) -->
+    <div class="perfil-preview">
+
+        <div class="preview-card">
+
+        <div class="preview-banner" id="previewBanner">
+        <button class="btn-editar-banner" id="btnEditarBanner">🖉</button>
+        </div>
+
+        <div class="preview-body">
+                <img id="previewAvatar" src="perfil/user.png" class="preview-avatar">
+
+                <div id="previewNombre" class="preview-name">Usuario</div>
+                <div id="previewUser" class="preview-username">usuario@email.com</div>
+
+        </div>
+
+
+        <div class="licencia-card">
+    <h3>Licencia de manejo</h3>
+
+    <div class="licencia-preview-container">
+        <img id="previewLicencia" src="perfil/licencia-default.png" class="preview-licencia">
+    </div>
+
+    <label class="btn-subir-licencia">
+        Subir licencia
+        <input type="file" id="inputLicencia" accept="image/*">
+    </label>
+</div>
+
+
+
+
+
         
-        <script src="script.js"></script>
+      </div>
 
+    </div>
+
+  </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="panelAvatares" class="panel-avatares">
+
+  <div class="contenedor-avatares">
+
+    <span class="cerrar-panel">✕</span>
+
+    <h3>Elige tu avatar</h3>
+
+    <div class="grid-avatares">
+
+      <!-- FILA 1 -->
+      <img src="perfil/cuervo.png" class="avatar-opcion">
+      <img src="perfil/LU.png" class="avatar-opcion">
+      <img src="perfil/fung.png" class="avatar-opcion">
+      <img src="perfil/GIL.png" class="avatar-opcion">
+
+      <!-- FILA 2 -->
+      <img src="perfil/May.png" class="avatar-opcion">
+      <img src="perfil/Pizza.png" class="avatar-opcion">
+      <img src="perfil/Dina.png" class="avatar-opcion">
+
+      <!-- 🔥 IMPORTAR IMAGEN -->
+      <div class="avatar-upload">
+        +
+        <input type="file" id="inputAvatarPanel" accept="image/*">
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<div id="panelBanners" class="panel-avatares">
+    <div class="contenedor-banner">
+
+        <span class="cerrar-panel" onclick="cerrarPanelBanners()">✕</span>
+
+        <h3>Elige tu banner</h3>
+
+        <div class="grid-banners">
+
+            <!-- 🎨 SOLO UN COLOR PERSONALIZABLE -->
+            <div class="banner-color-picker" id="btnColor">
+            🎨
+            <input type="color" id="colorBannerPicker">
+            </div>
+
+            <!-- 🖼️ IMÁGENES -->
+            <img src="perfil/banner-1.jpg" class="banner-opcion-img">
+            <img src="perfil/wolf.jpg" class="banner-opcion-img">
+            <img src="perfil/fondo.jpg" class="banner-opcion-img">
+            <img src="perfil/freddi.jpg" class="banner-opcion-img">
+            <img src="perfil/fnf.jpg" class="banner-opcion-img">
+            <img src="perfil/mfnf.jpg" class="banner-opcion-img">
+
+            <!-- ⬆️ IMPORTAR -->
+            <label class="banner-upload">
+                +
+                <input type="file" id="inputBannerPanel" accept="image/*">
+            </label>
+
+        </div>
+    </div>
+</div>
+
+
+<div id="editorBanner" class="editor-banner">
+
+    <div class="editor-card">
+
+        <div class="editor-header">
+            <h3>Editar imagen</h3>
+            <span class="cerrar-seccionbanner" onclick="cerrarTodoBanner()">✕</span>
+        </div>
+
+        <div class="editor-area">
+            <div class="imagen-container">
+
+                <!-- 🔥 IMAGEN QUE SE MUEVE -->
+                <div id="imagenBannerMovible"></div>
+
+                <!-- 🔥 SOMBRAS -->
+    <div class="sombra arriba"></div>
+    <div class="sombra abajo"></div>
+    <div class="sombra izquierda"></div>
+    <div class="sombra derecha"></div>
+
+    <div class="marco-recorte"></div>
+
+            </div>
+        </div>
+
+        <div class="zoom-container">
+            <span>🔍</span>
+            <input type="range" id="zoomSlider" min="0.5" max="3" step="0.01" value="1">
+        </div>
+
+
+        <div class="editor-footer">
+            <button onclick="cancelarBanner()">Cancelar</button>
+            <button onclick="aplicarBanner()">Aplicar</button>
+        </div>
+
+    </div>
+
+</div>
+
+<div id="modalConfirmar" class="modal-confirmar">
+  <div class="modal-box">
+    <h2>¿Salir sin guardar?</h2>
+    <p>Tienes cambios sin guardar, si sales ahora, se perderán.</p>
+
+    <div class="acciones">
+      <button onclick="cancelarSalida()">Cancelar</button>
+      <button class="rojo" onclick="confirmarSalida()">Salir</button>
+    </div>
+  </div>
+</div>
+
+
+<div id="modalCerrarSesion" class="modal-confirmarp">
+  <div class="modal-boxp personaje-box">
+
+    <div class="personaje-container">
+      <img src="perfil/chats.png" id="personajeImg" class="personaje-img">
+
+      <div class="globo-dialogo">
+    <img src="perfil/dialogo.png" class="img-burbuja">
+    <span class="texto-burbuja">¿Deseas salir?</span>
+</div>
+    </div>
+
+    <div class="accionesp">
+      <button id="btnCancelarCerrarSesion">Cancelar</button>
+
+      <button id="btnConfirmarCerrarSesion" class="rojo">Salir</button>
+    </div>
+
+  </div>
+</div>
+        <script src="script.js"></script>
+        <script type="module" src="auth.js"></script>
+        <script type="module" src="perfil.js"></script>
     </body>
     
 

@@ -1,0 +1,492 @@
+
+/* Inicio de sesion de Bryan para que se calle */
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body{
+    height:100vh;
+}
+
+
+.fondo{
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    background: linear-gradient(-45deg, #050b3f, #152191, #62299f, #3074ea);
+    background-size: 400% 400%;
+    animation: fondoAnimado 10s ease infinite;
+}
+
+@keyframes fondoAnimado{
+    0%{ background-position: 0% 50%; }
+    50%{ background-position: 100% 50%; }
+    100%{ background-position: 0% 50%; }
+}
+
+
+.login-card{
+    width: 90%;
+    max-width: 420px; /* tamaño máximo en compu */
+    padding: 30px;
+    border-radius: 20px;
+
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(18px);
+
+    box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+    text-align:center;
+    transition: opacity 0.3s ease;
+
+    animation: aparecer 0.8s ease;
+}
+
+
+@keyframes aparecer{
+    from{
+        opacity:0;
+        transform: translateY(30px);
+    }
+    to{
+        opacity:1;
+        transform: translateY(0);
+    }
+}
+
+.login-card h2{
+    color:white;
+    margin-bottom:20px;
+    font-weight:600;
+}
+
+.login-card input{
+    width:100%;
+    padding:12px 15px;
+    margin:10px 0;
+
+    border:none;
+    border-radius:25px;
+
+    outline:none;
+
+    background: rgba(255,255,255,0.9);
+    transition:0.3s;
+}
+
+.login-card input:focus{
+    transform: scale(1.03);
+    box-shadow: 0 0 10px rgba(255,255,255,0.5);
+}
+
+
+.login-card button{
+    width:100%;
+    padding:12px;
+    margin-top:15px;
+
+    border:none;
+    border-radius:25px;
+
+    background: linear-gradient(45deg, #00c6ff, #0072ff);
+    color:white;
+
+    font-weight:bold;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.login-card button:hover{
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+
+.opciones{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:10px;
+    font-size:13px;
+    color:white;
+}
+
+
+.opciones label{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    white-space:nowrap;
+}
+
+/* links */
+.opciones a{
+    color:#ddd;
+    text-decoration:none;
+    transition:0.3s;
+}
+
+.opciones a:hover{
+    color:white;
+}
+
+/* 🧑‍💻 REGISTRO */
+.registro{
+    margin-top:15px;
+    font-size:13px;
+    color:white;
+}
+
+.registro span{
+    color:#00c6ff;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.registro span:hover{
+    text-decoration: underline;
+}
+
+
+@media (max-width: 500px){
+
+    .fondo{
+        align-items: flex-end;
+    }
+
+
+}
+
+/* MODAL */
+.modal{
+    position: fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background: rgba(0,0,0,0.6);
+
+    display:none;
+    justify-content:center;
+    align-items:center;
+}
+
+.modal.activo{
+    display:flex;
+}
+
+/* CARD */
+.modal-contenido{
+    position:relative;
+    background: white;
+    padding:30px;
+    border-radius:20px;
+    width:320px;
+    text-align:center;
+
+    animation: zoomIn 0.4s ease;
+}
+
+@keyframes zoomIn{
+    from{ transform: scale(0.7); opacity:0; }
+    to{ transform: scale(1); opacity:1; }
+}
+
+/* INPUT */
+.modal-contenido input{
+    width:100%;
+    padding:12px;
+    margin:15px 0;
+    border-radius:12px;
+    border:1px solid #ccc;
+    outline:none;
+}
+
+/* BOTON */
+.modal-contenido button{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:12px;
+    background: linear-gradient(45deg, #00c6ff, #0072ff);
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.modal-contenido button:hover{
+    transform: scale(1.05);
+}
+
+/* LOADER */
+.loader{
+    width:30px;
+    height:30px;
+    border:4px solid #ddd;
+    border-top:4px solid #007BFF;
+    border-radius:50%;
+    margin:15px auto;
+    display:none;
+
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin{
+    to{ transform: rotate(360deg); }
+}
+
+/* MENSAJE */
+.mensaje{
+    margin-top:10px;
+    font-size:14px;
+    opacity:0;
+    transition:0.3s;
+}
+
+/* ÉXITO */
+.mensaje.ok{
+    color:green;
+    opacity:1;
+}
+
+/* ERROR */
+.mensaje.error{
+    color:red;
+    opacity:1;
+}
+
+/* CHECK ANIMADO */
+.mensaje.ok::before{
+    content:"✔ ";
+    animation: pop 0.3s ease;
+}
+
+@keyframes pop{
+    0%{ transform: scale(0); }
+    100%{ transform: scale(1); }
+}
+
+/* CERRAR */
+.cerrar{
+    position:absolute;
+    top:10px;
+    right:15px;
+    cursor:pointer;
+}
+
+
+
+.oculto {
+    opacity: 0;
+    pointer-events: none;
+}
+
+
+
+/* Modal base */
+.modalre {
+    display: none;
+    position: fixed;
+    z-index: 999;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    /* 🔥 quitar fondo oscuro */
+    background: transparent;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Card estilo Discord */
+.registro-card {
+    width: 90%;
+    max-width: 420px; /* tamaño máximo en compu */
+    padding: 30px;
+    border-radius: 20px;
+
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(18px);
+
+    box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+    text-align:center;
+    transition: opacity 0.3s ease;
+
+    animation: aparecer 0.8s ease;
+}
+
+/* Inputs */
+.registro-card input,
+.registro-card select {
+    width:100%;
+    padding:12px 15px;
+    margin:10px 0;
+
+    border:none;
+    border-radius:25px;
+
+    outline:none;
+
+    background: rgba(255,255,255,0.9);
+    transition:0.3s;
+}
+
+.registro-card h2{
+    margin-bottom: 3%;
+    color: white;
+}
+
+/* Fecha */
+.fecha {
+    display: flex;
+    gap: 10px;
+}
+
+/* Botón */
+.btn-crear {
+    width: 100%;
+    padding: 10px;
+    margin-top: 15px;
+    background: #5865f2;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+}
+
+/* Link */
+.login-link span {
+    color: #00a8fc;
+    cursor: pointer;
+}
+
+.login-link {
+    color: #ffffff;
+    margin-top: 15px;
+    font-size: 13px;
+}
+
+
+
+
+
+.custom-select {
+    position: relative;
+    flex: 1;
+    cursor: pointer;
+}
+
+/* Caja cerrada */
+.selected {
+    font-size: 16px;
+    background: #ffffff;
+    padding:10px 15px;
+    font-weight: bold;
+    text-align: left;
+    margin-top: 10px;
+    border-radius: 25px;
+    color: rgb(0, 0, 0);
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Lista */
+.options {
+    position: absolute;
+    top: -490%;
+    left: 0;
+    width: 100%;
+    max-height: 250px;
+    overflow-y: auto;
+    
+    background: #ffffff;
+    border-radius: 13px;
+
+    display: none;
+    z-index: 1000;
+
+    scrollbar-width: none;       
+    -ms-overflow-style: none;
+    border: 1px solid #a3a3a3;
+}
+
+.options::-webkit-scrollbar {
+    display: none;
+}
+
+/* Opciones */
+.options div {
+    padding: 10px;
+    color: rgb(0, 0, 0);
+}
+
+/* Hover */
+.options div:hover {
+    background: #eeeeee;
+}
+
+/* Mostrar */
+.custom-select.active .options {
+    display: block;
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+    .fecha {
+        flex-direction: column;
+    }
+}
+
+.selected::after {
+    content: "▼";
+    font-size: 12px;
+    color: #aaa;
+    transition: transform 0.3s ease;
+}
+
+.custom-select.active .selected::after {
+    transform: rotate(180deg);
+}
+
+
+.mensaje {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    display: none;
+}
+
+.mensaje.error {
+    background: #ff4d4d20;
+    color: #ff4d4d;
+    border: 1px solid #ff4d4d;
+    display: block;
+}
+
+.mensaje.ok {
+    background: #4dff8820;
+    color: #4dff88;
+    border: 1px solid #4dff88;
+    display: block;
+}
+
+.label-fecha {
+    margin-left: 1px;
+    display: block;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    font-size: 16px;
+    color: #ffffff;
+    text-align: left;
+}

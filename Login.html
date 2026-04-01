@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+
+    <head>
+        <meta charset="UTF-8">
+        <title> interfaz IHM </title>
+        <link rel="stylesheet" href="Login.css">
+        <link rel="icon" href="https://i.postimg.cc/sD1s6x3P/mua.webp">
+    </head>
+
+<body>
+
+<div class="fondo">
+
+    <div class="login-card" id="loginCard">
+
+        <div class="avatar">
+            <img src="perfil/perfil2.png" class="login-img">
+        </div>
+
+        <h2>Bienvenido</h2>
+
+        <input type="email" id="email" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+
+        <button onclick="login()">Ingresar</button>
+
+        <div id="mensajeLogin" class="mensaje"></div>
+
+        <div class="opciones">
+            <label>
+                <input type="checkbox" id="remember"> Recuerdame
+            </label>
+            <a href="#" onclick="abrirModal()">¿Olvidaste tu contraseña?</a>
+        </div>
+
+        <p class="registro">
+            Aun no eres miembro?
+            <span onclick="abrirRegistro()">Crea una cuenta</span>
+        </p>
+
+    </div>
+
+</div>
+
+<!-- MODAL RECUPERAR -->
+<div id="modalReset" class="modal">
+
+  <div class="modal-contenido">
+
+    <h3>Recuperar contraseña</h3>
+
+    <input type="email" id="resetEmail" placeholder="Ingresa tu correo">
+
+    <button id="btnReset" onclick="enviarReset()">Enviar correo</button>
+
+    <!-- LOADER -->
+    <div id="loader" class="loader"></div>
+
+    <!-- MENSAJE -->
+    <div id="mensajeReset" class="mensaje"></div>
+
+    <span class="cerrar" onclick="cerrarModal()">✖</span>
+
+  </div>
+
+</div>
+
+
+
+
+
+<!-- MODAL REGISTRO -->
+<div id="modalRegistro" class="modalre">
+
+  <div class="modal-contenido registro-card">
+
+    <h2>Crear una cuenta</h2>
+
+        <input type="email" id="regEmail" placeholder="Correo electrónico">
+
+        <input type="text" id="regNombre" placeholder="Nombre de usuario">
+
+        <input type="text" id="regMatricula" placeholder="Matrícula (opcional)">
+
+        <input type="password" id="regPassword" placeholder="Contraseña">
+
+
+    <label class="label-fecha">Fecha de nacimiento:</label>
+    <div class="fecha">
+
+    <!-- DÍA -->
+    <div class="custom-select" id="selectDia">
+        <div class="selected">Día</div>
+        <div class="options"></div>
+    </div>
+
+    <!-- MES -->
+    <div class="custom-select" id="selectMes">
+        <div class="selected">Mes</div>
+        <div class="options"></div>
+    </div>
+
+    <!-- AÑO -->
+    <div class="custom-select" id="selectAnio">
+        <div class="selected">Año</div>
+        <div class="options"></div>
+    </div>
+
+</div>
+
+
+    <button class="btn-crear" onclick="register()">Crear una cuenta</button>
+    <div id="mensajeRegistro" class="mensaje"></div>
+
+    <p class="login-link">
+        ¿Ya tienes cuenta? 
+        <span onclick="cerrarRegistro()">Inicia sesión</span>
+    </p>
+
+    <span class="cerrar" onclick="cerrarRegistro()"></span>
+
+  </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="module" src="Login.js"></script>
+
+</body>
+</html>
