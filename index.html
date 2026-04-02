@@ -72,20 +72,29 @@
 
 <!-- MODAL REGISTRO -->
 <div id="modalRegistro" class="modalre">
-
   <div class="modal-contenido registro-card">
-
     <h2>Crear una cuenta</h2>
 
-<h3 style="margin-top: 15px; font-size: 16px; color: #fff; text-align: left;">Datos Personales</h3>
+        <h3 style="margin-top: 15px; font-size: 16px; color: #fff; text-align: left;">Datos Personales</h3>
         <input type="email" id="regEmail" placeholder="Correo electrónico">
         <input type="text" id="regNombre" placeholder="Nombre de usuario">
         <input type="text" id="regMatricula" placeholder="Matrícula (opcional)">
-        
         <input type="tel" id="regTelefono" placeholder="Número de teléfono (10 dígitos)" maxlength="10">
-        
         <input type="password" id="regPassword" placeholder="Contraseña">
-        
+
+        <h3 style="margin-top: 15px; font-size: 16px; color: #fff; text-align: left;">Fecha de Nacimiento</h3>
+        <div class="fecha">
+            <div class="custom-select" id="selectDia"><div class="selected">Día</div><div class="options"></div></div>
+            <div class="custom-select" id="selectMes"><div class="selected">Mes</div><div class="options"></div></div>
+            <div class="custom-select" id="selectAnio"><div class="selected">Año</div><div class="options"></div></div>
+        </div>
+
+        <h3 style="margin-top: 15px; font-size: 16px; color: #fff; text-align: left;">Datos del Vehículo</h3>
+        <input type="text" id="regModelo" placeholder="Modelo del carro (ej. Jetta)">
+        <input type="text" id="regColor" placeholder="Color del carro">
+        <input type="number" id="regAnio" placeholder="Año del carro (ej. 2020)" min="1980" max="2027">
+        <input type="text" id="regPlacas" placeholder="Placas (ej. AAA-111-A)" maxlength="9" oninput="formatearPlacas(this)">
+
         <h3 style="margin-top: 10px; font-size: 16px; color: #fff; text-align: left;">Foto Frontal del Carro</h3>
         <div class="file-box">
             <label for="regFotoCarro" id="labelCarro" class="file-btn">Seleccionar archivo</label>
@@ -100,39 +109,13 @@
             <input type="file" id="regDocumento" accept="image/*,.pdf" style="display: none;" onchange="document.getElementById('textoINE').textContent = this.files[0] ? this.files[0].name : 'Ningún archivo...'">
         </div>
 
-
-
         <button class="btn-crear" onclick="register()">Crear una cuenta</button>
-    
+        <div id="mensajeRegistro" class="mensaje"></div>
 
-
-    <div id="mensajeRegistro" class="mensaje"></div>
-
-    <p class="login-link">
-        ¿Ya tienes cuenta? 
-        <span onclick="cerrarRegistro()">Inicia sesión</span>
-    </p>
-
-    <span class="cerrar" onclick="cerrarRegistro()"></span>
-
+        <p class="login-link">
+            ¿Ya tienes cuenta? 
+            <span onclick="cerrarRegistro()">Inicia sesión</span>
+        </p>
+        <span class="cerrar" onclick="cerrarRegistro()"></span>
   </div>
-
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<script type="module" src="Login.js"></script>
-
-</body>
-</html>
