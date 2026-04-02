@@ -452,3 +452,13 @@ function actualizarDias() {
   }
 
 }
+// Exponer funciones al entorno global para que el HTML (onclick) pueda leerlas
+window.login = login;
+window.register = register;
+
+// Asegúrate de poner aquí el nombre exacto de tus funciones para abrir/cerrar los modales
+window.abrirModal = abrirModal; 
+window.cerrarModal = cerrarModal;
+window.abrirRegistro = abrirRegistro;
+window.cerrarRegistro = cerrarRegistro;
+
