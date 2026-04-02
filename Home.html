@@ -590,7 +590,7 @@ dbCajones.ref('estacionamiento').on('value', (snapshot) => {
     }
 });
 /* ========================= */
-/*  SENSORES + PLUMAS      */
+/* SENSORES + PLUMAS      */
 /* ========================= */
 
 // --- Variables de Firebase ---
@@ -603,19 +603,34 @@ const refPlumaSalida = dbPluma.ref("estacionamiento/pluma_salida");
 // --- Variables de Estado Local ---
 let estadoSensorEntrada = 0;
 let estadoSensorSalida = 0;
-let modoBoton = "entrada"; // Puede ser "entrada" o "salida"
+let modoBoton = "entrada"; 
+let refEstadoUsuario = null; // Guardará la ruta en la BD del usuario actual
 
-// --- Escuchadores de Firebase ---
+// --- NUEVO: Función que conecta el usuario a su botón guardado ---
+window.conectarBotonUsuario = function(uid) {
+    // Creamos una ruta única para cada usuario
+    refEstadoUsuario = dbPluma.ref("estado_pluma_usuarios/" + uid);
+
+    // Escuchar en tiempo real en qué estado se quedó este usuario
+    refEstadoUsuario.on("value", (snapshot) => {
+        if(snapshot.exists()) {
+            modoBoton = snapshot.val(); // "entrada" o "salida"
+        } else {
+            modoBoton = "entrada"; // Si es una cuenta nueva, por defecto entra
+            refEstadoUsuario.set("entrada");
+        }
+        // Actualizar los colores y el texto del botón al cargar
+        actualizarEstiloBoton(modoBoton);
+    });
+};
+
+// --- Escuchadores de Firebase para Sensores ---
 refSensorEntrada.on("value", (snapshot) => {
-    if(snapshot.exists()){
-        estadoSensorEntrada = snapshot.val();
-    }
+    if(snapshot.exists()){ estadoSensorEntrada = snapshot.val(); }
 });
 
 refSensorSalida.on("value", (snapshot) => {
-    if(snapshot.exists()){
-        estadoSensorSalida = snapshot.val();
-    }
+    if(snapshot.exists()){ estadoSensorSalida = snapshot.val(); }
 });
 
 // --- Función Principal del Botón ---
@@ -631,10 +646,9 @@ window.solicitarApertura = function(){
             refPlumaEntrada.set(1);
             mostrarAlerta("✅ Bienvenido", "#00c853"); // Verde
             
-            // Cambiar a modo salida después de que entre
+            // ACTUALIZAR ESTADO EN LA BD DESPUÉS DE ENTRAR
             setTimeout(() => {
-                modoBoton = "salida";
-                actualizarEstiloBoton("salida");
+                if(refEstadoUsuario) refEstadoUsuario.set("salida");
             }, 3000); 
         }
     } 
@@ -646,10 +660,9 @@ window.solicitarApertura = function(){
             refPlumaSalida.set(1);
             mostrarAlerta("👋 Excelente día", "#00c853"); // Verde
             
-            // Regresar a modo entrada después de que salga
+            // ACTUALIZAR ESTADO EN LA BD DESPUÉS DE SALIR
             setTimeout(() => {
-                modoBoton = "entrada";
-                actualizarEstiloBoton("entrada");
+                if(refEstadoUsuario) refEstadoUsuario.set("entrada");
             }, 3000);
         }
     }
@@ -662,13 +675,13 @@ function mostrarAlerta(mensaje, color) {
     alerta.style.background = color;
     alerta.classList.add("visible");
     
-    setTimeout(() => {
-        alerta.classList.remove("visible");
-    }, 3000);
+    setTimeout(() => { alerta.classList.remove("visible"); }, 3000);
 }
 
 function actualizarEstiloBoton(modo) {
     const boton = document.getElementById("btnAbrirPluma");
+    if(!boton) return;
+    
     if (modo === "entrada") {
         boton.innerHTML = "Abrir Entrada";
         boton.style.background = "linear-gradient(135deg, #152191 0%, #0c1661 100%)";
@@ -680,6 +693,10 @@ function actualizarEstiloBoton(modo) {
     }
 }
 
+
+
+
+            
 
 
             
