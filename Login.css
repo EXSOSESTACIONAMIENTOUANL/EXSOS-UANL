@@ -545,42 +545,40 @@ input[type="file"]::file-selector-button:hover {
 }
 
 
-/* Ocultar input real */
-.file-box input[type="file"] {
-    display: none;
-}
-
-/* Botón bonito */
-.file-btn {
-    display: block;
-    width: 100%;
-    padding: 14px;
-    margin-top: 5px;
+/* Contenedor blanco */
+.file-box {
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    border-radius: 35px;
+    padding: 6px;
     margin-bottom: 15px;
+    width: 100%;
+}
 
-    background: rgba(255,255,255,0.1);
-    border: 2px dashed rgba(255,255,255,0.6);
-    border-radius: 15px;
-
+/* Tu botón Negro */
+.file-btn {
+    background: #000000;
     color: #ffffff;
-    font-size: 14px;
-    text-align: center;
-
+    padding: 8px 18px;
+    border-radius: 25px;
     cursor: pointer;
-    transition: 0.3s;
-}
-
-/* Hover */
-.file-btn:hover {
-    background: rgba(255,255,255,0.2);
-    border-color: #00c6ff;
-    transform: scale(1.02);
-}
-
-/* Cuando ya subió archivo */
-.file-btn.ok {
-    background: rgba(77,255,136,0.2);
-    border: 2px solid #4dff88;
-    color: #4dff88;
     font-weight: bold;
+    font-size: 14px;
+    transition: 0.3s;
+    white-space: nowrap;
+}
+
+.file-btn:hover {
+    background: #333333;
+}
+
+/* El texto de al lado */
+.file-texto {
+    color: #000000;
+    font-size: 14px;
+    margin-left: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
