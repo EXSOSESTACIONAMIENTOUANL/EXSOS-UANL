@@ -16,7 +16,10 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 auth.useDeviceLanguage();
 
+import { getStorage, ref, uploadBytes, getDownloadURL } 
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
+const storage = getStorage();
 
 async function login() {
   const email = document.getElementById("email").value;
@@ -75,97 +78,10 @@ async function login() {
   }
 }
 
-function register() {
-  const email = document.getElementById("regEmail").value;
-  const password = document.getElementById("regPassword").value;
-  const nombre = document.getElementById("regNombre").value;
-  const matricula = document.getElementById("regMatricula").value;
-
-  if(email === "" || password === ""){
-  mostrarMensaje("mensajeRegistro", "Completa los campos obligatorios");
-  return;
-  }
-
-
-  // Obtener valores de la fecha
-  const dia = document.querySelector("#selectDia .selected").textContent;
-  const mes = document.querySelector("#selectMes .selected").textContent;
-  const anio = document.querySelector("#selectAnio .selected").textContent;
-
-  // Validar que hayan seleccionado fecha
-  if (dia === "Día" || mes === "Mes" || anio === "Año") {
-    mostrarMensaje("mensajeRegistro", "Selecciona tu fecha de nacimiento");
-    return;
-  }
-
-  // Convertir mes a número
-    const mesesLista = [
-    "Enero","Febrero","Marzo","Abril","Mayo","Junio",
-    "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"
-    ];
-
-const mesNumero = mesesLista.indexOf(mes); // 0–11
-
-// Convertir a fecha
-const fechaNacimiento = new Date(anio, mesNumero, dia);
-const hoy = new Date();
-
-// Fecha mínima para ser mayor de edad
-const fechaMinima = new Date(
-  hoy.getFullYear() - 18,
-  hoy.getMonth(),
-  hoy.getDate()
-);
-
-if (fechaNacimiento > fechaMinima) {
-  mostrarMensaje("mensajeRegistro", "Debes ser mayor de edad");
-  return;
-}
-
-
-  createUserWithEmailAndPassword(auth, email, password)
-    .then(() => {
-      mostrarMensaje("mensajeRegistro", "Cuenta creada correctamente", "ok");
-
-      setTimeout(() => {
-      cerrarRegistro();
-      }, 1000);
-
-      // limpiar inputs
-      document.getElementById("regEmail").value = "";
-      document.getElementById("regPassword").value = "";
-      document.getElementById("regNombre").value = "";
-      document.getElementById("regUser").value = "";
-
-    })
-   .catch(error => {
-
-  let mensaje = "Error al crear cuenta";
-
-  switch (error.code) {
-
-    case "auth/email-already-in-use":
-      mensaje = "Este correo ya está registrado";
-      break;
-
-    case "auth/weak-password":
-      mensaje = "La contraseña debe tener mínimo 6 caracteres";
-      break;
-
-    case "auth/invalid-email":
-      mensaje = "Correo inválido";
-      break;
-
-    case "auth/network-request-failed":
-      mensaje = "Error de conexión";
-      break;
-
-    default:
-      mensaje = "Error: " + error.code;
-  }
-
-  mostrarMensaje("mensajeRegistro", mensaje);
-});
+async function subirImagen(file, ruta) {
+    const storageRef = ref(storage, ruta);
+    await uploadBytes(storageRef, file);
+    return await getDownloadURL(storageRef);
 }
 
 
@@ -184,6 +100,57 @@ function resetPassword() {
     .catch(error => {
       mostrarMensaje("mensajeLogin", "Error: " + error.code);
     });
+}
+
+
+
+async function registrarUsuario() {
+
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const nombre = document.getElementById("regNombre").value;
+
+    const placas = document.getElementById("placas").value;
+    const marca = document.getElementById("marca").value;
+    const modelo = document.getElementById("modelo").value;
+    const anio = document.getElementById("anio").value;
+
+    const fotoAuto = document.getElementById("fotoAuto").files[0];
+    const licencia = document.getElementById("licencia").files[0];
+
+    try {
+
+        const userCred = await createUserWithEmailAndPassword(auth, email, password);
+        const uid = userCred.user.uid;
+
+        // 🔥 subir imágenes
+        const urlAuto = await subirImagen(fotoAuto, "autos/" + uid);
+        const urlLicencia = await subirImagen(licencia, "licencias/" + uid);
+
+        // 🔥 guardar en base de datos
+        await db.ref("usuarios/" + uid).set({
+            nombre: nombre,
+            email: email,
+
+            vehiculo: {
+                placas: placas,
+                marca: marca,
+                modelo: modelo,
+                anio: anio,
+                foto: urlAuto
+            },
+
+            licencia: urlLicencia,
+
+            estado: "pendiente", // 🔥 clave
+            fechaRegistro: new Date().toISOString()
+        });
+
+        alert("Cuenta creada. En revisión (24 hrs)");
+
+    } catch (error) {
+        console.error(error);
+    }
 }
 
 
