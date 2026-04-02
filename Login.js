@@ -20,22 +20,31 @@ function login() {
   const password = document.getElementById("password").value;
   const remember = document.getElementById("remember").checked;
 
+  if(email === "" || password === ""){
+    mostrarMensaje("mensajeLogin", "Ingresa tu correo y contraseña");
+    return;
+  }
+
   const persistence = remember ? browserLocalPersistence : browserSessionPersistence;
 
   setPersistence(auth, persistence)
     .then(() => signInWithEmailAndPassword(auth, email, password))
-    .then(() => mostrarMensaje("mensajeLogin", "Sesión iniciada correctamente", "ok"))
+    .then((userCredential) => {
+      // 🔴 BLOQUEO ESTRICTO: Revisar si ya verificó el correo
+      if (!userCredential.user.emailVerified) {
+        // Si no lo ha verificado, le cerramos la sesión y le avisamos
+        signOut(auth);
+        mostrarMensaje("mensajeLogin", "Aún no has verificado tu correo. Revisa tu bandeja de entrada.", "error");
+      } else {
+        mostrarMensaje("mensajeLogin", "Sesión iniciada correctamente", "ok");
+        window.location.href = "Home.html";
+      }
+    })
     .catch(error => {
       let mensaje = "Error al iniciar sesión";
-      switch (error.code) {
-        case "auth/user-not-found": mensaje = "El correo no está registrado"; break;
-        case "auth/missing-password": mensaje = "Ingresa tu contraseña"; break;
-        case "auth/wrong-password": mensaje = "La contraseña es incorrecta"; break;
-        case "auth/invalid-credential": mensaje = "Correo o contraseña incorrectos"; break;
-        case "auth/invalid-email": mensaje = "El formato del correo no es válido"; break;
-        case "auth/too-many-requests": mensaje = "Demasiados intentos. Intenta más tarde"; break;
-        case "auth/network-request-failed": mensaje = "Error de conexión a internet"; break;
-      }
+      if (error.code === "auth/user-not-found") mensaje = "El correo no está registrado";
+      if (error.code === "auth/invalid-credential" || error.code === "auth/wrong-password") mensaje = "Correo o contraseña incorrectos";
+      if (error.code === "auth/too-many-requests") mensaje = "Demasiados intentos. Intenta más tarde";
       mostrarMensaje("mensajeLogin", mensaje);
       document.getElementById("password").value = "";
     });
@@ -46,7 +55,6 @@ function register() {
   const email = document.getElementById("regEmail").value;
   const password = document.getElementById("regPassword").value;
   const nombre = document.getElementById("regNombre").value;
-  const matricula = document.getElementById("regMatricula").value;
   const telefono = document.getElementById("regTelefono").value; 
   const modelo = document.getElementById("regModelo").value;
   const color = document.getElementById("regColor").value;
@@ -56,7 +64,7 @@ function register() {
   const documento = document.getElementById("regDocumento").files[0];
 
   if(email === "" || password === ""){
-    mostrarMensaje("mensajeRegistro", "Completa los campos obligatorios");
+    mostrarMensaje("mensajeRegistro", "Completa el correo y contraseña");
     return;
   }
 
@@ -66,7 +74,7 @@ function register() {
   }
 
   if (!modelo || !color || !anio || !placas || !fotoCarro || !documento) {
-      mostrarMensaje("mensajeRegistro", "Por seguridad, completa todos los datos del vehículo y sube tus documentos.", "error");
+      mostrarMensaje("mensajeRegistro", "Completa todos los datos del vehículo y documentos.", "error");
       return;
   }
 
@@ -90,34 +98,40 @@ function register() {
     return;
   }
 
-  // Creación de cuenta y envío de correo de verificación
+  // Mostramos un mensaje temporal para que el usuario sepa que está cargando
+  mostrarMensaje("mensajeRegistro", "Creando cuenta... por favor espera", "ok");
+
   createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
+      // 1. Enviar correo de verificación
       sendEmailVerification(userCredential.user).then(() => {
-          mostrarMensaje("mensajeRegistro", "Cuenta creada. Revisa tu correo para verificarlo.", "ok");
           
-          setTimeout(() => { cerrarRegistro(); }, 2500);
+          // 2. 🔴 IMPORTANTE: Cerramos la sesión que Firebase abrió automáticamente
+          // para evitar que se vaya a Home.html antes de verificar su correo
+          signOut(auth).then(() => {
+              mostrarMensaje("mensajeRegistro", "¡Éxito! Revisa tu correo electrónico para verificar la cuenta.", "ok");
+              
+              setTimeout(() => { cerrarRegistro(); }, 3500);
 
-          // Limpiar inputs
-          document.getElementById("regEmail").value = "";
-          document.getElementById("regPassword").value = "";
-          document.getElementById("regNombre").value = "";
-          document.getElementById("regMatricula").value = ""; 
-          document.getElementById("regTelefono").value = ""; 
-          document.getElementById("regModelo").value = "";
-          document.getElementById("regColor").value = "";
-          document.getElementById("regAnio").value = "";
-          document.getElementById("regPlacas").value = "";
+              // Limpiar todos los campos
+              document.getElementById("regEmail").value = "";
+              document.getElementById("regPassword").value = "";
+              document.getElementById("regNombre").value = "";
+              document.getElementById("regMatricula").value = ""; 
+              document.getElementById("regTelefono").value = ""; 
+              document.getElementById("regModelo").value = "";
+              document.getElementById("regColor").value = "";
+              document.getElementById("regAnio").value = "";
+              document.getElementById("regPlacas").value = "";
+              document.getElementById("textoCarro").textContent = "Ningún archivo...";
+              document.getElementById("textoINE").textContent = "Ningún archivo...";
+          });
       });
     })
     .catch(error => {
       let mensaje = "Error al crear cuenta";
-      switch (error.code) {
-        case "auth/email-already-in-use": mensaje = "Este correo ya está registrado"; break;
-        case "auth/weak-password": mensaje = "La contraseña debe tener mínimo 6 caracteres"; break;
-        case "auth/invalid-email": mensaje = "Correo inválido"; break;
-        case "auth/network-request-failed": mensaje = "Error de conexión"; break;
-      }
+      if(error.code === "auth/email-already-in-use") mensaje = "Este correo ya está registrado";
+      if(error.code === "auth/weak-password") mensaje = "La contraseña debe tener mínimo 6 caracteres";
       mostrarMensaje("mensajeRegistro", mensaje);
     });
 }
@@ -265,7 +279,8 @@ window.addEventListener("load", () => {
 });
 
 onAuthStateChanged(auth, (user) => {
-  if (user) {
+  // Solo lo dejamos pasar a Home si su usuario existe y SU CORREO ESTÁ VERIFICADO
+  if (user && user.emailVerified) {
     window.location.href = "Home.html";
   } else {
     document.getElementById("modalRegistro").style.display = "none";
