@@ -34,6 +34,11 @@ window.addEventListener("DOMContentLoaded", () => {
 onAuthStateChanged(auth, (user) => {
     if(user){
         cargarPerfil(); // 🔥 ahora se ejecuta cuando Firebase ya sabe quién eres
+        
+        // NUEVO: Conectar el botón de la pluma al usuario actual
+        if(typeof window.conectarBotonUsuario === "function"){
+            window.conectarBotonUsuario(user.uid);
+        }
     }
 });
 
