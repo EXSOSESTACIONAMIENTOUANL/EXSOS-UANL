@@ -506,3 +506,46 @@ input[type="file"]::file-selector-button {
 input[type="file"]::file-selector-button:hover {
     background: rgba(255, 255, 255, 0.4);
 }
+
+
+/* Ocultar el input original de archivos */
+.file-upload-container input[type="file"] {
+    display: none;
+}
+
+/* Diseño del botón falso moderno */
+.custom-file-upload {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px dashed rgba(255, 255, 255, 0.5);
+    border-radius: 15px;
+    color: #fff;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+.custom-file-upload:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: #00c6ff;
+    transform: scale(1.02);
+}
+
+/* Color verde cuando el usuario ya seleccionó un archivo */
+.custom-file-upload.archivo-ok {
+    background: rgba(77, 255, 136, 0.2);
+    border: 2px solid #4dff88;
+    color: #4dff88;
+    font-weight: bold;
+}
+
+
+
+
+
+
