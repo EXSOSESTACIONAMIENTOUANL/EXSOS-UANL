@@ -146,6 +146,53 @@ function resetPassword() {
   sendPasswordResetEmail(auth, email)
     .then(() => mostrarMensaje("mensajeLogin", "Correo enviado correctamente", "ok"))
     .catch(error => mostrarMensaje("mensajeLogin", "Error: " + error.code));
+  let confirmationResult; // Variable global para manejar la sesión del SMS
+
+// Función para enviar el SMS
+function enviarSmsVerificacion(user) {
+    const tel = document.getElementById("regTelefono").value;
+    const numeroCompleto = "+52" + tel; // Ajusta el +52 si es otro país
+
+    // Configurar Recaptcha Invisible
+    window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        'size': 'invisible'
+    });
+
+    // Vincular el teléfono a la cuenta recién creada
+    linkWithPhoneNumber(user, numeroCompleto, window.recaptchaVerifier)
+        .then((result) => {
+            confirmationResult = result;
+            document.getElementById("seccionSms").style.display = "block";
+            mostrarMensaje("mensajeRegistro", "Código enviado al teléfono", "ok");
+        }).catch((error) => {
+            console.error("Error SMS:", error);
+            mostrarMensaje("mensajeRegistro", "Error al enviar SMS. Revisa el número.");
+            // Si falla, es bueno resetear el recaptcha
+            if(window.recaptchaVerifier) window.recaptchaVerifier.clear();
+        });
+}
+
+// Función para confirmar el código que el usuario recibió
+function verificarCodigoSms() {
+    const codigo = document.getElementById("codigoSms").value;
+    
+    confirmationResult.confirm(codigo)
+        .then((result) => {
+            mostrarMensaje("mensajeRegistro", "¡Teléfono y Correo vinculados! Verifica tu email para terminar.", "ok");
+            
+            // Ahora que todo está verificado, cerramos sesión para que valide el correo
+            setTimeout(() => {
+                signOut(auth).then(() => {
+                    cerrarRegistro();
+                    // Limpiar campos...
+                });
+            }, 3000);
+        }).catch((error) => {
+            mostrarMensaje("mensajeRegistro", "Código SMS incorrecto.");
+        });
+}
+
+  
 }
 
 function enviarReset(){
@@ -300,10 +347,54 @@ function formatearPlacas(input) {
     if (valor.length > 6) formateado += '-' + valor.substring(6, 7);
     input.value = formateado;
 }
+let confirmationResult; // Variable global para manejar la sesión del SMS
+
+// Función para enviar el SMS
+function enviarSmsVerificacion(user) {
+    const tel = document.getElementById("regTelefono").value;
+    const numeroCompleto = "+52" + tel; // Ajusta el +52 si es otro país
+
+    // Configurar Recaptcha Invisible
+    window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        'size': 'invisible'
+    });
+
+    // Vincular el teléfono a la cuenta recién creada
+    linkWithPhoneNumber(user, numeroCompleto, window.recaptchaVerifier)
+        .then((result) => {
+            confirmationResult = result;
+            document.getElementById("seccionSms").style.display = "block";
+            mostrarMensaje("mensajeRegistro", "Código enviado al teléfono", "ok");
+        }).catch((error) => {
+            console.error("Error SMS:", error);
+            mostrarMensaje("mensajeRegistro", "Error al enviar SMS. Revisa el número.");
+            // Si falla, es bueno resetear el recaptcha
+            if(window.recaptchaVerifier) window.recaptchaVerifier.clear();
+        });
+}
+
+// Función para confirmar el código que el usuario recibió
+function verificarCodigoSms() {
+    const codigo = document.getElementById("codigoSms").value;
+    
+    confirmationResult.confirm(codigo)
+        .then((result) => {
+            mostrarMensaje("mensajeRegistro", "¡Teléfono y Correo vinculados! Verifica tu email para terminar.", "ok");
+            
+            // Ahora que todo está verificado, cerramos sesión para que valide el correo
+            setTimeout(() => {
+                signOut(auth).then(() => {
+                    cerrarRegistro();
+                    // Limpiar campos...
+                });
+            }, 3000);
+        }).catch((error) => {
+            mostrarMensaje("mensajeRegistro", "Código SMS incorrecto.");
+        });
+}
 
 
-
-
+window.verificarCodigoSms = verificarCodigoSms;
 window.login = login;
 window.register = register;
 window.resetPassword = resetPassword;
@@ -314,3 +405,4 @@ window.abrirRegistro = abrirRegistro;
 window.cerrarRegistro = cerrarRegistro;
 window.cerrarSesion = cerrarSesion;
 window.formatearPlacas = formatearPlacas;
+
