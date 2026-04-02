@@ -292,7 +292,21 @@ function formatearPlacas(input) {
     input.value = formateado;
 }
 
+document.getElementById("regFotoCarro").addEventListener("change", function(){
+    const label = document.getElementById("labelCarro");
+    if(this.files.length > 0){
+        label.textContent = "✅ Foto cargada";
+        label.classList.add("ok");
+    }
+});
 
+document.getElementById("regDocumento").addEventListener("change", function(){
+    const label = document.getElementById("labelINE");
+    if(this.files.length > 0){
+        label.textContent = "✅ INE cargado";
+        label.classList.add("ok");
+    }
+});
 
 // ----------------- EXPOSICIÓN GLOBAL AL HTML (Solo 1 vez) -----------------
 window.login = login;
