@@ -545,30 +545,42 @@ input[type="file"]::file-selector-button:hover {
 }
 
 
-.simple-file {
-    width: 100%;
-    margin-bottom: 15px;
-    background: #ffffff;
-    border-radius: 30px;
-    font-size: 14px;
-    padding: 6px;
-    color: #000; /* 🔥 texto visible */
-    border: none;
+/* Ocultar input real */
+.file-box input[type="file"] {
+    display: none;
 }
 
-/* Botón "Seleccionar archivo" */
-.simple-file::file-selector-button {
-    background: #000000; /* negro */
-    color: #ffffff; /* letras blancas */
-    border: none;
-    padding: 10px 18px;
-    border-radius: 25px;
+/* Botón bonito */
+.file-btn {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+
+    background: rgba(255,255,255,0.1);
+    border: 2px dashed rgba(255,255,255,0.6);
+    border-radius: 15px;
+
+    color: #ffffff;
+    font-size: 14px;
+    text-align: center;
+
     cursor: pointer;
-    margin-right: 10px;
-    font-weight: bold;
+    transition: 0.3s;
 }
 
 /* Hover */
-.simple-file::file-selector-button:hover {
-    background: #333333;
+.file-btn:hover {
+    background: rgba(255,255,255,0.2);
+    border-color: #00c6ff;
+    transform: scale(1.02);
+}
+
+/* Cuando ya subió archivo */
+.file-btn.ok {
+    background: rgba(77,255,136,0.2);
+    border: 2px solid #4dff88;
+    color: #4dff88;
+    font-weight: bold;
 }
