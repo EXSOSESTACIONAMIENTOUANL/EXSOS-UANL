@@ -545,7 +545,29 @@ input[type="file"]::file-selector-button:hover {
 }
 
 
+.simple-file {
+    width: 100%;
+    margin-bottom: 15px;
+    color: #fff;
+    background: transparent;
+    font-size: 14px;
+}
 
+.simple-file::file-selector-button {
+    background: #5865f2;
+    border: none;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 15px;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.simple-file::file-selector-button:hover {
+    background: #4752c4;
+}
 
 
 
