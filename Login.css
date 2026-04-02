@@ -548,30 +548,48 @@ input[type="file"]::file-selector-button:hover {
 .simple-file {
     width: 100%;
     margin-bottom: 15px;
-    color: #000000; /* El texto de "Ningún archivo..." ahora es negro */
-    background: rgba(255, 255, 255, 0.9); /* Fondo blanco para que las letras negras se lean perfecto */
-    padding: 6px; /* Le da un poco de espacio para que parezca una barra moderna */
-    border-radius: 35px; /* Hace que toda la barra tenga forma de óvalo alargado */
+    color: #000000; 
+    background: rgba(255, 255, 255, 0.9); 
+    padding: 8px; /* Un poquito más despacio para que no se corte */
+    border-radius: 35px; 
     font-size: 14px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    outline: none;
 }
 
-.simple-file::file-selector-button {
+/* 1. Para Chrome, Safari, Edge y Móviles */
+.simple-file::-webkit-file-upload-button {
     background: #ffffff; 
-    color: #000000; /* Letras negras en el botón */
-    border: 2px solid #000000; /* Contorno negro que pediste */
+    color: #000000; 
+    border: 2px solid #000000; 
     padding: 8px 20px;
-    border-radius: 25px; /* Óvalo perfecto para el botón */
+    border-radius: 25px; 
     cursor: pointer;
     margin-right: 15px;
     font-weight: bold;
     transition: all 0.3s ease;
 }
 
-/* Un toque extra: al pasar el mouse, el botón se invierte (negro con letras blancas) */
+/* 2. Para Firefox y navegadores modernos */
+.simple-file::file-selector-button {
+    background: #ffffff; 
+    color: #000000; 
+    border: 2px solid #000000; 
+    padding: 8px 20px;
+    border-radius: 25px; 
+    cursor: pointer;
+    margin-right: 15px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+/* Efecto al pasar el mouse (para ambos) */
+.simple-file::-webkit-file-upload-button:hover {
+    background: #000000; 
+    color: #ffffff;
+}
+
 .simple-file::file-selector-button:hover {
     background: #000000; 
     color: #ffffff;
-    transform: scale(1.02);
 }
-
