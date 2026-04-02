@@ -102,11 +102,19 @@
         <input type="text" id="regPlacas" placeholder="Placas (ej. AAA-111-A)" maxlength="9" oninput="formatearPlacas(this)">
 
         <h3 style="margin-top: 10px; font-size: 16px; color: #fff; text-align: left;">Foto Frontal del Carro</h3>
-        <input type="file" id="regFotoCarro" accept="image/*" class="simple-file">
+                    <div class="file-box">
+                <label for="regFotoCarro" id="labelCarro" class="file-btn">
+                </label>
+                <input type="file" id="regFotoCarro" accept="image/*">
+            </div>
 
         <h3 style="margin-top: 10px; font-size: 16px; color: #fff; text-align: left;">Verificación de Identidad - INE</h3>
         
-        <input type="file" id="regDocumento" accept="image/*,.pdf" class="simple-file">
+                    <div class="file-box">
+                <label for="regDocumento" id="labelINE" class="file-btn">
+                </label>
+                <input type="file" id="regDocumento" accept="image/*,.pdf">
+            </div>
 
 
 
