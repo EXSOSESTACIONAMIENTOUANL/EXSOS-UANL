@@ -300,15 +300,7 @@ function formatearPlacas(input) {
     if (valor.length > 6) formateado += '-' + valor.substring(6, 7);
     input.value = formateado;
 }
-document.addEventListener("DOMContentLoaded", () => {
-  const btnLogin = document.getElementById("btnLogin");
-  const btnRegistro = document.querySelector(".btn-crear");
-  const btnReset = document.getElementById("btnReset");
 
-  if (btnLogin) btnLogin.addEventListener("click", login);
-  if (btnRegistro) btnRegistro.addEventListener("click", register);
-  if (btnReset) btnReset.addEventListener("click", enviarReset);
-});
 
 
 
