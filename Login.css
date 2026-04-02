@@ -548,26 +548,26 @@ input[type="file"]::file-selector-button:hover {
 .simple-file {
     width: 100%;
     margin-bottom: 15px;
-    color: #fff;
+    color: #fff; /* Mantiene el texto de "Ningún archivo seleccionado" en blanco para que se lea bien */
     background: transparent;
     font-size: 14px;
 }
 
 .simple-file::file-selector-button {
-    background: #5865f2;
+    background: #ffffff; /* Fondo blanco para el botón */
+    color: #000000; /* Letras negras que pediste */
     border: none;
-    color: white;
-    padding: 8px 15px;
-    border-radius: 5px;
+    padding: 8px 18px;
+    border-radius: 25px; /* Mantiene la forma de "círculo" o píldora */
     cursor: pointer;
     margin-right: 15px;
     font-weight: bold;
-    transition: background 0.3s;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15); /* Una sombra muy suave para que el botón resalte más */
 }
 
 .simple-file::file-selector-button:hover {
-    background: #4752c4;
+    background: #e8e8e8; /* Se oscurece un poquitito al pasar el mouse */
+    transform: scale(1.02);
 }
-
-
 
