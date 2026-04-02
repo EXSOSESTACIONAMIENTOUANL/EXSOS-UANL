@@ -86,6 +86,12 @@
         <input type="text" id="regMatricula" placeholder="Matrícula (opcional)">
 
         <input type="password" id="regPassword" placeholder="Contraseña">
+        <label class="label-fecha">Fecha de nacimiento</label>
+        <div class="fecha">
+            <div class="custom-select" id="selectDia"><div class="selected">Día</div><div class="options"></div></div>
+            <div class="custom-select" id="selectMes"><div class="selected">Mes</div><div class="options"></div></div>
+            <div class="custom-select" id="selectAnio"><div class="selected">Año</div><div class="options"></div></div>
+        </div>
       
 
         <h3 style="margin-top: 15px; font-size: 16px; color: #fff; text-align: left;">Datos del Vehículo</h3>
@@ -95,19 +101,14 @@
         
         <input type="text" id="regPlacas" placeholder="Placas (ej. AAA-111-A)" maxlength="9" oninput="formatearPlacas(this)">
 
-        <label class="label-fecha" style="display: block; text-align: left; margin-top: 10px;">Foto frontal del carro :</label>
+        <h3 style="margin-top: 10px; font-size: 16px; color: #fff; text-align: left;">Foto frontal del carro</h3>
         <input type="file" id="regFotoCarro" accept="image/*" class="simple-file">
 
         <h3 style="margin-top: 10px; font-size: 16px; color: #fff; text-align: left;">Verificación de Identidad - INE</h3>
         
         <input type="file" id="regDocumento" accept="image/*,.pdf" class="simple-file">
 
-        <label class="label-fecha">Fecha de nacimiento:</label>
-        <div class="fecha">
-            <div class="custom-select" id="selectDia"><div class="selected">Día</div><div class="options"></div></div>
-            <div class="custom-select" id="selectMes"><div class="selected">Mes</div><div class="options"></div></div>
-            <div class="custom-select" id="selectAnio"><div class="selected">Año</div><div class="options"></div></div>
-        </div>
+
 
         <button class="btn-crear" onclick="register()">Crear una cuenta</button>
     
