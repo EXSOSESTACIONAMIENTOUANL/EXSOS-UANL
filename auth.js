@@ -1,9 +1,13 @@
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-const auth = getAuth();
+import { onAuthStateChanged } from "firebase/auth";
 
 onAuthStateChanged(auth, (user) => {
-    if (!user) {
-        window.location.href = "Login.html";
-    }
+  if (user) {
+    console.log("Usuario logueado:", user.email);
+    // aquí cargas datos del perfil si quieres
+  } else {
+    console.log("No hay sesión");
+
+    // 🔴 REDIRECCIÓN SI NO ESTÁ LOGUEADO
+    window.location.href = "index.html"; // o tu index de login
+  }
 });

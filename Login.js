@@ -255,7 +255,7 @@ onAuthStateChanged(auth, (user) => {
 
   if (user) {
     // Usuario logueado → ir a Home
-    window.location.href = "index.html";
+    window.location.href = "Home.html";
   } else {
     // Usuario NO logueado → asegurar vista limpia
     document.getElementById("modalRegistro").style.display = "none";

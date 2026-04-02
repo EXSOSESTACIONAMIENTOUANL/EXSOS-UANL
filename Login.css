@@ -374,7 +374,9 @@ body{
     font-size: 13px;
 }
 
-
+#modalRegistro {
+  display: none;
+}
 
 
 

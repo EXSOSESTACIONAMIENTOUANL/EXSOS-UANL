@@ -4,489 +4,124 @@
     <head>
         <meta charset="UTF-8">
         <title> interfaz IHM </title>
-        <link rel="stylesheet" href="Styles.css">
+        <link rel="stylesheet" href="Login.css">
         <link rel="icon" href="https://i.postimg.cc/sD1s6x3P/mua.webp">
-        
-        <!-- IMPORTACIÓN DE LIBRERÍAS FIREBASE (Versión Compat para no romper los botones) -->
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     </head>
 
-    <body>
-    <!--    ----------------         Aqui esta para el menu despegable               ------------------   -->
-                 <div class="header">
-                    <div class="menu-btn" id="btnMenu">☰</div>
-                    <div id="overlayMenu" class="overlay-menu"></div>
-                    
-                    <div class="imagen-exsos">
-                            <img src="https://i.imgur.com/lXxOiO5.png" alt="EXSOS" class="posicion-logo">
-                    </div>
-                    <div class="notificaciones-container">
-                        <div class="campana-wrapper" id="btnNotificaciones">
-                        <img src="https://i.imgur.com/gANyK8b.png" class="bell" alt="bell">
-                        <span class="badge" id="badgeNoti">0</span>
-                        </div>
+<body>
 
-                            <div id="panelNotificaciones" class="panel-notificaciones">
+<div class="fondo">
 
-                            <h3 class="titulo-panel">Actualizaciones</h3>
+    <div class="login-card" id="loginCard">
 
-                                    <!-- HOY -->
-                                        <div class="bloque-noti">
-                                            <div class="cabecera-noti" data-seccion="hoy">
-                                                <span>Hoy</span>
-                                                <span class="flecha" id="flecha-hoy">▼</span>
-                                            </div>
-
-                                            <div class="contenido-noti" id="hoy">
-
-                                                <div class="estado-vacio" id="estadoVacioHoy">
-                                                    <img src="https://i.postimg.cc/vT0816bb/Dino-sorprendido.webp" alt="Sin eventos" class="img-vacio">
-                                                    <p>No se encontraron eventos...</p>
-                                                </div>
-
-                                            </div>
-                                        </div>
-
-                                    
-                                        <div class="bloque-noti">
-                                            <div class="cabecera-noti" data-seccion="anteriores">
-                                                <span>Anteriores</span>
-                                                <span class="flecha" id="flecha-anteriores">▼</span>
-                                            </div>
-
-                                            <div class="contenido-noti" id="anteriores">
-
-                                                <div class="estado-vacio" id="estadoVacioAnteriores">
-                                                    <img src="https://i.postimg.cc/vT0816bb/Dino-sorprendido.webp" class="img-vacio">
-                                                    <p>No se encontraron eventos...</p>
-                                                </div>
-
-                                            </div>
-                                        </div>
-
-                            </div>
-                    </div>
-                </div>
-
-
-                
-                <div id="menuLateral" class="menu-lateral">
-
-                    <div class="menu-top">
-
-    <div class="banner-menu" id="bannerMenu">
-        <div class="editar-banner" id="btnEditarPerfil">🖉</div>
-    </div>
-
-    <div class="perfil-menu">
-        <img id="fotoPerfil" src="perfil/user.png" class="foto-perfil">
-    </div>
-
-    <div class="info-perfil">
-        <span id="nombreUsuario">Usuario</span>
-        <span id="correoUsuario">correo@email.com</span>
-    </div>
-
-</div>
-
-                    <div class="menu-body">
-                    <a href="Calendario.html">Calendario</a>
-                    <a href="#" id="btnAbrirAyuda">Ayuda</a>
-                    <a href="Comentarios.html">Comentarios</a>
-                    </div>
-
-                </div>
-
-                <div id="overlay" class="overlay"></div>
-
-    <!--    ----------------         Aqui termina  el menu despegable               ------------------   -->
-
-
-
-        <div class="Lugares-disponibles">Lugares disponibles</div>
-        
-<div class="contenedor-disponibilidad">
-
-    <div class="bloque-numero">
-        <span class="numero-verde">003</span>
-        <span class="texto-label">Vacíos</span>
-    </div>
-
-    <div class="linea-vertical"></div>
-
-    <div class="bloque-numero">
-        <span class="numero-rojo">002</span>
-        <span class="texto-label">Ocupados</span>
-    </div>
-
-</div>
-
-
-
-
-
-
-
-
-<div class="mapa-estacionamiento">
-
-<img src="https://i.imgur.com/AgysTJE.png" class="estadio">
-
-<div class="cajon libre cajon1">
-    <img src="https://i.imgur.com/J6oQWkW.png" class="carro">
-</div>
-
-<div class="cajon libre cajon2">
-    <img src="https://i.imgur.com/UI5w5Cl.png" class="carro">
-</div>
-
-<div class="cajon ocupado cajon3">
-    <img src="https://i.imgur.com/orgo04S.png" class="carro">
-</div>
-
-<div class="cajon ocupado cajon4">
-    <img src="https://i.imgur.com/Uoj2Zxn.png" class="carro">
-</div>
-
-<div class="cajon libre cajon5">
-    <img src="https://i.imgur.com/QnTv1Oe.png" class="carro">
-</div>
-
-</div>
-
-        <div class="contenedor-boton-acceso">
-    <button id="btnAbrirPluma" class="boton-premium" onclick="solicitarApertura()">
-        Abrir Entrada
-    </button>
-</div> 
-
-<div id="contenedorAlerta" class="alerta-acceso"></div>
-        
-
-
-
-<!--    ----------------         Aqui empieza  el pie de pagina               ------------------   -->
-
-        <footer class="pie-de-pagina">
-            <img src="https://i.imgur.com/ThuJm05.png" alt="FIME" class="tamaño-logos-FIME">
-            <p class="texto-universidad">Universidad Autónoma de Nuevo León
-                    Pedro de Alba S/N, Niños Héroes, Ciudad Universitaria
-                    66455 San Nicolás de los Garza, N.L.</p>
-            
-            <img src="https://i.imgur.com/YqsTbxy.png" alt="UANL" class="tamaño-logos-uni">
-        </footer>
-
-<!--    ----------------         Aqui termina  el pie de pagina               ------------------   --> 
-        
-        
-
-
-
-<div id="overlayAyuda">
-
-<div class="contenedor-ayudante">
-
-    <!-- MONITO CENTRAL -->
-    <img src="https://i.postimg.cc/zv83Hrh0/Dino-saludo.png"
-    id="imagenCentral"
-    class="monito-animado-grande">
-
-    <div class="mensaje-ayuda" id="mensajeAyuda">
-        <h3 id="tituloAyuda"></h3>
-        <p id="textoAyuda"></p>
-    </div>
-
-    <!-- CHAT -->
-    
-<div class="chat-contenedor">
-
-<div class="titulo-chat">
-Asistente virtual Exsos
-</div>
-
-<div class="chat-area" id="chatArea">
-
-<!-- MENSAJE DEL BOT -->
-<div class="mensaje bot">
-<img src="https://i.postimg.cc/76TSnwb3/Dino.jpg" class="avatar">
-<div class="burbuja">
-¿En qué puedo ayudarte?
-</div>
-</div>
-
-</div>
-
-<div class="input-chat">
-<input type="text" id="inputUsuario" placeholder="Escribe tu pregunta...">
-<button class="boton-enviar" id="btnEnviarMensaje">➤</button>
-</div>
-
-</div>
-
-    <button class="btn-cerrar" id="btnCerrarAyuda">Cerrar</button>
-
-</div>
-
-</div>
-
-
-
-
-
-
-
-
-
-    <!-- MODAL PERFIL FULL SCREEN -->
-
-<div id="modalPerfil" class="modal-perfil-full">
-
-  <div class="card-perfil">
-
-    <!-- IZQUIERDA -->
-    <div class="perfil-form">
-
-      <div class="perfil-header">
-         <button id="btnCerrarPerfil" class="btn-salir">⨉</button>
-        <h2>Editar perfil</h2>
-        <span id="btnGuardarPerfil" class="guardar-btn">Guardar</span>
-      </div>
-
-      <div class="perfil-body">
-
-        <div id="mensajePerfil"></div>
-
-        <div class="perfil-foto-container">
-            <img id="previewFoto" src="perfil/user.png">
-            <input type="file" id="inputFoto" accept="image/*">
+        <div class="avatar">
+            <img src="perfil/perfil2.png" class="login-img">
         </div>
 
-        <div class="perfil-campo">
-            <label>Nombre</label>
-            <input type="text" id="nuevoNombre" placeholder="Nombre de Usuario">
-        </div>
+        <h2>Bienvenido</h2>
 
-        <div class="perfil-campo">
-            <label>Correo</label>
-            <input type="email" id="correoPerfil" placeholder="Institucional o personal">
-        </div>
+        <input type="email" id="email" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
 
-        <div class="perfil-campo">
-            <label>Matrícula</label>
-            <input type="text" id="matriculaPerfil" placeholder="En caso de ser estudiante o docente">
-        </div>
+        <button onclick="login()">Ingresar</button>
 
-        <div class="perfil-campo">
-            <label>Placas del auto</label>
-            <input type="text" id="placasPerfil" placeholder="Registre su auto">
-        </div>
+        <div id="mensajeLogin" class="mensaje"></div>
 
-        <button id="btnCerrarSesion" class="btn-cerrar-sesion">Cerrar sesión</button>
-
-        </div>
-    </div>
-
-    <!-- DERECHA (PREVIEW) -->
-    <div class="perfil-preview">
-
-        <div class="preview-card">
-
-        <div class="preview-banner" id="previewBanner">
-        <button class="btn-editar-banner" id="btnEditarBanner">🖉</button>
-        </div>
-
-        <div class="preview-body">
-                <img id="previewAvatar" src="perfil/user.png" class="preview-avatar">
-
-                <div id="previewNombre" class="preview-name">Usuario</div>
-                <div id="previewUser" class="preview-username">usuario@email.com</div>
-
-        </div>
-
-
-        <div class="licencia-card">
-    <h3>Licencia de manejo</h3>
-
-    <div class="licencia-preview-container">
-        <img id="previewLicencia" src="perfil/licencia-default.png" class="preview-licencia">
-    </div>
-
-    <label class="btn-subir-licencia">
-        Subir licencia
-        <input type="file" id="inputLicencia" accept="image/*">
-    </label>
-</div>
-
-
-
-
-
-        
-      </div>
-
-    </div>
-
-  </div>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div id="panelAvatares" class="panel-avatares">
-
-  <div class="contenedor-avatares">
-
-    <span class="cerrar-panel">✕</span>
-
-    <h3>Elige tu avatar</h3>
-
-    <div class="grid-avatares">
-
-      <!-- FILA 1 -->
-      <img src="perfil/cuervo.png" class="avatar-opcion">
-      <img src="perfil/LU.png" class="avatar-opcion">
-      <img src="perfil/fung.png" class="avatar-opcion">
-      <img src="perfil/GIL.png" class="avatar-opcion">
-
-      <!-- FILA 2 -->
-      <img src="perfil/May.png" class="avatar-opcion">
-      <img src="perfil/Pizza.png" class="avatar-opcion">
-      <img src="perfil/Dina.png" class="avatar-opcion">
-
-      <!-- 🔥 IMPORTAR IMAGEN -->
-      <div class="avatar-upload">
-        +
-        <input type="file" id="inputAvatarPanel" accept="image/*">
-      </div>
-
-    </div>
-
-  </div>
-
-</div>
-
-
-
-<div id="panelBanners" class="panel-avatares">
-    <div class="contenedor-banner">
-
-        <span class="cerrar-panel" onclick="cerrarPanelBanners()">✕</span>
-
-        <h3>Elige tu banner</h3>
-
-        <div class="grid-banners">
-
-            <!-- 🎨 SOLO UN COLOR PERSONALIZABLE -->
-            <div class="banner-color-picker" id="btnColor">
-            🎨
-            <input type="color" id="colorBannerPicker">
-            </div>
-
-            <!-- 🖼️ IMÁGENES -->
-            <img src="perfil/banner-1.jpg" class="banner-opcion-img">
-            <img src="perfil/wolf.jpg" class="banner-opcion-img">
-            <img src="perfil/fondo.jpg" class="banner-opcion-img">
-            <img src="perfil/freddi.jpg" class="banner-opcion-img">
-            <img src="perfil/fnf.jpg" class="banner-opcion-img">
-            <img src="perfil/mfnf.jpg" class="banner-opcion-img">
-
-            <!-- ⬆️ IMPORTAR -->
-            <label class="banner-upload">
-                +
-                <input type="file" id="inputBannerPanel" accept="image/*">
+        <div class="opciones">
+            <label>
+                <input type="checkbox" id="remember"> Recuerdame
             </label>
-
-        </div>
-    </div>
-</div>
-
-
-<div id="editorBanner" class="editor-banner">
-
-    <div class="editor-card">
-
-        <div class="editor-header">
-            <h3>Editar imagen</h3>
-            <span class="cerrar-seccionbanner" onclick="cerrarTodoBanner()">✕</span>
+            <a href="#" onclick="abrirModal()">¿Olvidaste tu contraseña?</a>
         </div>
 
-        <div class="editor-area">
-            <div class="imagen-container">
-
-                <!-- 🔥 IMAGEN QUE SE MUEVE -->
-                <div id="imagenBannerMovible"></div>
-
-                <!-- 🔥 SOMBRAS -->
-    <div class="sombra arriba"></div>
-    <div class="sombra abajo"></div>
-    <div class="sombra izquierda"></div>
-    <div class="sombra derecha"></div>
-
-    <div class="marco-recorte"></div>
-
-            </div>
-        </div>
-
-        <div class="zoom-container">
-            <span>🔍</span>
-            <input type="range" id="zoomSlider" min="0.5" max="3" step="0.01" value="1">
-        </div>
-
-
-        <div class="editor-footer">
-            <button onclick="cancelarBanner()">Cancelar</button>
-            <button onclick="aplicarBanner()">Aplicar</button>
-        </div>
+        <p class="registro">
+            Aun no eres miembro?
+            <span onclick="abrirRegistro()">Crea una cuenta</span>
+        </p>
 
     </div>
 
 </div>
 
-<div id="modalConfirmar" class="modal-confirmar">
-  <div class="modal-box">
-    <h2>¿Salir sin guardar?</h2>
-    <p>Tienes cambios sin guardar, si sales ahora, se perderán.</p>
+<!-- MODAL RECUPERAR -->
+<div id="modalReset" class="modal">
 
-    <div class="acciones">
-      <button onclick="cancelarSalida()">Cancelar</button>
-      <button class="rojo" onclick="confirmarSalida()">Salir</button>
-    </div>
-  </div>
-</div>
+  <div class="modal-contenido">
 
+    <h3>Recuperar contraseña</h3>
 
-<div id="modalCerrarSesion" class="modal-confirmarp">
-  <div class="modal-boxp personaje-box">
+    <input type="email" id="resetEmail" placeholder="Ingresa tu correo">
 
-    <div class="personaje-container">
-      <img src="perfil/chats.png" id="personajeImg" class="personaje-img">
+    <button id="btnReset" onclick="enviarReset()">Enviar correo</button>
 
-      <div class="globo-dialogo">
-    <img src="perfil/dialogo.png" class="img-burbuja">
-    <span class="texto-burbuja">¿Deseas salir?</span>
-</div>
-    </div>
+    <!-- LOADER -->
+    <div id="loader" class="loader"></div>
 
-    <div class="accionesp">
-      <button id="btnCancelarCerrarSesion">Cancelar</button>
+    <!-- MENSAJE -->
+    <div id="mensajeReset" class="mensaje"></div>
 
-      <button id="btnConfirmarCerrarSesion" class="rojo">Salir</button>
-    </div>
+    <span class="cerrar" onclick="cerrarModal()">✖</span>
 
   </div>
+
+</div>
+
+
+
+
+
+<!-- MODAL REGISTRO -->
+<div id="modalRegistro" class="modalre">
+
+  <div class="modal-contenido registro-card">
+
+    <h2>Crear una cuenta</h2>
+
+        <input type="email" id="regEmail" placeholder="Correo electrónico">
+
+        <input type="text" id="regNombre" placeholder="Nombre de usuario">
+
+        <input type="text" id="regMatricula" placeholder="Matrícula (opcional)">
+
+        <input type="password" id="regPassword" placeholder="Contraseña">
+
+
+    <label class="label-fecha">Fecha de nacimiento:</label>
+    <div class="fecha">
+
+    <!-- DÍA -->
+    <div class="custom-select" id="selectDia">
+        <div class="selected">Día</div>
+        <div class="options"></div>
+    </div>
+
+    <!-- MES -->
+    <div class="custom-select" id="selectMes">
+        <div class="selected">Mes</div>
+        <div class="options"></div>
+    </div>
+
+    <!-- AÑO -->
+    <div class="custom-select" id="selectAnio">
+        <div class="selected">Año</div>
+        <div class="options"></div>
+    </div>
+
+</div>
+
+
+    <button class="btn-crear" onclick="register()">Crear una cuenta</button>
+    <div id="mensajeRegistro" class="mensaje"></div>
+
+    <p class="login-link">
+        ¿Ya tienes cuenta? 
+        <span onclick="cerrarRegistro()">Inicia sesión</span>
+    </p>
+
+    <span class="cerrar" onclick="cerrarRegistro()"></span>
+
+  </div>
+
 </div>
 
 
@@ -502,685 +137,7 @@ Asistente virtual Exsos
 
 
 
+<script type="module" src="Login.js"></script>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-        <script type="module" src="auth.js"></script>
-        <script type="module" src="perfil.js"></script>
-
-
-
-        
-        <!-- SCRIPT INTEGRADO: Reemplaza el llamado externo para asegurar la conexión -->
-        <script>
-
-            
-            /* ========================= */
-/* ========================= */
-/* 🔥 FIREBASE 2 BASES       */
-/* ========================= */
-
-// 🔵 BASE CAJONES
-const configCajones = {
-    apiKey: "AIzaSyBTnfeDaDYQlk3ugUHzc3SXB_b7dMrv3Qg",
-    databaseURL: "https://esp32-ecdcf-default-rtdb.asia-southeast1.firebasedatabase.app"
-};
-
-// 🟢 BASE PLUMA
-const configPluma = {
-    apiKey: "AIzaSyDTEJ3mfhPKsC2gsp4VNutoCcZ-4naQNTs",
-    databaseURL: "https://estacionamientouanl-default-rtdb.firebaseio.com"
-};
-
-// 🔥 INICIALIZAR LAS 2
-const appCajones = firebase.initializeApp(configCajones, "cajonesApp");
-const appPluma = firebase.initializeApp(configPluma, "plumaApp");
-
-const dbCajones = appCajones.database();
-const dbPluma = appPluma.database();
-
-/* ========================= */
-/* 🚗 CAJONES (BASE 1)       */
-/* ========================= */
-
-dbCajones.ref('estacionamiento').on('value', (snapshot) => {
-    const data = snapshot.val();
-    
-    if (data) {
-        let estados = [data.cajon1, data.cajon2, data.cajon3, data.cajon4, data.cajon5];
-
-        let cajones = [
-            document.querySelector(".cajon1"),
-            document.querySelector(".cajon2"),
-            document.querySelector(".cajon3"),
-            document.querySelector(".cajon4"),
-            document.querySelector(".cajon5")
-        ];
-
-        let ocupados = 0;
-        let libres = 0;
-
-        for (let i = 0; i < 5; i++) {
-            if (cajones[i]) {
-                if (estados[i] == 0) {
-                    cajones[i].classList.remove("libre");
-                    cajones[i].classList.add("ocupado");
-                    ocupados++;
-                } else {
-                    cajones[i].classList.remove("ocupado");
-                    cajones[i].classList.add("libre");
-                    libres++;
-                }
-            }
-        }
-
-        document.querySelector(".numero-verde").innerText = libres.toString().padStart(3,'0');
-        document.querySelector(".numero-rojo").innerText = ocupados.toString().padStart(3,'0');
-    }
-});
-/* ========================= */
-/*  SENSORES + PLUMAS      */
-/* ========================= */
-
-// --- Variables de Firebase ---
-const refSensorEntrada = dbPluma.ref("estacionamiento/sensor_presion");
-const refPlumaEntrada = dbPluma.ref("estacionamiento/pluma");
-
-const refSensorSalida = dbPluma.ref("estacionamiento/sensor_presion_salida");
-const refPlumaSalida = dbPluma.ref("estacionamiento/pluma_salida");
-
-// --- Variables de Estado Local ---
-let estadoSensorEntrada = 0;
-let estadoSensorSalida = 0;
-let modoBoton = "entrada"; // Puede ser "entrada" o "salida"
-
-// --- Escuchadores de Firebase ---
-refSensorEntrada.on("value", (snapshot) => {
-    if(snapshot.exists()){
-        estadoSensorEntrada = snapshot.val();
-    }
-});
-
-refSensorSalida.on("value", (snapshot) => {
-    if(snapshot.exists()){
-        estadoSensorSalida = snapshot.val();
-    }
-});
-
-// --- Función Principal del Botón ---
-window.solicitarApertura = function(){
-    const alerta = document.getElementById("contenedorAlerta");
-    const boton = document.getElementById("btnAbrirPluma");
-
-    if (modoBoton === "entrada") {
-        // LÓGICA DE ENTRADA
-        if(estadoSensorEntrada == 0){
-            mostrarAlerta("⚠️ Posiciónate en la entrada", "#ff3b3b"); // Rojo
-        } else if(estadoSensorEntrada == 1){
-            refPlumaEntrada.set(1);
-            mostrarAlerta("✅ Bienvenido", "#00c853"); // Verde
-            
-            // Cambiar a modo salida después de que entre
-            setTimeout(() => {
-                modoBoton = "salida";
-                actualizarEstiloBoton("salida");
-            }, 3000); 
-        }
-    } 
-    else if (modoBoton === "salida") {
-        // LÓGICA DE SALIDA
-        if(estadoSensorSalida == 0){
-            mostrarAlerta("⚠️ Posiciónate en la salida", "#ff3b3b"); // Rojo
-        } else if(estadoSensorSalida == 1){
-            refPlumaSalida.set(1);
-            mostrarAlerta("👋 Excelente día", "#00c853"); // Verde
-            
-            // Regresar a modo entrada después de que salga
-            setTimeout(() => {
-                modoBoton = "entrada";
-                actualizarEstiloBoton("entrada");
-            }, 3000);
-        }
-    }
-};
-
-// --- Funciones Auxiliares ---
-function mostrarAlerta(mensaje, color) {
-    const alerta = document.getElementById("contenedorAlerta");
-    alerta.innerHTML = mensaje;
-    alerta.style.background = color;
-    alerta.classList.add("visible");
-    
-    setTimeout(() => {
-        alerta.classList.remove("visible");
-    }, 3000);
-}
-
-function actualizarEstiloBoton(modo) {
-    const boton = document.getElementById("btnAbrirPluma");
-    if (modo === "entrada") {
-        boton.innerHTML = "Abrir Entrada";
-        boton.style.background = "linear-gradient(135deg, #152191 0%, #0c1661 100%)";
-        boton.style.color = "white";
-    } else if (modo === "salida") {
-        boton.innerHTML = "Abrir Salida";
-        boton.style.background = "linear-gradient(135deg, #FFD400 0%, #e5be00 100%)"; 
-        boton.style.color = "#0c1661"; 
-    }
-}
-
-
-
-            
-            // Escuchar cambios en la ruta "estacionamiento" en TIEMPO REAL
-           dbCajones.ref('estacionamiento').on('value', (snapshot) => {
-                const data = snapshot.val();
-                
-                if (data) {
-                    // Mapeamos los datos de Firebase
-                    let estados = [data.cajon1, data.cajon2, data.cajon3, data.cajon4, data.cajon5];
-
-                    let cajones = [
-                        document.querySelector(".cajon1"),
-                        document.querySelector(".cajon2"),
-                        document.querySelector(".cajon3"),
-                        document.querySelector(".cajon4"),
-                        document.querySelector(".cajon5")
-                    ];
-
-                    let ocupados = 0;
-                    let libres = 0;
-
-                    for (let i = 0; i < 5; i++) {
-                        if (cajones[i]) {
-                            if (estados[i] == 0) { // Ocupado
-                                cajones[i].classList.remove("libre");
-                                cajones[i].classList.add("ocupado");
-                                ocupados++;
-                            } else { // Libre
-                                cajones[i].classList.remove("ocupado");
-                                cajones[i].classList.add("libre");
-                                libres++;
-                            }
-                        }
-                    }
-
-                    // Actualizar textos de contador
-                    const txtLibres = document.querySelector(".numero-verde");
-                    const txtOcupados = document.querySelector(".numero-rojo");
-                    if(txtLibres) txtLibres.innerText = libres.toString().padStart(3, '0');
-                    if(txtOcupados) txtOcupados.innerText = ocupados.toString().padStart(3, '0');
-                }
-            });
-
-
-            function cambiarEstadoCajon(numero, estado){
-                const cajon = document.querySelector(".cajon" + numero);
-                if(estado === "libre"){
-                    cajon.classList.remove("ocupado");
-                    cajon.classList.add("libre");
-                }else{
-                    cajon.classList.remove("libre");
-                    cajon.classList.add("ocupado");
-                }
-            }
-
-            /* ========================= */
-            /* MENU LATERAL              */
-            /* ========================= */
-            function abrirMenu(){
-                document.getElementById("menuLateral").classList.add("activo");
-                document.getElementById("overlay").classList.add("activo");
-            }
-
-            function cerrarMenu(){
-                document.getElementById("menuLateral").classList.remove("activo");
-                document.getElementById("overlay").classList.remove("activo");
-            }
-
-            /* ========================= */
-            /* PANEL DE NOTIFICACIONES   */
-            /* ========================= */
-            function toggleNotificaciones(){
-                const panel = document.getElementById("panelNotificaciones");
-                panel.classList.toggle("activo");
-            }
-
-            document.addEventListener("click", function(e){
-                const panel = document.getElementById("panelNotificaciones");
-                const container = document.querySelector(".notificaciones-container");
-                if(container && !container.contains(e.target)){
-                    if(panel) panel.classList.remove("activo");
-                }
-            });
-
-            function toggleSeccion(id){
-                const contenido = document.getElementById(id);
-                const flecha = document.getElementById("flecha-" + id);
-                if(contenido) contenido.classList.toggle("activo");
-                if(flecha) flecha.classList.toggle("rotar");
-            }
-
-            /* ========================= */
-            /* AYUDANTE CHATBOT          */
-            /* ========================= */
-            function abrirAyuda(){
-                const overlay = document.getElementById("overlayAyuda");
-                const titulo = document.getElementById("tituloAyuda");
-                const texto = document.getElementById("textoAyuda");
-                const mensajeAyuda = document.getElementById("mensajeAyuda");
-                const imagenCentral = document.getElementById("imagenCentral");
-                const chatContenedor = document.querySelector(".chat-contenedor");
-                const chat = document.getElementById("chatArea");
-
-                overlay.classList.add("activo");
-                titulo.innerHTML = "";
-                texto.innerHTML = "";
-                chat.innerHTML = "";
-                chatContenedor.classList.remove("activo");
-
-                /* RESETEAR ESTADO */
-                imagenCentral.classList.remove("monito-desaparece");
-                mensajeAyuda.classList.remove("monito-desaparece");
-                imagenCentral.style.display = "block";
-                mensajeAyuda.style.display = "block";
-
-                escribirTexto("¡Hola!", titulo, 50, () => {
-                    escribirTexto("Soy tu asistente virtual EXSOS", texto, 30, () => {
-                        setTimeout(()=>{
-                            imagenCentral.classList.add("monito-desaparece");
-                            mensajeAyuda.classList.add("monito-desaparece");
-                            setTimeout(()=>{
-                                imagenCentral.style.display="none";
-                                mensajeAyuda.style.display="none";
-                                chatContenedor.classList.add("activo");
-                                chat.innerHTML += `
-                                <div class="mensaje bot">
-                                    <img src="https://i.postimg.cc/WpxqwBv1/Feliz.png" class="avatar">
-                                    <div class="burbuja">
-                                        ¿En qué puedo ayudarte?
-                                    </div>
-                                </div>
-                                `;
-                                chat.scrollTop = chat.scrollHeight;
-                            },500);
-                        },1500);
-                    });
-                });
-            }
-
-            function cerrarAyuda(){
-                const overlay = document.getElementById("overlayAyuda");
-                const chat = document.getElementById("chatArea");
-                const imagenCentral = document.getElementById("imagenCentral");
-                const chatContenedor = document.querySelector(".chat-contenedor");
-                const mensajeAyuda = document.getElementById("mensajeAyuda");
-
-                overlay.classList.remove("activo");
-                chat.innerHTML="";
-                chatContenedor.classList.remove("activo");
-
-                /* RESETEAR ANIMACIÓN */
-                imagenCentral.classList.remove("monito-desaparece");
-                mensajeAyuda.classList.remove("monito-desaparece");
-                imagenCentral.style.display="block";
-                mensajeAyuda.style.display="block";
-            }
-
-            /* ========================= */
-            /* EFECTO MAQUINA DE ESCRIBIR*/
-            /* ========================= */
-            function escribirTexto(textoCompleto, elemento, velocidad, callback){
-                let i = 0;
-                elemento.innerHTML = "";
-                const intervalo = setInterval(()=>{
-                    elemento.innerHTML += textoCompleto.charAt(i);
-                    i++;
-                    if(i >= textoCompleto.length){
-                        clearInterval(intervalo);
-                        if(callback) callback();
-                    }
-                }, velocidad);
-            }
-
-            /* ========================= */
-            /* AVATAR DINAMICO           */
-            /* ========================= */
-            function obtenerAvatarBot(texto){
-                texto = texto.toLowerCase();
-                if(texto.includes("verde")) return "https://i.postimg.cc/WpxqwBv1/Feliz.png";
-                if(texto.includes("rojo")) return "https://i.postimg.cc/WpxqwBv1/Feliz.png";
-                if(texto.includes("tu nombre") || texto.includes("como te llamas") || texto.includes("eres")) return "https://i.postimg.cc/WpxqwBv1/Feliz.png";
-                if(texto.includes("funciona") || texto.includes("funcionamiento") || texto.includes("colores") || texto.includes("color")) return "https://i.postimg.cc/zv83Hrh0/Dino-saludo.png";
-                if(texto.includes("hora") || texto.includes("dia") || texto.includes("horario")) return "https://i.postimg.cc/zv83Hrh0/Dino-saludo.png";
-                if(texto.includes("tiempo real") || texto.includes("actualiza en tiempo real") || texto.includes("actualiza solo") || texto.includes("automaticamente")) return "https://i.postimg.cc/pXnXVr41/chat.png";
-                if(texto.includes("incorrectamente") || texto.includes("lugar incorrecto") || texto.includes("error")) return "https://i.postimg.cc/MTCZ18j7/sorry.webp";
-                if(texto.includes("contador") || texto.includes("cada cuanto") || texto.includes("cada cuánto")) return "https://i.postimg.cc/pXnXVr41/chat.png";
-                if(texto.includes("confiar") || texto.includes("disponibilidad")) return "https://i.postimg.cc/g0rG50VB/Dino-ss.png";
-                if(texto.includes("no muestra color") || texto.includes("sin color")) return "https://i.postimg.cc/9XyCsK7N/risa.webp";
-                if(texto.includes("actualizar pagina") || texto.includes("actualizar página") || texto.includes("recargar")) return "https://i.postimg.cc/sD1s6x3P/mua.webp";
-                return "https://i.postimg.cc/rwwT0pPq/triste.png";
-            }
-
-            function obtenerAvatarUsuario(texto){
-                if(texto.includes("verde")) return "https://i.postimg.cc/Xvg92Qgp/Pizza.png";
-                if(texto.includes("rojo")) return "https://i.postimg.cc/ZqjyP0bk/duda.png";
-                if(texto.includes("funciona") || texto.includes("funcionamiento") || texto.includes("colores") || texto.includes("color")) return "https://i.postimg.cc/qMCyfkLh/como.png";
-                if(texto.includes("tu nombre") || texto.includes("como te llamas") || texto.includes("eres")) return "https://i.postimg.cc/3NzGy63L/Dina.png";
-                if(texto.includes("hora") || texto.includes("dia") || texto.includes("horario")) return "https://i.postimg.cc/qMCyfkLh/como.png";
-                if(texto.includes("tiempo real") || texto.includes("actualiza en tiempo real") || texto.includes("actualiza solo") || texto.includes("automaticamente")) return "https://i.postimg.cc/Xvg92Qgp/Pizza.png";
-                if(texto.includes("incorrectamente") || texto.includes("lugar incorrecto") || texto.includes("error")) return "https://i.postimg.cc/h4NMQZZ7/fung.png";
-                if(texto.includes("contador") || texto.includes("cada cuanto") || texto.includes("cada cuánto")) return "https://i.postimg.cc/WpxqwBv1/Feliz.png";
-                if(texto.includes("confiar") || texto.includes("disponibilidad")) return "https://i.postimg.cc/WpxqwBv1/Feliz.png";
-                if(texto.includes("no muestra color") || texto.includes("sin color")) return "https://i.postimg.cc/fLrtFFSV/pizza-serio.png";
-                if(texto.includes("actualizar pagina") || texto.includes("actualizar página") || texto.includes("recargar")) return "https://i.postimg.cc/FFwGkCCf/LU.png";
-                return "https://i.postimg.cc/3NzGy63L/Dina.png";
-            }
-
-            /* ========================= */
-            /* ENVIAR MENSAJE            */
-            /* ========================= */
-            function enviarMensaje(){
-                const input = document.getElementById("inputUsuario");
-                const chat = document.getElementById("chatArea");
-                const textoUsuario = input.value.trim();
-                
-                if(textoUsuario === "") return;
-                const avatarUsuario = obtenerAvatarUsuario(textoUsuario);
-
-                chat.innerHTML += `
-                <div class="mensaje usuario">
-                    <div class="burbuja">${textoUsuario}</div>
-                    <img src="${avatarUsuario}" class="avatar usuario-avatar">
-                </div>
-                `;
-
-                input.value="";
-
-                const pensando = document.createElement("div");
-                pensando.classList.add("mensaje","bot");
-                pensando.innerHTML = `
-                    <img src="https://i.postimg.cc/WpxqwBv1/Feliz.png" class="avatar">
-                    <div class="burbuja pensando">Escribiendo...</div>
-                `;
-                chat.appendChild(pensando);
-                chat.scrollTop = chat.scrollHeight;
-
-                setTimeout(()=>{
-                    pensando.remove();
-                    const respuesta = generarRespuesta(textoUsuario);
-                    const avatarBot = obtenerAvatarBot(textoUsuario);
-                    const mensajeBot = document.createElement("div");
-                    mensajeBot.classList.add("mensaje","bot");
-
-                    mensajeBot.innerHTML = `
-                        <img src="${avatarBot}" class="avatar">
-                        <div class="burbuja"></div>
-                    `;
-                    chat.appendChild(mensajeBot);
-
-                    const burbuja = mensajeBot.querySelector(".burbuja");
-                    escribirTexto(respuesta, burbuja, 20);
-                    chat.scrollTop = chat.scrollHeight;
-                },1000);
-            }
-
-            /* ========================= */
-            /* RESPUESTAS DEL BOT        */
-            /* ========================= */
-            function generarRespuesta(texto){
-                texto = texto.toLowerCase();
-                if(texto.includes("verde")) return "El color verde indica que el lugar de estacionamiento está disponible y puede ser utilizado.";
-                if(texto.includes("funciona") || texto.includes("funcionamiento") || texto.includes("colores") || texto.includes("color")) return "El color verde indica que el lugar de estacionamiento está disponible y puede ser utilizado, mientras el color rojo indica que el cajón está ocupado por un vehículo.";
-                if(texto.match(/hola|buenas|hey|que tal/)){
-                return "¡Hola! Mi nombre es Dino, soy el asistente oficial de la página EXSOS, ¿En qué puedo ayudarte?";
-    }
-                if(texto.includes("tu nombre") || texto.includes("como te llamas") || texto.includes("eres")) return "Mi nombre es Dino, soy el asistente oficial de la página EXSOS, estoy aquí para ayudarte a responder preguntas o dudas que tengas sobre la página";
-                if(texto.includes("hora") || texto.includes("dia") || texto.includes("horario")) return "El color verde indica que el lugar de estacionamiento está disponible y puede ser utilizado, mientras el color rojo indica que el cajón está ocupado por un vehículo.";
-                if(texto.includes("rojo")) return "El color rojo indica que el cajón está ocupado por un vehículo.";
-                if(texto.includes("tiempo real") || texto.includes("actualiza en tiempo real") || texto.includes("actualiza solo") || texto.includes("automaticamente")) return "Sí. El sistema se actualiza automáticamente conforme los sensores detectan la entrada o salida de vehículos.";
-                if(texto.includes("incorrectamente") || texto.includes("lugar incorrecto") || texto.includes("error")) return "Puedes reportarlo en la sección de Comentarios para que el personal revise el sensor correspondiente.";
-                if(texto.includes("contador") || texto.includes("cada cuanto") || texto.includes("cada cuánto")) return "El contador se actualiza automáticamente cada vez que un sensor detecta un cambio en un cajón.";
-                if(texto.includes("confiar") || texto.includes("disponibilidad")) return "El sistema tiene alta precisión, pero pueden existir pequeñas variaciones si un vehículo está entrando o saliendo en ese momento.";
-                if(texto.includes("no muestra color") || texto.includes("sin color")) return "Puede indicar que el sensor está en revisión o que hay un problema de comunicación. Se recomienda verificar físicamente el lugar.";
-                if(texto.includes("actualizar pagina") || texto.includes("actualizar página") || texto.includes("recargar")) return "No. La página se actualiza automáticamente, no necesitas actualizarla manualmente.";
-                return "Lo siento, aún estoy aprendiendo. Intenta preguntar sobre colores, disponibilidad o funcionamiento del sistema.";
-            }
-
-            /* ========================= */
-            /* ENTER PARA ENVIAR         */
-            /* ========================= */
-            document.addEventListener("DOMContentLoaded", function(){
-                const input = document.getElementById("inputUsuario");
-                if(input) {
-                    input.addEventListener("keypress", function(e){
-                        if(e.key === "Enter"){
-                            enviarMensaje();
-                        }
-                    });
-                }
-            });
-
-            /* ========================= */
-            /* CALENDARIO                */
-            /* ========================= */
-            let partidos = {};
-
-            async function cargarPartidos(){
-                try {
-                    const respuesta = await fetch("partidos.csv");
-                    const texto = await respuesta.text();
-                    const lineas = texto.split("\n");
-                    lineas.shift();
-
-                    lineas.forEach(linea => {
-                        const datos = linea.split(",");
-                        if(datos.length >= 7) {
-                            const mes = datos[0];
-                            const dia = datos[1];
-                            const local = datos[2];
-                            const rival = datos[3];
-                            const hora = datos[4];
-                            const logoLocal = datos[5];
-                            const logoRival = datos[6];
-                            const clave = mes + "-" + dia;
-
-                            if(!partidos[clave]){
-                                partidos[clave] = [];
-                            }
-                            partidos[clave].push({
-                                rival:rival, local:local, hora:hora, logoLocal:logoLocal, logoRival:logoRival
-                            });
-                        }
-                    });
-                    marcarPartidos();
-                    activarClicks();
-                    revisarPartidosHoy();
-                    revisarPartidosAnteriores();
-                } catch(e) {
-                    console.log("No se pudo cargar partidos.csv");
-                }
-            }
-
-            function marcarPartidos(){
-                const meses = document.querySelectorAll(".mes");
-                meses.forEach((mesDiv, index) => {
-                    const mesNumero = index + 1;
-                    const dias = mesDiv.querySelectorAll(".dias span");
-                    dias.forEach(dia => {
-                        const numero = dia.dataset.dia;
-                        const clave = mesNumero + "-" + numero;
-                        if(partidos[clave]){
-                            dia.classList.add("partido");
-                        }
-                    });
-                });
-            }
-
-            function activarClicks(){
-                const meses = document.querySelectorAll(".mes");
-                meses.forEach((mesDiv, index) => {
-                    const mesNumero = index + 1;
-                    const dias = mesDiv.querySelectorAll(".dias span");
-                    dias.forEach(dia => {
-                        dia.addEventListener("click", function(){
-                            const numero = this.dataset.dia;
-                            const clave = mesNumero + "-" + numero;
-                            if(partidos[clave]){
-                                mostrarPopup(partidos[clave]);
-                            }
-                        });
-                    });
-                });
-            }
-
-            function mostrarPopup(listaPartidos){
-                document.getElementById("popup").style.display="flex";
-                let contenido = "";
-                listaPartidos.forEach(partido => {
-                    contenido += `
-                    <div class="partido-card">
-                        <div class="partido-info">
-                            <div class="equipo">
-                                <img src="logos/${partido.logoLocal}">
-                                <span class="nombre-equipo">${partido.local}</span>
-                            </div>
-                            <div class="vs">VS</div>
-                            <div class="equipo">
-                                <span class="nombre-equipo">${partido.rival}</span>
-                                <img src="logos/${partido.logoRival}">
-                            </div>
-                            <div class="info-partido">
-                                <div class="hora">🕒 ${partido.hora}</div>
-                            </div>
-                        </div>
-                        <div class="barra-color"></div>
-                    </div>
-                    `;
-                });
-                document.getElementById("popup-rival").innerHTML = contenido;
-            }
-
-            function cerrarPopup(){
-                document.getElementById("popup").style.display="none";
-            }
-
-            document.addEventListener("DOMContentLoaded",function(){
-                corregirInicioMeses();
-                cargarPartidos();
-            });
-
-            function revisarPartidosHoy(){
-                const hoy = new Date();
-                const mes = hoy.getMonth() + 1;
-                const dia = hoy.getDate();
-                const clave = mes + "-" + dia;
-                const contenedor = document.getElementById("hoy");
-                const estadoVacio = document.getElementById("estadoVacioHoy");
-
-                if(partidos[clave]){
-                    if(estadoVacio) estadoVacio.style.display = "none";
-                    partidos[clave].forEach(partido => {
-                        const aviso = document.createElement("div");
-                        aviso.classList.add("notificacion-card");
-                        aviso.innerHTML = `
-                        <div class="noti-icono">⚽</div>
-                        <div class="noti-texto">
-                        <div class="noti-titulo">Partido hoy</div>
-                        <div class="noti-mensaje">Hoy hay partido a las ${partido.hora}. Se recomienda salir temprano.</div>
-                        </div>
-                        `;
-                        if(contenedor) contenedor.appendChild(aviso);
-                    });
-                }
-                actualizarNumeroCampana();
-            }
-
-            function revisarPartidosAnteriores(){
-                const hoy = new Date();
-                const mesActual = hoy.getMonth() + 1;
-                const diaActual = hoy.getDate();
-                const contenedor = document.getElementById("anteriores");
-                const estadoVacio = document.getElementById("estadoVacioAnteriores");
-
-                if(contenedor) contenedor.querySelectorAll(".notificacion-card").forEach(e => e.remove());
-
-                let hayEventos = false;
-                Object.keys(partidos).forEach(clave => {
-                    const partes = clave.split("-");
-                    const mes = parseInt(partes[0]);
-                    const dia = parseInt(partes[1]);
-
-                    if(mes < mesActual || (mes === mesActual && dia < diaActual)){
-                        partidos[clave].forEach(partido => {
-                            const aviso = document.createElement("div");
-                            aviso.classList.add("notificacion-card");
-                            aviso.innerHTML = `
-                            <div class="noti-icono">📅</div>
-                            <div class="noti-texto">
-                            <div class="noti-titulo">${partido.local} vs ${partido.rival}</div>
-                            <div class="noti-mensaje">${dia}/${mes}/26 - ${partido.hora}</div>
-                            </div>
-                            `;
-                            if(contenedor) contenedor.appendChild(aviso);
-                            hayEventos = true;
-                        });
-                    }
-                });
-
-                if(estadoVacio) {
-                    if(hayEventos) estadoVacio.style.display = "none";
-                    else estadoVacio.style.display = "flex";
-                }
-                actualizarNumeroCampana();
-            }
-
-            function corregirInicioMeses(){
-                const year = 2026;
-                document.querySelectorAll(".mes").forEach((mesDiv, index) => {
-                    const diasContainer = mesDiv.querySelector(".dias");
-                    if(diasContainer) {
-                        diasContainer.querySelectorAll(".vacio").forEach(e => e.remove());
-                        const primerDia = new Date(year, index, 1).getDay();
-                        let offset = primerDia - 1;
-                        if(offset < 0) offset = 6;
-                        for(let i = 0; i < offset; i++){
-                            const espacio = document.createElement("span");
-                            espacio.classList.add("vacio");
-                            diasContainer.prepend(espacio);
-                        }
-                    }
-                });
-            }
-
-            function actualizarNumeroCampana(){
-                const hoy = document.querySelectorAll("#hoy .notificacion-card").length;
-                const anteriores = document.querySelectorAll("#anteriores .notificacion-card").length;
-                const total = hoy + anteriores;
-                const badge = document.getElementById("badgeNoti");
-
-                if(badge) {
-                    badge.textContent = total;
-                    if(total === 0){
-                        badge.style.backgroundColor = "#00c800"; // verde
-                    }else{
-                        badge.style.backgroundColor = "red"; // rojo
-                    }
-                }
-            }
-            
-
-        </script>
-    </body>
+</body>
 </html>
