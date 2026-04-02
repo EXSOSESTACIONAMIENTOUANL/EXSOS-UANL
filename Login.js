@@ -62,20 +62,22 @@ function register() {
     const password = document.getElementById("regPassword").value;
     const telefono = document.getElementById("regTelefono").value;
     
-    // Captura de fecha desde Custom Selects
-    const dia = document.querySelector("#selectDia .selected").textContent;
-    const mes = document.querySelector("#selectMes .selected").textContent;
-    const anio = document.querySelector("#selectAnio .selected").textContent;
+
 
     if(email === "" || password === "" || telefono.length < 10){
         mostrarMensaje("mensajeRegistro", "Datos incompletos o teléfono inválido.");
         return;
     }
 
-    if (dia === "Día" || mes === "Mes" || anio === "Año") {
-        mostrarMensaje("mensajeRegistro", "Selecciona tu fecha de nacimiento.");
-        return;
-    }
+// Dentro de register()
+const dia = document.querySelector("#selectDia .selected").innerText.trim();
+const mes = document.querySelector("#selectMes .selected").innerText.trim();
+const anioNac = document.querySelector("#selectAnio .selected").innerText.trim();
+
+if (dia === "Día" || mes === "Mes" || anioNac === "Año") {
+    mostrarMensaje("mensajeRegistro", "Selecciona tu fecha de nacimiento completa");
+    return;
+}
 
     mostrarMensaje("mensajeRegistro", "Procesando registro...", "ok");
 
@@ -166,6 +168,73 @@ onAuthStateChanged(auth, (user) => {
         window.location.href = "Home.html";
     }
 });
+
+// --- LÓGICA DE SELECTORES DE FECHA ---
+function actualizarDias() {
+    const mes = document.querySelector("#selectMes .selected").textContent;
+    const anio = document.querySelector("#selectAnio .selected").textContent;
+    if (mes === "Mes" || anio === "Año") return;
+
+    const mesesLista = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+    const mesNumero = mesesLista.indexOf(mes);
+    const diasMes = new Date(anio, mesNumero + 1, 0).getDate();
+    const options = document.querySelector("#selectDia .options");
+    options.innerHTML = ""; 
+
+    for (let i = 1; i <= diasMes; i++) {
+        const div = document.createElement("div");
+        div.textContent = i;
+        div.addEventListener("click", () => {
+            document.querySelector("#selectDia .selected").textContent = i;
+            document.getElementById("selectDia").classList.remove("active");
+        });
+        options.appendChild(div);
+    }
+}
+
+function crearOpciones(selectId, datos) {
+    const select = document.getElementById(selectId);
+    if(!select) return;
+    const selected = select.querySelector(".selected");
+    const options = select.querySelector(".options");
+
+    datos.forEach(valor => {
+        const div = document.createElement("div");
+        div.textContent = valor;
+        div.addEventListener("click", () => {
+            selected.textContent = valor;
+            select.classList.remove("active");
+            if (selectId === "selectMes" || selectId === "selectAnio") actualizarDias();
+        });
+        options.appendChild(div);
+    });
+
+    selected.addEventListener("click", (e) => {
+        e.stopPropagation(); 
+        document.querySelectorAll(".custom-select").forEach(s => s.classList.remove("active"));
+        select.classList.toggle("active");
+    });
+}
+
+// Inicializar las opciones al cargar la página
+window.addEventListener("load", () => {
+    const dias = Array.from({length: 31}, (_, i) => i + 1);
+    const meses = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+    const actual = new Date().getFullYear();
+    const anios = [];
+    for(let i = actual - 18; i >= actual - 80; i--) anios.push(i);
+
+    crearOpciones("selectDia", dias);
+    crearOpciones("selectMes", meses);
+    crearOpciones("selectAnio", anios);
+});
+
+// Cerrar selectores si haces clic afuera
+document.addEventListener("click", () => {
+    document.querySelectorAll(".custom-select").forEach(s => s.classList.remove("active"));
+});
+
+
 
 // --- EXPOSICIÓN GLOBAL ---
 window.login = login;
