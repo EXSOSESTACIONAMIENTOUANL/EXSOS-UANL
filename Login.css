@@ -492,3 +492,17 @@ body{
     color: #ffffff;
     text-align: left;
 }
+input[type="file"]::file-selector-button {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    margin-right: 10px;
+    transition: background 0.3s ease;
+}
+
+input[type="file"]::file-selector-button:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
