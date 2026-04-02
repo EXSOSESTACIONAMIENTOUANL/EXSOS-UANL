@@ -1,7 +1,7 @@
 /* Inicio de sesion de Bryan para que se calle */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, setPersistence, browserLocalPersistence, browserSessionPersistence, onAuthStateChanged, signOut } 
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, setPersistence, browserLocalPersistence, browserSessionPersistence, onAuthStateChanged, signOut,sendEmailVerification } 
 from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -48,15 +48,47 @@ function login() {
 
 
 function register() {
+  // ... al inicio de function register() ...
   const email = document.getElementById("regEmail").value;
   const password = document.getElementById("regPassword").value;
   const nombre = document.getElementById("regNombre").value;
   const matricula = document.getElementById("regMatricula").value;
+  const telefono = document.getElementById("regTelefono").value; // <-- CAPTURA EL TELÉFONO
 
-  if(email === "" || password === ""){
-    mostrarMensaje("mensajeRegistro", "Completa los campos obligatorios");
-    return;
+  // Validar teléfono básico (que sean 10 números)
+  if(telefono.length < 10) {
+      mostrarMensaje("mensajeRegistro", "El teléfono debe tener 10 dígitos.", "error");
+      return;
   }
+
+  // ... (tus validaciones del carro y fecha) ...
+
+  // 👇 AQUÍ ES DONDE SE ENVÍA LA VERIFICACIÓN DE CORREO 👇
+  createUserWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      // 1. Enviar el correo de verificación
+      sendEmailVerification(userCredential.user)
+      .then(() => {
+          mostrarMensaje("mensajeRegistro", "Cuenta creada. Revisa tu correo para verificarlo.", "ok");
+          
+          setTimeout(() => {
+            cerrarRegistro();
+          }, 2500); // Le damos más tiempo para que lea el mensaje
+
+          // Limpiar todos los inputs
+          document.getElementById("regEmail").value = "";
+          document.getElementById("regPassword").value = "";
+          document.getElementById("regNombre").value = "";
+          document.getElementById("regMatricula").value = ""; 
+          document.getElementById("regTelefono").value = ""; // Limpiar teléfono
+          document.getElementById("regModelo").value = "";
+          document.getElementById("regColor").value = "";
+          document.getElementById("regAnio").value = "";
+          document.getElementById("regPlacas").value = "";
+      });
+    })
+    .catch(error => {
+
 const modelo = document.getElementById("regModelo").value;
   const color = document.getElementById("regColor").value;
   const anio = document.getElementById("regAnio").value;
