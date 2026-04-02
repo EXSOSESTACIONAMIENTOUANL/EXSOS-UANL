@@ -80,6 +80,14 @@
         <input type="text" id="regNombre" placeholder="Nombre de usuario">
         <input type="text" id="regMatricula" placeholder="Matrícula (opcional)">
         <input type="tel" id="regTelefono" placeholder="Número de teléfono (10 dígitos)" maxlength="10">
+                  <div id="seccionSms" style="display:none; margin-top: 20px; border-top: 1px solid #555; padding-top: 15px;">
+                <h3 style="font-size: 16px; color: #fff; text-align: left;">Verifica tu Teléfono</h3>
+                
+                <div id="recaptcha-container"></div> 
+            
+                <input type="text" id="codigoSms" placeholder="Código de 6 dígitos" maxlength="6">
+                <button class="btn-crear" onclick="verificarCodigoSms()" style="background: #28a745;">Confirmar Código SMS</button>
+            </div>
         <input type="password" id="regPassword" placeholder="Contraseña">
 
         <h3 style="margin-top: 15px; font-size: 16px; color: #fff; text-align: left;">Fecha de Nacimiento</h3>
