@@ -1,4 +1,4 @@
-/* Inicio de sesion de Bryan para que se calle - Versión Corregida */
+/* Inicio de sesion de Bryan - Versión Final Optimizada */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { 
@@ -26,7 +26,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// Variable global para el SMS
 let confirmationResult;
 
 // --- LOGIN ---
@@ -47,14 +46,13 @@ function login() {
         .then((userCredential) => {
             if (!userCredential.user.emailVerified) {
                 signOut(auth);
-                mostrarMensaje("mensajeLogin", "Aún no has verificado tu correo.", "error");
+                mostrarMensaje("mensajeLogin", "Verifica tu correo electrónico.", "error");
             } else {
-                mostrarMensaje("mensajeLogin", "Sesión iniciada correctamente", "ok");
                 window.location.href = "Home.html";
             }
         })
         .catch(error => {
-            mostrarMensaje("mensajeLogin", "Error: " + error.code);
+            mostrarMensaje("mensajeLogin", "Error: Credenciales incorrectas");
         });
 }
 
@@ -63,26 +61,34 @@ function register() {
     const email = document.getElementById("regEmail").value;
     const password = document.getElementById("regPassword").value;
     const telefono = document.getElementById("regTelefono").value;
+    
+    // Captura de fecha desde Custom Selects
+    const dia = document.querySelector("#selectDia .selected").textContent;
+    const mes = document.querySelector("#selectMes .selected").textContent;
+    const anio = document.querySelector("#selectAnio .selected").textContent;
 
     if(email === "" || password === "" || telefono.length < 10){
-        mostrarMensaje("mensajeRegistro", "Completa los datos correctamente (Teléfono 10 dígitos)");
+        mostrarMensaje("mensajeRegistro", "Datos incompletos o teléfono inválido.");
         return;
     }
 
-    mostrarMensaje("mensajeRegistro", "Creando cuenta... espera el SMS", "ok");
+    if (dia === "Día" || mes === "Mes" || anio === "Año") {
+        mostrarMensaje("mensajeRegistro", "Selecciona tu fecha de nacimiento.");
+        return;
+    }
+
+    mostrarMensaje("mensajeRegistro", "Procesando registro...", "ok");
 
     createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
             const user = userCredential.user;
-
-            // 1. Enviar correo
             sendEmailVerification(user);
-
-            // 2. Disparar SMS
-            enviarSmsVerificacion(user);
+            enviarSmsVerificacion(user); 
         })
         .catch(error => {
-            mostrarMensaje("mensajeRegistro", "Error: " + error.message);
+            let mensaje = "Error al registrar";
+            if (error.code === "auth/email-already-in-use") mensaje = "El correo ya está registrado.";
+            mostrarMensaje("mensajeRegistro", mensaje, "error");
         });
 }
 
@@ -101,10 +107,9 @@ function enviarSmsVerificacion(user) {
         .then((result) => {
             confirmationResult = result;
             document.getElementById("seccionSms").style.display = "block";
-            mostrarMensaje("mensajeRegistro", "Código SMS enviado", "ok");
+            mostrarMensaje("mensajeRegistro", "Código SMS enviado al celular", "ok");
         }).catch((error) => {
-            console.error(error);
-            mostrarMensaje("mensajeRegistro", "Error SMS: " + error.message);
+            mostrarMensaje("mensajeRegistro", "Error al enviar SMS. Revisa el número.");
         });
 }
 
@@ -114,7 +119,7 @@ function verificarCodigoSms() {
 
     confirmationResult.confirm(codigo)
         .then(() => {
-            mostrarMensaje("mensajeRegistro", "¡Teléfono verificado! Revisa tu email.", "ok");
+            mostrarMensaje("mensajeRegistro", "¡Teléfono verificado! Revisa tu correo.", "ok");
             setTimeout(() => {
                 signOut(auth).then(() => {
                     cerrarRegistro();
@@ -126,13 +131,24 @@ function verificarCodigoSms() {
         });
 }
 
+// --- PLACAS FORMATO NUEVO LEÓN ---
+function formatearPlacas(input) {
+    let valor = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    let formateado = '';
+    if (valor.length > 0) formateado += valor.substring(0, 3);
+    if (valor.length > 3) formateado += '-' + valor.substring(3, 6);
+    if (valor.length > 6) formateado += '-' + valor.substring(6, 7);
+    input.value = formateado;
+}
+
 // --- AUXILIARES ---
 function mostrarMensaje(id, texto, tipo="error") {
     const box = document.getElementById(id);
+    if(!box) return;
     box.textContent = texto;
     box.className = "mensaje " + tipo;
     box.style.display = "block";
-    setTimeout(() => { box.style.display = "none"; }, 4000);
+    setTimeout(() => { box.style.display = "none"; }, 5000);
 }
 
 function abrirRegistro() {
@@ -145,27 +161,18 @@ function cerrarRegistro() {
     document.getElementById("loginCard").classList.remove("oculto");
 }
 
-function enviarReset(){
-    const email = document.getElementById("resetEmail").value;
-    if(!email) return;
-    sendPasswordResetEmail(auth, email)
-        .then(() => mostrarMensaje("mensajeReset", "Correo enviado", "ok"))
-        .catch(err => mostrarMensaje("mensajeReset", err.code));
-}
-
-// Inicializar selectores y AuthState
 onAuthStateChanged(auth, (user) => {
     if (user && user.emailVerified) {
         window.location.href = "Home.html";
     }
 });
 
-// Exponer funciones al HTML
+// --- EXPOSICIÓN GLOBAL ---
 window.login = login;
 window.register = register;
 window.verificarCodigoSms = verificarCodigoSms;
 window.abrirRegistro = abrirRegistro;
 window.cerrarRegistro = cerrarRegistro;
-window.enviarReset = enviarReset;
+window.formatearPlacas = formatearPlacas;
 window.abrirModal = () => document.getElementById("modalReset").classList.add("activo");
 window.cerrarModal = () => document.getElementById("modalReset").classList.remove("activo");
