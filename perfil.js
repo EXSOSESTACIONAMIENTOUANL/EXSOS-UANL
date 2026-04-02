@@ -1162,18 +1162,3 @@ window.confirmarSalida = confirmarSalida;
 
 window.cancelarCerrarSesion = cancelarCerrarSesion;
 window.confirmarCerrarSesion = confirmarCerrarSesion;
-
-db.ref("usuarios/" + uid).once("value").then(snapshot => {
-
-    const data = snapshot.val();
-
-    if (data.estado === "pendiente") {
-
-        document.getElementById("nombre").disabled = true;
-        document.getElementById("correo").disabled = true;
-        document.getElementById("matricula").disabled = true;
-        document.getElementById("placas").disabled = true;
-
-        alert("Tu cuenta está en verificación. No puedes modificar datos.");
-    }
-});
