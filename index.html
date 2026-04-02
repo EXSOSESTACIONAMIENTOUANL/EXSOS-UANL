@@ -84,45 +84,27 @@
         <input type="text" id="regMatricula" placeholder="Matrícula (opcional)">
 
         <input type="password" id="regPassword" placeholder="Contraseña">
+      
 
-<h3 style="margin-top: 15px; font-size: 16px; color: #fff; text-align: left;">Datos del Vehículo</h3>
+        <h3 style="margin-top: 15px; font-size: 16px; color: #fff; text-align: left;">Datos del Vehículo</h3>
         <input type="text" id="regModelo" placeholder="Modelo del carro (ej. Jetta)">
         <input type="text" id="regColor" placeholder="Color del carro">
         <input type="number" id="regAnio" placeholder="Año del carro (ej. 2020)" min="1980" max="2027">
         
-        <input type="text" id="regPlacas" placeholder="Placas del vehículo (Obligatorio)">
+        <input type="text" id="regPlacas" placeholder="Placas (ej. AAA-111-A)" maxlength="9" oninput="formatearPlacas(this)">
 
-        <div class="file-upload-container">
-            <label class="label-fecha" style="display: block; text-align: left;">Foto frontal del carro (con placas):</label>
-            <label for="regFotoCarro" class="custom-file-upload" id="lblFotoCarro">
-                📷 Seleccionar imagen del vehículo
-            </label>
-            <input type="file" id="regFotoCarro" accept="image/*" onchange="actualizarNombreArchivo(this, 'lblFotoCarro')">
-        </div>
+        <label class="label-fecha" style="display: block; text-align: left; margin-top: 10px;">Foto frontal del carro (con placas):</label>
+        <input type="file" id="regFotoCarro" accept="image/*" class="simple-file">
 
-        <div class="file-upload-container">
-            <h3 style="margin-top: 10px; font-size: 16px; color: #fff; text-align: left;">Verificación de Identidad</h3>
-            <label class="label-fecha" style="display: block; text-align: left;">INE o Licencia de conducir:</label>
-            <label for="regDocumento" class="custom-file-upload" id="lblDocumento">
-                📄 Subir documento oficial
-            </label>
-            <input type="file" id="regDocumento" accept="image/*,.pdf" onchange="actualizarNombreArchivo(this, 'lblDocumento')">
-        </div>
+        <h3 style="margin-top: 10px; font-size: 16px; color: #fff; text-align: left;">Verificación de Identidad</h3>
+        <label class="label-fecha" style="display: block; text-align: left; margin-top: 10px;">INE o Licencia de conducir:</label>
+        <input type="file" id="regDocumento" accept="image/*,.pdf" class="simple-file">
 
         <label class="label-fecha">Fecha de nacimiento:</label>
         <div class="fecha">
-            <div class="custom-select" id="selectDia">
-                <div class="selected">Día</div>
-                <div class="options"></div>
-            </div>
-            <div class="custom-select" id="selectMes">
-                <div class="selected">Mes</div>
-                <div class="options"></div>
-            </div>
-            <div class="custom-select" id="selectAnio">
-                <div class="selected">Año</div>
-                <div class="options"></div>
-            </div>
+            <div class="custom-select" id="selectDia"><div class="selected">Día</div><div class="options"></div></div>
+            <div class="custom-select" id="selectMes"><div class="selected">Mes</div><div class="options"></div></div>
+            <div class="custom-select" id="selectAnio"><div class="selected">Año</div><div class="options"></div></div>
         </div>
 
         <button class="btn-crear" onclick="register()">Crear una cuenta</button>
