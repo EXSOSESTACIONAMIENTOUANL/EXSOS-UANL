@@ -548,26 +548,30 @@ input[type="file"]::file-selector-button:hover {
 .simple-file {
     width: 100%;
     margin-bottom: 15px;
-    color: #fff; /* Mantiene el texto de "Ningún archivo seleccionado" en blanco para que se lea bien */
-    background: transparent;
+    color: #000000; /* El texto de "Ningún archivo..." ahora es negro */
+    background: rgba(255, 255, 255, 0.9); /* Fondo blanco para que las letras negras se lean perfecto */
+    padding: 6px; /* Le da un poco de espacio para que parezca una barra moderna */
+    border-radius: 35px; /* Hace que toda la barra tenga forma de óvalo alargado */
     font-size: 14px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }
 
 .simple-file::file-selector-button {
-    background: #ffffff; /* Fondo blanco para el botón */
-    color: #000000; /* Letras negras que pediste */
-    border: none;
-    padding: 8px 18px;
-    border-radius: 25px; /* Mantiene la forma de "círculo" o píldora */
+    background: #ffffff; 
+    color: #000000; /* Letras negras en el botón */
+    border: 2px solid #000000; /* Contorno negro que pediste */
+    padding: 8px 20px;
+    border-radius: 25px; /* Óvalo perfecto para el botón */
     cursor: pointer;
     margin-right: 15px;
     font-weight: bold;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15); /* Una sombra muy suave para que el botón resalte más */
 }
 
+/* Un toque extra: al pasar el mouse, el botón se invierte (negro con letras blancas) */
 .simple-file::file-selector-button:hover {
-    background: #e8e8e8; /* Se oscurece un poquitito al pasar el mouse */
+    background: #000000; 
+    color: #ffffff;
     transform: scale(1.02);
 }
 
