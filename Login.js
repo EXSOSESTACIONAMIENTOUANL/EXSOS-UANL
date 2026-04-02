@@ -14,72 +14,66 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+auth.useDeviceLanguage();
 
 
 
-
-function login() {
+async function login() {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
   const remember = document.getElementById("remember").checked;
 
-  const persistence = remember
-    ? browserLocalPersistence
-    : browserSessionPersistence;
+  try {
+    await setPersistence(
+      auth,
+      remember ? browserLocalPersistence : browserSessionPersistence
+    );
 
-  setPersistence(auth, persistence)
-    .then(() => {
-      return signInWithEmailAndPassword(auth, email, password);
-    })
-    .then(() => {
-      mostrarMensaje("mensajeLogin", "Sesión iniciada correctamente", "ok");
-    })
+    await signInWithEmailAndPassword(auth, email, password);
 
+    // 👇 respaldo para Safari
+    if (remember) {
+      localStorage.setItem("rememberUser", "true");
+    } else {
+      localStorage.removeItem("rememberUser");
+    }
 
-.catch(error => {
+    mostrarMensaje("mensajeLogin", "Sesión iniciada correctamente", "ok");
 
-  let mensaje = "Error al iniciar sesión";
+  } catch (error) {
 
-  switch (error.code) {
+    let mensaje = "Error al iniciar sesión";
 
-    case "auth/user-not-found":
-      mensaje = "El correo no está registrado";
-      break;
+    switch (error.code) {
+      case "auth/user-not-found":
+        mensaje = "El correo no está registrado";
+        break;
+      case "auth/missing-password":
+        mensaje = "Ingresa tu contraseña";
+        break;
+      case "auth/wrong-password":
+        mensaje = "La contraseña es incorrecta";
+        break;
+      case "auth/invalid-credential":
+        mensaje = "Correo o contraseña incorrectos";
+        break;
+      case "auth/invalid-email":
+        mensaje = "El formato del correo no es válido";
+        break;
+      case "auth/too-many-requests":
+        mensaje = "Demasiados intentos. Intenta más tarde";
+        break;
+      case "auth/network-request-failed":
+        mensaje = "Error de conexión a internet";
+        break;
+      default:
+        mensaje = "Error desconocido";
+    }
 
-    case "auth/missing-password":
-    mensaje = "Ingresa tu contraseña";
-    break;
-
-    case "auth/wrong-password":
-      mensaje = "La contraseña es incorrecta";
-      break;
-
-    case "auth/invalid-credential":
-      mensaje = "Correo o contraseña incorrectos";
-      break;
-
-    case "auth/invalid-email":
-      mensaje = "El formato del correo no es válido";
-      break;
-
-    case "auth/too-many-requests":
-      mensaje = "Demasiados intentos. Intenta más tarde";
-      break;
-
-    case "auth/network-request-failed":
-      mensaje = "Error de conexión a internet";
-      break;
-
-    default:
-      mensaje = "Error desconocido";
+    mostrarMensaje("mensajeLogin", mensaje);
+    document.getElementById("password").value = "";
   }
-
-  mostrarMensaje("mensajeLogin", mensaje);
-  document.getElementById("password").value = "";
-});
-
 }
-
 
 function register() {
   const email = document.getElementById("regEmail").value;
@@ -360,7 +354,11 @@ document.addEventListener("click", (e) => {
 
 
 window.addEventListener("load", () => {
-
+    const remember = localStorage.getItem("rememberUser");
+    
+    if (remember === "true") {
+      console.log("Safari fallback activo");
+    }
     // DÍAS
     const dias = Array.from({length: 31}, (_, i) => i + 1);
 
