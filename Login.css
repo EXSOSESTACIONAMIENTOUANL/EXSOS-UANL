@@ -548,18 +548,6 @@ input[type="file"]::file-selector-button:hover {
 .simple-file {
     width: 100%;
     margin-bottom: 15px;
-    color: #000000; 
-    background: rgba(255, 255, 255, 0.9); 
-    padding: 8px; /* Un poquito más despacio para que no se corte */
-    border-radius: 35px; 
-    font-size: 14px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    outline: none;
-}
-
-.simple-file {
-    width: 100%;
-    margin-bottom: 15px;
     background: #ffffff;
     border-radius: 30px;
     font-size: 14px;
