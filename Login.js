@@ -56,43 +56,77 @@ function login() {
         });
 }
 
-// --- REGISTRO ---
-function register() {
+
+
+
+
+async function register() {
     const email = document.getElementById("regEmail").value;
     const password = document.getElementById("regPassword").value;
     const telefono = document.getElementById("regTelefono").value;
-    
+    const fotoCarro = document.getElementById("regFotoCarro").files[0];
+    const documento = document.getElementById("regDocumento").files[0];
+    const btn = document.querySelector(".btn-crear");
 
-
-    if(email === "" || password === "" || telefono.length < 10){
-        mostrarMensaje("mensajeRegistro", "Datos incompletos o teléfono inválido.");
+    // 1. VALIDACIÓN ESTRICTA DE TODOS LOS CAMPOS
+    if (!email || !password || telefono.length < 10) {
+        mostrarMensaje("mensajeRegistro", "Correo, contraseña y teléfono (10 dígitos) son obligatorios.");
         return;
     }
 
-// Dentro de register()
-const dia = document.querySelector("#selectDia .selected").innerText.trim();
-const mes = document.querySelector("#selectMes .selected").innerText.trim();
-const anioNac = document.querySelector("#selectAnio .selected").innerText.trim();
+    if (!fotoCarro || !documento) {
+        mostrarMensaje("mensajeRegistro", "Debes subir la foto del carro y el documento INE.");
+        return;
+    }
 
-if (dia === "Día" || mes === "Mes" || anioNac === "Año") {
-    mostrarMensaje("mensajeRegistro", "Selecciona tu fecha de nacimiento completa");
-    return;
+    const dia = document.querySelector("#selectDia .selected").textContent;
+    const mes = document.querySelector("#selectMes .selected").textContent;
+    const anio = document.querySelector("#selectAnio .selected").textContent;
+
+    if (dia === "Día" || mes === "Mes" || anio === "Año") {
+        mostrarMensaje("mensajeRegistro", "Selecciona tu fecha de nacimiento.");
+        return;
+    }
+
+    // Bloquear botón para evitar duplicados
+    btn.disabled = true;
+    mostrarMensaje("mensajeRegistro", "Procesando... no cierres la ventana", "ok");
+
+    try {
+        // 2. INTENTAR CREAR LA CUENTA
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        try {
+            // 3. ENVIAR CORREO Y SMS
+            await sendEmailVerification(user);
+            await enviarSmsVerificacion(user); 
+            
+            mostrarMensaje("mensajeRegistro", "Cuenta creada. Revisa el SMS enviado.", "ok");
+        } catch (smsError) {
+            // 🔴 SI EL SMS FALLA: Borramos al usuario recién creado para que pueda reintentar
+            console.error("Fallo el SMS, borrando usuario...", smsError);
+            await user.delete(); 
+            mostrarMensaje("mensajeRegistro", "Error al enviar SMS. Por favor, revisa tu número e intenta de nuevo.");
+            btn.disabled = false;
+        }
+
+    } catch (firebaseError) {
+        btn.disabled = false;
+        let mensaje = "Error al registrar";
+        if (firebaseError.code === "auth/email-already-in-use") {
+            mensaje = "Este correo ya está en uso. Usa otro o recupera tu contraseña.";
+        }
+        mostrarMensaje("mensajeRegistro", mensaje);
+    }
 }
 
-    mostrarMensaje("mensajeRegistro", "Procesando registro...", "ok");
 
-    createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-            const user = userCredential.user;
-            sendEmailVerification(user);
-            enviarSmsVerificacion(user); 
-        })
-        .catch(error => {
-            let mensaje = "Error al registrar";
-            if (error.code === "auth/email-already-in-use") mensaje = "El correo ya está registrado.";
-            mostrarMensaje("mensajeRegistro", mensaje, "error");
-        });
-}
+
+
+
+
+
 
 // --- SMS LOGIC ---
 function enviarSmsVerificacion(user) {
