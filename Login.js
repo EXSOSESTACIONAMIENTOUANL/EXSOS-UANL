@@ -1,7 +1,7 @@
 /* Inicio de sesion de Bryan para que se calle */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, setPersistence, browserLocalPersistence, browserSessionPersistence, onAuthStateChanged, signOut,sendEmailVerification } 
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, setPersistence, browserLocalPersistence, browserSessionPersistence, onAuthStateChanged, signOut, sendEmailVerification } 
 from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -23,12 +23,8 @@ function login() {
   const persistence = remember ? browserLocalPersistence : browserSessionPersistence;
 
   setPersistence(auth, persistence)
-    .then(() => {
-      return signInWithEmailAndPassword(auth, email, password);
-    })
-    .then(() => {
-      mostrarMensaje("mensajeLogin", "Sesión iniciada correctamente", "ok");
-    })
+    .then(() => signInWithEmailAndPassword(auth, email, password))
+    .then(() => mostrarMensaje("mensajeLogin", "Sesión iniciada correctamente", "ok"))
     .catch(error => {
       let mensaje = "Error al iniciar sesión";
       switch (error.code) {
@@ -39,7 +35,6 @@ function login() {
         case "auth/invalid-email": mensaje = "El formato del correo no es válido"; break;
         case "auth/too-many-requests": mensaje = "Demasiados intentos. Intenta más tarde"; break;
         case "auth/network-request-failed": mensaje = "Error de conexión a internet"; break;
-        default: mensaje = "Error desconocido";
       }
       mostrarMensaje("mensajeLogin", mensaje);
       document.getElementById("password").value = "";
@@ -48,59 +43,33 @@ function login() {
 
 
 function register() {
-  // ... al inicio de function register() ...
   const email = document.getElementById("regEmail").value;
   const password = document.getElementById("regPassword").value;
   const nombre = document.getElementById("regNombre").value;
   const matricula = document.getElementById("regMatricula").value;
-  const telefono = document.getElementById("regTelefono").value; // <-- CAPTURA EL TELÉFONO
+  const telefono = document.getElementById("regTelefono").value; 
+  const modelo = document.getElementById("regModelo").value;
+  const color = document.getElementById("regColor").value;
+  const anio = document.getElementById("regAnio").value;
+  const placas = document.getElementById("regPlacas").value; 
+  const fotoCarro = document.getElementById("regFotoCarro").files[0];
+  const documento = document.getElementById("regDocumento").files[0];
 
-  // Validar teléfono básico (que sean 10 números)
+  if(email === "" || password === ""){
+    mostrarMensaje("mensajeRegistro", "Completa los campos obligatorios");
+    return;
+  }
+
   if(telefono.length < 10) {
       mostrarMensaje("mensajeRegistro", "El teléfono debe tener 10 dígitos.", "error");
       return;
   }
 
-  // ... (tus validaciones del carro y fecha) ...
-
-  // 👇 AQUÍ ES DONDE SE ENVÍA LA VERIFICACIÓN DE CORREO 👇
-  createUserWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      // 1. Enviar el correo de verificación
-      sendEmailVerification(userCredential.user)
-      .then(() => {
-          mostrarMensaje("mensajeRegistro", "Cuenta creada. Revisa tu correo para verificarlo.", "ok");
-          
-          setTimeout(() => {
-            cerrarRegistro();
-          }, 2500); // Le damos más tiempo para que lea el mensaje
-
-          // Limpiar todos los inputs
-          document.getElementById("regEmail").value = "";
-          document.getElementById("regPassword").value = "";
-          document.getElementById("regNombre").value = "";
-          document.getElementById("regMatricula").value = ""; 
-          document.getElementById("regTelefono").value = ""; // Limpiar teléfono
-          document.getElementById("regModelo").value = "";
-          document.getElementById("regColor").value = "";
-          document.getElementById("regAnio").value = "";
-          document.getElementById("regPlacas").value = "";
-      });
-    })
-    .catch(error => {
-
-const modelo = document.getElementById("regModelo").value;
-  const color = document.getElementById("regColor").value;
-  const anio = document.getElementById("regAnio").value;
-  const placas = document.getElementById("regPlacas").value; // <-- Capturar placas
-  const fotoCarro = document.getElementById("regFotoCarro").files[0];
-  const documento = document.getElementById("regDocumento").files[0];
-
   if (!modelo || !color || !anio || !placas || !fotoCarro || !documento) {
       mostrarMensaje("mensajeRegistro", "Por seguridad, completa todos los datos del vehículo y sube tus documentos.", "error");
       return;
   }
-  // Validación de fecha
+
   const dia = document.querySelector("#selectDia .selected").textContent;
   const mes = document.querySelector("#selectMes .selected").textContent;
   const anioNacimiento = document.querySelector("#selectAnio .selected").textContent;
@@ -121,22 +90,25 @@ const modelo = document.getElementById("regModelo").value;
     return;
   }
 
+  // Creación de cuenta y envío de correo de verificación
   createUserWithEmailAndPassword(auth, email, password)
-    .then(() => {
-      mostrarMensaje("mensajeRegistro", "Cuenta creada correctamente", "ok");
+    .then((userCredential) => {
+      sendEmailVerification(userCredential.user).then(() => {
+          mostrarMensaje("mensajeRegistro", "Cuenta creada. Revisa tu correo para verificarlo.", "ok");
+          
+          setTimeout(() => { cerrarRegistro(); }, 2500);
 
-      setTimeout(() => {
-        cerrarRegistro();
-      }, 1000);
-
-      // Limpiar inputs (¡Corregido regMatricula!)
-      document.getElementById("regEmail").value = "";
-      document.getElementById("regPassword").value = "";
-      document.getElementById("regNombre").value = "";
-      document.getElementById("regMatricula").value = ""; 
-      document.getElementById("regModelo").value = "";
-      document.getElementById("regColor").value = "";
-      document.getElementById("regAnio").value = "";
+          // Limpiar inputs
+          document.getElementById("regEmail").value = "";
+          document.getElementById("regPassword").value = "";
+          document.getElementById("regNombre").value = "";
+          document.getElementById("regMatricula").value = ""; 
+          document.getElementById("regTelefono").value = ""; 
+          document.getElementById("regModelo").value = "";
+          document.getElementById("regColor").value = "";
+          document.getElementById("regAnio").value = "";
+          document.getElementById("regPlacas").value = "";
+      });
     })
     .catch(error => {
       let mensaje = "Error al crear cuenta";
@@ -145,7 +117,6 @@ const modelo = document.getElementById("regModelo").value;
         case "auth/weak-password": mensaje = "La contraseña debe tener mínimo 6 caracteres"; break;
         case "auth/invalid-email": mensaje = "Correo inválido"; break;
         case "auth/network-request-failed": mensaje = "Error de conexión"; break;
-        default: mensaje = "Error: " + error.code;
       }
       mostrarMensaje("mensajeRegistro", mensaje);
     });
@@ -162,7 +133,6 @@ function resetPassword() {
     .then(() => mostrarMensaje("mensajeLogin", "Correo enviado correctamente", "ok"))
     .catch(error => mostrarMensaje("mensajeLogin", "Error: " + error.code));
 }
-
 
 function enviarReset(){
   const email = document.getElementById("resetEmail").value;
@@ -200,12 +170,10 @@ function enviarReset(){
     });
 }
 
-
 function cerrarSesion(){
   signOut(auth).then(() => console.log("Sesión cerrada")).catch(err => console.error(err));
 }
 
-// ----------------- CONTROL DE MODALES -----------------
 function abrirModal(){ document.getElementById("modalReset").classList.add("activo"); }
 function cerrarModal(){ document.getElementById("modalReset").classList.remove("activo"); }
 
@@ -219,7 +187,6 @@ function cerrarRegistro() {
     document.getElementById("loginCard").classList.remove("oculto");
 }
 
-// ----------------- UTILIDADES DE FECHA Y MENSAJES -----------------
 function mostrarMensaje(id, texto, tipo="error") {
     const box = document.getElementById(id);
     box.textContent = texto;
@@ -236,7 +203,6 @@ function actualizarDias() {
   const mesesLista = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
   const mesNumero = mesesLista.indexOf(mes);
   const diasMes = new Date(anio, mesNumero + 1, 0).getDate();
-
   const options = document.querySelector("#selectDia .options");
   options.innerHTML = ""; 
 
@@ -280,7 +246,6 @@ function crearOpciones(selectId, datos) {
     });
 }
 
-// ----------------- LISTENERS GLOBALES -----------------
 document.addEventListener("click", (e) => {
     if (!e.target.closest(".custom-select")) {
         document.querySelectorAll(".custom-select").forEach(s => s.classList.remove("active"));
@@ -311,36 +276,16 @@ onAuthStateChanged(auth, (user) => {
     }
   }
 });
+
 function formatearPlacas(input) {
-    // Convierte a mayúsculas y quita todo lo que no sea letra o número
     let valor = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
     let formateado = '';
-
-    // Formato Nuevo León: 3 letras - 3 números - 1 letra (AAA-111-A)
     if (valor.length > 0) formateado += valor.substring(0, 3);
     if (valor.length > 3) formateado += '-' + valor.substring(3, 6);
     if (valor.length > 6) formateado += '-' + valor.substring(6, 7);
-
     input.value = formateado;
 }
 
-document.getElementById("regFotoCarro").addEventListener("change", function(){
-    const label = document.getElementById("labelCarro");
-    if(this.files.length > 0){
-        label.textContent = "✅ Foto cargada";
-        label.classList.add("ok");
-    }
-});
-
-document.getElementById("regDocumento").addEventListener("change", function(){
-    const label = document.getElementById("labelINE");
-    if(this.files.length > 0){
-        label.textContent = "✅ INE cargado";
-        label.classList.add("ok");
-    }
-});
-
-// ----------------- EXPOSICIÓN GLOBAL AL HTML (Solo 1 vez) -----------------
 window.login = login;
 window.register = register;
 window.resetPassword = resetPassword;
@@ -351,5 +296,3 @@ window.abrirRegistro = abrirRegistro;
 window.cerrarRegistro = cerrarRegistro;
 window.cerrarSesion = cerrarSesion;
 window.formatearPlacas = formatearPlacas;
-
-
