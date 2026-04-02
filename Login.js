@@ -91,7 +91,20 @@ function register() {
   mostrarMensaje("mensajeRegistro", "Completa los campos obligatorios");
   return;
   }
-
+  // Captura de los nuevos campos
+      const modelo = document.getElementById("regModelo").value;
+      const color = document.getElementById("regColor").value;
+      const anio = document.getElementById("regAnio").value;
+      
+      // Para los archivos, se captura el primer archivo seleccionado
+      const fotoCarro = document.getElementById("regFotoCarro").files[0];
+      const documento = document.getElementById("regDocumento").files[0];
+  
+      // Validación de seguridad: exigir que se llenen los datos
+      if (!modelo || !color || !anio || !fotoCarro || !documento) {
+          mostrarMensaje("mensajeRegistro", "Por seguridad, completa los datos del vehículo y sube tus documentos.", "error");
+          return;
+      }
 
   // Obtener valores de la fecha
   const dia = document.querySelector("#selectDia .selected").textContent;
