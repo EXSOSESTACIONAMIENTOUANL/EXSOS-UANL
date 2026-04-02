@@ -557,49 +557,30 @@ input[type="file"]::file-selector-button:hover {
     outline: none;
 }
 
-/* Contenedor principal (La barra blanca ovalada) */
 .simple-file {
     width: 100%;
     margin-bottom: 15px;
-    color: #000000; 
-    background: #ffffff; 
-    border-radius: 30px; 
+    background: #ffffff;
+    border-radius: 30px;
     font-size: 14px;
-    /* La clave está aquí: muy poco padding general para no aplastar el botón */
-    padding: 5px 15px 5px 5px; 
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    outline: none;
-    cursor: pointer;
+    padding: 6px;
+    color: #000; /* 🔥 texto visible */
+    border: none;
 }
 
-/* El botón ovalado (Fondo negro y letras blancas para que resalte) */
-.simple-file::-webkit-file-upload-button {
-    background: #000000; /* Fondo negro */
-    color: #ffffff; /* Letras blancas */
-    border: 2px solid #000000; 
-    padding: 8px 18px; 
-    border-radius: 25px; 
-    cursor: pointer;
-    margin-right: 15px;
-    font-weight: bold;
-    transition: all 0.3s ease;
-}
-
+/* Botón "Seleccionar archivo" */
 .simple-file::file-selector-button {
-    background: #000000; /* Fondo negro */
-    color: #ffffff; /* Letras blancas */
-    border: 2px solid #000000; 
-    padding: 8px 18px;
-    border-radius: 25px; 
+    background: #000000; /* negro */
+    color: #ffffff; /* letras blancas */
+    border: none;
+    padding: 10px 18px;
+    border-radius: 25px;
     cursor: pointer;
-    margin-right: 15px;
+    margin-right: 10px;
     font-weight: bold;
-    transition: all 0.3s ease;
 }
 
-/* Efecto al pasar el mouse (se pone gris oscuro) */
-.simple-file::-webkit-file-upload-button:hover,
+/* Hover */
 .simple-file::file-selector-button:hover {
-    background: #333333; 
-    color: #ffffff;
+    background: #333333;
 }
