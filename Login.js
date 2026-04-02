@@ -57,20 +57,17 @@ function register() {
     mostrarMensaje("mensajeRegistro", "Completa los campos obligatorios");
     return;
   }
-// Captura de los nuevos campos de vehículo y documentos
-  const modelo = document.getElementById("regModelo").value;
+const modelo = document.getElementById("regModelo").value;
   const color = document.getElementById("regColor").value;
   const anio = document.getElementById("regAnio").value;
-  const placas = document.getElementById("regPlacas").value; // <-- NUEVO
+  const placas = document.getElementById("regPlacas").value; // <-- Capturar placas
   const fotoCarro = document.getElementById("regFotoCarro").files[0];
   const documento = document.getElementById("regDocumento").files[0];
 
-  // Agregamos 'placas' a la validación
   if (!modelo || !color || !anio || !placas || !fotoCarro || !documento) {
-      mostrarMensaje("mensajeRegistro", "Por seguridad, completa todos los datos del vehículo, placas y sube tus documentos.", "error");
+      mostrarMensaje("mensajeRegistro", "Por seguridad, completa todos los datos del vehículo y sube tus documentos.", "error");
       return;
   }
-
   // Validación de fecha
   const dia = document.querySelector("#selectDia .selected").textContent;
   const mes = document.querySelector("#selectMes .selected").textContent;
@@ -282,6 +279,20 @@ onAuthStateChanged(auth, (user) => {
     }
   }
 });
+function formatearPlacas(input) {
+    // Convierte a mayúsculas y quita todo lo que no sea letra o número
+    let valor = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    let formateado = '';
+
+    // Formato Nuevo León: 3 letras - 3 números - 1 letra (AAA-111-A)
+    if (valor.length > 0) formateado += valor.substring(0, 3);
+    if (valor.length > 3) formateado += '-' + valor.substring(3, 6);
+    if (valor.length > 6) formateado += '-' + valor.substring(6, 7);
+
+    input.value = formateado;
+}
+
+
 
 // ----------------- EXPOSICIÓN GLOBAL AL HTML (Solo 1 vez) -----------------
 window.login = login;
@@ -293,20 +304,6 @@ window.cerrarModal = cerrarModal;
 window.abrirRegistro = abrirRegistro;
 window.cerrarRegistro = cerrarRegistro;
 window.cerrarSesion = cerrarSesion;
+window.formatearPlacas = formatearPlacas;
 
 
-function actualizarNombreArchivo(input, labelId) {
-    const label = document.getElementById(labelId);
-    if (input.files && input.files.length > 0) {
-        // Si hay archivo, muestra el nombre y cambia el diseño a verde
-        label.textContent = "✅ " + input.files[0].name;
-        label.classList.add("archivo-ok");
-    } else {
-        // Si cancela, regresa al estado original
-        label.textContent = labelId === 'lblFotoCarro' ? "📷 Seleccionar imagen del vehículo" : "📄 Subir documento oficial";
-        label.classList.remove("archivo-ok");
-    }
-}
-
-// ⚠️ IMPORTANTE: No olvides exponerla al final de tu Login.js junto con las demás:
-window.actualizarNombreArchivo = actualizarNombreArchivo;
