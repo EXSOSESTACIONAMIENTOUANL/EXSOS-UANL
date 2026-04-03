@@ -54,23 +54,25 @@
 
             <h3 style="margin-top: 15px; font-size: 16px; color: #fff; text-align: left;">Datos del Vehículo</h3>
             <input type="text" id="regModelo" placeholder="Modelo del carro (ej. Jetta)">
+            <input type="text" id="regColor" placeholder="Color del carro">
+            <input type="number" id="regAnio" placeholder="Año del carro (ej. 2020)" min="1980" max="2027">
             <input type="text" id="regPlacas" placeholder="Placas (ej. AAA-111-A)" maxlength="9" oninput="formatearPlacas(this)">
 
             <h3 style="margin-top: 10px; font-size: 16px; color: #fff; text-align: left;">Foto Frontal del Carro</h3>
             <div class="file-box">
-                <label for="regFotoCarro" id="labelCarro" class="file-btn" style="background: black; color: white; padding: 5px 10px; border-radius: 5px; cursor: pointer;">Seleccionar archivo</label>
-                <span class="file-texto" id="textoCarro" style="color: white; margin-left: 10px;">Ningún archivo...</span>
+                <label for="regFotoCarro" id="labelCarro" class="file-btn">Seleccionar archivo</label>
+                <span class="file-texto" id="textoCarro">Ningún archivo...</span>
                 <input type="file" id="regFotoCarro" accept="image/*" style="display: none;" onchange="document.getElementById('textoCarro').textContent = this.files[0] ? this.files[0].name : 'Ningún archivo...'">
             </div>
 
             <h3 style="margin-top: 10px; font-size: 16px; color: #fff; text-align: left;">Verificación de Identidad - INE</h3>
-            <div class="file-box" style="margin-bottom: 15px;">
-                 <label for="regDocumento" id="labelINE" class="file-btn" style="background: black; color: white; padding: 5px 10px; border-radius: 5px; cursor: pointer;">Seleccionar archivo</label>
-                <span class="file-texto" id="textoINE" style="color: white; margin-left: 10px;">Ningún archivo...</span>
+            <div class="file-box">
+                 <label for="regDocumento" id="labelINE" class="file-btn">Seleccionar archivo</label>
+                <span class="file-texto" id="textoINE">Ningún archivo...</span>
                 <input type="file" id="regDocumento" accept="image/*,.pdf" style="display: none;" onchange="document.getElementById('textoINE').textContent = this.files[0] ? this.files[0].name : 'Ningún archivo...'">
             </div>
 
-            <button class="btn-crear" onclick="register()">Crear una cuenta</button>
+            <div id="recaptcha-container" style="margin: 15px 0; display: flex; justify-content: center;"></div>
 
             <div id="seccionSms" style="display:none; margin-top: 10px; border-top: 1px solid #555; padding-top: 15px;">
                 <h3 style="color: white; font-size: 16px; text-align: left;">Verifica tu Teléfono</h3>
@@ -78,6 +80,7 @@
                 <button type="button" onclick="verificarCodigoSms()" style="background: #28a745; width: 100%; margin-top:10px; border:none; padding:10px; border-radius:5px; color:white; cursor:pointer;">Confirmar Código SMS</button>
             </div>
 
+            <button class="btn-crear" onclick="register()">Crear una cuenta</button>
             <div id="mensajeRegistro" class="mensaje"></div>
 
             <p class="login-link">
@@ -88,8 +91,6 @@
         </div>
     </div>
 
-    <div id="recaptcha-container"></div>
-    
     <script type="module" src="Login.js"></script>
 </body>
 </html>
