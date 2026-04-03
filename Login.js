@@ -1,10 +1,6 @@
 /* ==========================================
-   Login.js - VERSIÓN FINAL DEFINITIVA
-   (Email Link + Validaciones Estrictas + Link SMS)
-   ========================================== */
-/* ==========================================
-   Login.js - VERSIÓN FINAL DEFINITIVA
-   (Proyecto de Pruebas - Cuotas Restablecidas)
+   Login.js - VERSIÓN FINAL (Flujo en 2 Pasos)
+   Paso 1: Solo Correo -> Paso 2: Resto de Datos + SMS
    ========================================== */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -16,7 +12,6 @@ import {
     updatePassword, linkWithPhoneNumber
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-// NUEVA CONFIGURACIÓN: exsos-pruebas
 const firebaseConfig = {
   apiKey: "AIzaSyCjlT5tS1iEWvYzSIHRzg3jQLnyq5AAFJk",
   authDomain: "exsos-pruebas.firebaseapp.com",
@@ -52,7 +47,7 @@ function login() {
         .catch(() => mostrarMensaje("mensajeLogin", "Credenciales incorrectas"));
 }
 
-// --- PASO 1: VERIFICAR EMAIL (MANDA EL LINK) ---
+// --- PASO 1: VERIFICAR EMAIL (SOLO SE VE EL INPUT DE CORREO) ---
 async function iniciarVerificacionCorreo() {
     const email = document.getElementById("regEmail").value;
     const btn = document.querySelector(".btn-crear");
@@ -71,55 +66,82 @@ async function iniciarVerificacionCorreo() {
         await sendSignInLinkToEmail(auth, email, actionCodeSettings);
         window.localStorage.setItem('emailParaRegistro', email);
         
-        mostrarMensaje("mensajeRegistro", "¡Enlace enviado! Revisa tu correo y haz clic en el link para continuar.", "ok");
+        mostrarMensaje("mensajeRegistro", "¡Enlace enviado! Revisa tu correo y haz clic en el link.", "ok");
     } catch (error) {
         btn.disabled = false;
         btn.innerText = "Verificar Correo";
-        mostrarMensaje("mensajeRegistro", "Error al enviar el link. " + error.message);
+        mostrarMensaje("mensajeRegistro", "Error al enviar el link. " + error.code);
     }
 }
 
-// --- PASO 2: VALIDAR TODOS LOS DATOS Y ENVIAR SMS ---
+// --- PASO 2: EL USUARIO REGRESA DEL CORREO (SE MUESTRA TODO EL FORMULARIO) ---
+window.addEventListener("load", async () => {
+    // Cargar opciones de fechas
+    const dias = Array.from({length: 31}, (_, i) => i + 1);
+    const meses = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+    const actual = new Date().getFullYear();
+    const anios = [];
+    for(let i = actual - 18; i >= actual - 80; i--) anios.push(i);
+
+    crearOpciones("selectDia", dias);
+    crearOpciones("selectMes", meses);
+    crearOpciones("selectAnio", anios);
+
+    // ¿Viene del enlace del correo?
+    if (isSignInWithEmailLink(auth, window.location.href)) {
+        let email = window.localStorage.getItem('emailParaRegistro');
+        if (!email) email = window.prompt('Confirma tu correo para continuar:');
+
+        try {
+            await signInWithEmailLink(auth, email, window.location.href);
+            window.localStorage.removeItem('emailParaRegistro');
+
+            // Abrimos el modal automáticamente
+            document.getElementById("modalRegistro").style.display = "flex";
+            document.getElementById("loginCard").classList.add("oculto");
+
+            // AHORA SÍ, MOSTRAMOS EL RESTO DE LOS DATOS
+            document.getElementById("datosExtra").style.display = "block";
+            
+            document.getElementById("regEmail").value = email;
+            document.getElementById("regEmail").disabled = true; 
+            
+            mostrarMensaje("mensajeRegistro", "Correo verificado. Ahora completa el resto de tus datos.", "ok");
+            
+            // El botón ahora sirve para validar datos y mandar SMS
+            const btn = document.querySelector(".btn-crear");
+            btn.innerText = "Finalizar y enviar SMS";
+            btn.onclick = finalizarRegistro; 
+            btn.disabled = false;
+        } catch (error) {
+            mostrarMensaje("mensajeLogin", "El enlace expiró o es inválido.");
+        }
+    }
+});
+
+// --- PASO 3: VALIDAR DATOS EXTRA Y ENVIAR SMS ---
 async function finalizarRegistro() {
-    // Obtenemos todos los campos
     const nombre = document.getElementById("regNombre").value.trim();
     const password = document.getElementById("regPassword").value;
     const telefono = document.getElementById("regTelefono").value.trim();
-    
     const modelo = document.getElementById("regModelo").value.trim();
     const color = document.getElementById("regColor").value.trim();
     const anioCarro = document.getElementById("regAnio").value.trim();
     const placas = document.getElementById("regPlacas").value.trim();
-
     const fotoCarro = document.getElementById("regFotoCarro").files[0];
     const documento = document.getElementById("regDocumento").files[0];
     const btn = document.querySelector(".btn-crear");
-
     const dia = document.querySelector("#selectDia .selected").innerText.trim();
     const mes = document.querySelector("#selectMes .selected").innerText.trim();
     const anio = document.querySelector("#selectAnio .selected").innerText.trim();
 
-    // CANDADO 1: Validar textos
-    if (!nombre || !password || !modelo || !color || !anioCarro || !placas) {
-        return mostrarMensaje("mensajeRegistro", "Faltan datos. Completa todos los campos de texto.");
-    }
+    // Validaciones estrictas
+    if (!nombre || !password || !modelo || !color || !anioCarro || !placas) return mostrarMensaje("mensajeRegistro", "Completa todos los campos de texto.");
+    if (password.length < 6) return mostrarMensaje("mensajeRegistro", "La contraseña debe tener al menos 6 caracteres.");
+    if (telefono.length < 10) return mostrarMensaje("mensajeRegistro", "El número debe tener 10 dígitos.");
+    if (dia === "Día" || mes === "Mes" || anio === "Año") return mostrarMensaje("mensajeRegistro", "Selecciona tu fecha de nacimiento.");
+    if (!fotoCarro || !documento) return mostrarMensaje("mensajeRegistro", "Falta subir la foto del carro o el INE.");
 
-    // CANDADO 2: Validar número
-    if (telefono.length < 10) {
-        return mostrarMensaje("mensajeRegistro", "El número de teléfono debe tener 10 dígitos.");
-    }
-
-    // CANDADO 3: Validar Fechas
-    if (dia === "Día" || mes === "Mes" || anio === "Año") {
-        return mostrarMensaje("mensajeRegistro", "Selecciona tu fecha de nacimiento completa.");
-    }
-
-    // CANDADO 4: Validar Fotos
-    if (!fotoCarro || !documento) {
-        return mostrarMensaje("mensajeRegistro", "Falta subir la foto del carro o el INE.");
-    }
-
-    // Desactivamos el botón y enviamos el SMS
     btn.disabled = true;
     btn.innerText = "Enviando SMS...";
 
@@ -128,43 +150,55 @@ async function finalizarRegistro() {
             window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { 'size': 'normal' });
         }
         const numeroCompleto = "+52" + telefono;
-        
-        // VINCULAMOS el teléfono al usuario que acaba de confirmar su correo
         confirmationResult = await linkWithPhoneNumber(auth.currentUser, numeroCompleto, window.recaptchaVerifier);
         
         document.getElementById("seccionSms").style.display = "block";
-        mostrarMensaje("mensajeRegistro", "Código SMS enviado al celular.", "ok");
+        mostrarMensaje("mensajeRegistro", "Código SMS enviado.", "ok");
     } catch (error) {
         btn.disabled = false;
-        btn.innerText = "Enviar SMS de verificación";
-        mostrarMensaje("mensajeRegistro", "Error SMS: Verifica que el número sea correcto.");
-        console.error("Error al enviar SMS: ", error);
+        btn.innerText = "Finalizar y enviar SMS";
+        mostrarMensaje("mensajeRegistro", "Error Firebase: " + error.code);
     }
 }
 
-// --- PASO 3: CONFIRMAR SMS Y GUARDAR CONTRASEÑA ---
+// --- PASO 4: CONFIRMAR SMS Y CREAR CUENTA ---
 async function verificarCodigoSms() {
     const codigo = document.getElementById("codigoSms").value;
     const password = document.getElementById("regPassword").value;
 
     try {
-        // 1. Confirmamos el código SMS
         await confirmationResult.confirm(codigo);
-        
-        // 2. Le asignamos la contraseña al usuario para que pueda iniciar sesión después
         await updatePassword(auth.currentUser, password);
         
-        mostrarMensaje("mensajeRegistro", "¡Cuenta creada y verificada exitosamente!", "ok");
-        
-        // Como ya está verificado, lo mandamos al Home directo
+        mostrarMensaje("mensajeRegistro", "¡Cuenta creada exitosamente!", "ok");
         setTimeout(() => { window.location.href = "Home.html"; }, 3000);
     } catch (error) {
-        mostrarMensaje("mensajeRegistro", "Código SMS incorrecto o error al crear.");
-        console.error(error);
+        mostrarMensaje("mensajeRegistro", "Error SMS: " + error.code);
     }
 }
 
-// --- UTILIDADES (PLACAS, FECHAS, MODALES) ---
+// --- FUNCIONES DE INTERFAZ (BOTONES, MODALES, FECHAS) ---
+function abrirRegistro() {
+    document.getElementById("modalRegistro").style.display = "flex";
+    document.getElementById("loginCard").classList.add("oculto");
+    
+    // Por defecto ocultamos los datos extra (Paso 1)
+    const datosExtra = document.getElementById("datosExtra");
+    if (datosExtra) datosExtra.style.display = "none";
+    document.getElementById("seccionSms").style.display = "none";
+
+    // Reiniciamos el botón
+    const btn = document.querySelector(".btn-crear");
+    btn.innerText = "Verificar Correo";
+    btn.disabled = false;
+    btn.onclick = iniciarVerificacionCorreo;
+}
+
+function cerrarRegistro() {
+    document.getElementById("modalRegistro").style.display = "none";
+    document.getElementById("loginCard").classList.remove("oculto");
+}
+
 function formatearPlacas(input) {
     let valor = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
     let formateado = '';
@@ -178,16 +212,13 @@ function actualizarDias() {
     const mes = document.querySelector("#selectMes .selected").textContent;
     const anio = document.querySelector("#selectAnio .selected").textContent;
     if (mes === "Mes" || anio === "Año") return;
-
     const mesesLista = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
     const mesNumero = mesesLista.indexOf(mes);
     const diasMes = new Date(anio, mesNumero + 1, 0).getDate();
     const options = document.querySelector("#selectDia .options");
     options.innerHTML = ""; 
-
     for (let i = 1; i <= diasMes; i++) {
-        const div = document.createElement("div");
-        div.textContent = i;
+        const div = document.createElement("div"); div.textContent = i;
         div.addEventListener("click", () => {
             document.querySelector("#selectDia .selected").textContent = i;
             document.getElementById("selectDia").classList.remove("active");
@@ -202,8 +233,7 @@ function crearOpciones(selectId, datos) {
     const selected = select.querySelector(".selected");
     const options = select.querySelector(".options");
     datos.forEach(valor => {
-        const div = document.createElement("div");
-        div.textContent = valor;
+        const div = document.createElement("div"); div.textContent = valor;
         div.addEventListener("click", () => {
             selected.textContent = valor;
             select.classList.remove("active");
@@ -218,45 +248,6 @@ function crearOpciones(selectId, datos) {
     });
 }
 
-// --- EVENTOS AL CARGAR LA PÁGINA ---
-window.addEventListener("load", async () => {
-    // 1. Cargar Fechas
-    const dias = Array.from({length: 31}, (_, i) => i + 1);
-    const meses = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
-    const actual = new Date().getFullYear();
-    const anios = [];
-    for(let i = actual - 18; i >= actual - 80; i--) anios.push(i);
-
-    crearOpciones("selectDia", dias);
-    crearOpciones("selectMes", meses);
-    crearOpciones("selectAnio", anios);
-
-    // 2. Detectar si viene del Link del Correo
-    if (isSignInWithEmailLink(auth, window.location.href)) {
-        let email = window.localStorage.getItem('emailParaRegistro');
-        if (!email) email = window.prompt('Confirma tu correo para continuar:');
-
-        try {
-            await signInWithEmailLink(auth, email, window.location.href);
-            window.localStorage.removeItem('emailParaRegistro');
-
-            abrirRegistro(); 
-            document.getElementById("regEmail").value = email;
-            document.getElementById("regEmail").disabled = true; // Bloquea el correo
-            
-            mostrarMensaje("mensajeRegistro", "Correo verificado. Ahora completa todos tus datos.", "ok");
-            
-            // CAMBIO DE BOTÓN: Ahora valida todo y manda SMS
-            const btn = document.querySelector(".btn-crear");
-            btn.innerText = "Enviar SMS de verificación";
-            btn.onclick = finalizarRegistro; 
-        } catch (error) {
-            mostrarMensaje("mensajeLogin", "El enlace expiró o es inválido.");
-        }
-    }
-});
-
-// Cierra los dropdowns de fecha si haces clic afuera
 document.addEventListener("click", () => {
     document.querySelectorAll(".custom-select").forEach(s => s.classList.remove("active"));
 });
@@ -271,24 +262,12 @@ function mostrarMensaje(id, texto, tipo="error") {
     }
 }
 
-function abrirRegistro() {
-    document.getElementById("modalRegistro").style.display = "flex";
-    document.getElementById("loginCard").classList.add("oculto");
-}
-
-function cerrarRegistro() {
-    document.getElementById("modalRegistro").style.display = "none";
-    document.getElementById("loginCard").classList.remove("oculto");
-}
-
 onAuthStateChanged(auth, (user) => {
-    // Si viene de iniciar sesión normal o acaba de crear la cuenta y está verificado
-    if (user && user.emailVerified && user.phoneNumber) {
+    if (user && user.emailVerified && user.phoneNumber && !isSignInWithEmailLink(auth, window.location.href)) {
         window.location.href = "Home.html";
     }
 });
 
-// --- RECUPERAR CONTRASEÑA ---
 function enviarReset(){
   const email = document.getElementById("resetEmail").value;
   if(!email) return mostrarMensaje("mensajeReset", "Escribe tu correo");
@@ -297,7 +276,7 @@ function enviarReset(){
     .catch(err => mostrarMensaje("mensajeReset", "Error: " + err.code));
 }
 
-// --- EXPOSICIÓN GLOBAL ---
+// EXPOSICIÓN GLOBAL
 window.login = login;
 window.register = iniciarVerificacionCorreo; 
 window.verificarCodigoSms = verificarCodigoSms;
