@@ -1,15 +1,15 @@
 /* ==========================================
-   Login.js - VERSIÓN FINAL CORREGIDA
-   (Fechas, Placas, Validación Estricta, Email Link + SMS)
+   Login.js - VERSIÓN FINAL DEFINITIVA
+   (Email Link + Validaciones Estrictas + Link SMS)
    ========================================== */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { 
-    getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, 
-    sendPasswordResetEmail, setPersistence, browserLocalPersistence, 
-    browserSessionPersistence, onAuthStateChanged, signOut, 
-    RecaptchaVerifier, signInWithPhoneNumber,
-    sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink 
+    getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, 
+    setPersistence, browserLocalPersistence, browserSessionPersistence, 
+    onAuthStateChanged, signOut, RecaptchaVerifier,
+    sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink,
+    updatePassword, linkWithPhoneNumber // <-- NUEVAS FUNCIONES IMPORTADAS
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -72,9 +72,8 @@ async function iniciarVerificacionCorreo() {
 }
 
 // --- PASO 2: VALIDAR TODOS LOS DATOS Y ENVIAR SMS ---
-// --- PASO 2: VALIDAR TODOS LOS DATOS Y ENVIAR SMS ---
 async function finalizarRegistro() {
-    // Obtenemos absolutamente todos los campos
+    // Obtenemos todos los campos
     const nombre = document.getElementById("regNombre").value.trim();
     const password = document.getElementById("regPassword").value;
     const telefono = document.getElementById("regTelefono").value.trim();
@@ -92,12 +91,12 @@ async function finalizarRegistro() {
     const mes = document.querySelector("#selectMes .selected").innerText.trim();
     const anio = document.querySelector("#selectAnio .selected").innerText.trim();
 
-    // CANDADO 1: Validar campos de texto (Si falta UNO, se detiene)
+    // CANDADO 1: Validar textos
     if (!nombre || !password || !modelo || !color || !anioCarro || !placas) {
         return mostrarMensaje("mensajeRegistro", "Faltan datos. Completa todos los campos de texto.");
     }
 
-    // CANDADO 2: Validar que el teléfono tenga exactamente 10 dígitos
+    // CANDADO 2: Validar número
     if (telefono.length < 10) {
         return mostrarMensaje("mensajeRegistro", "El número de teléfono debe tener 10 dígitos.");
     }
@@ -107,12 +106,12 @@ async function finalizarRegistro() {
         return mostrarMensaje("mensajeRegistro", "Selecciona tu fecha de nacimiento completa.");
     }
 
-    // CANDADO 4: Validar Archivos (Fotos)
+    // CANDADO 4: Validar Fotos
     if (!fotoCarro || !documento) {
         return mostrarMensaje("mensajeRegistro", "Falta subir la foto del carro o el INE.");
     }
 
-    // Si pasa todos los candados, desactivamos el botón y enviamos el SMS
+    // Desactivamos el botón y enviamos el SMS
     btn.disabled = true;
     btn.innerText = "Enviando SMS...";
 
@@ -121,7 +120,9 @@ async function finalizarRegistro() {
             window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { 'size': 'normal' });
         }
         const numeroCompleto = "+52" + telefono;
-        confirmationResult = await signInWithPhoneNumber(auth, numeroCompleto, window.recaptchaVerifier);
+        
+        // VINCULAMOS el teléfono al usuario que acaba de confirmar su correo
+        confirmationResult = await linkWithPhoneNumber(auth.currentUser, numeroCompleto, window.recaptchaVerifier);
         
         document.getElementById("seccionSms").style.display = "block";
         mostrarMensaje("mensajeRegistro", "Código SMS enviado al celular.", "ok");
@@ -133,26 +134,29 @@ async function finalizarRegistro() {
     }
 }
 
-// --- PASO 3: CONFIRMAR SMS Y CREAR USUARIO EN FIREBASE ---
+// --- PASO 3: CONFIRMAR SMS Y GUARDAR CONTRASEÑA ---
 async function verificarCodigoSms() {
     const codigo = document.getElementById("codigoSms").value;
-    const email = document.getElementById("regEmail").value;
     const password = document.getElementById("regPassword").value;
 
     try {
+        // 1. Confirmamos el código SMS
         await confirmationResult.confirm(codigo);
-        // Al usar email y password aquí, automáticamente Firebase asume que el correo ya está verificado 
-        // porque viene del flujo de Email Link anterior.
-        await createUserWithEmailAndPassword(auth, email, password);
         
-        mostrarMensaje("mensajeRegistro", "¡Cuenta creada exitosamente!", "ok");
-        setTimeout(() => { location.reload(); }, 3000);
+        // 2. Le asignamos la contraseña al usuario para que pueda iniciar sesión después
+        await updatePassword(auth.currentUser, password);
+        
+        mostrarMensaje("mensajeRegistro", "¡Cuenta creada y verificada exitosamente!", "ok");
+        
+        // Como ya está verificado, lo mandamos al Home directo
+        setTimeout(() => { window.location.href = "Home.html"; }, 3000);
     } catch (error) {
         mostrarMensaje("mensajeRegistro", "Código SMS incorrecto o error al crear.");
+        console.error(error);
     }
 }
 
-// --- UTILIDADES RESTAURADAS (PLACAS, FECHAS, MODALES) ---
+// --- UTILIDADES (PLACAS, FECHAS, MODALES) ---
 function formatearPlacas(input) {
     let valor = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
     let formateado = '';
@@ -208,7 +212,7 @@ function crearOpciones(selectId, datos) {
 
 // --- EVENTOS AL CARGAR LA PÁGINA ---
 window.addEventListener("load", async () => {
-    // 1. Cargar Fechas (Esto lo había borrado por error)
+    // 1. Cargar Fechas
     const dias = Array.from({length: 31}, (_, i) => i + 1);
     const meses = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
     const actual = new Date().getFullYear();
@@ -270,7 +274,10 @@ function cerrarRegistro() {
 }
 
 onAuthStateChanged(auth, (user) => {
-    if (user && user.emailVerified) window.location.href = "Home.html";
+    // Si viene de iniciar sesión normal o acaba de crear la cuenta y está verificado
+    if (user && user.emailVerified && user.phoneNumber) {
+        window.location.href = "Home.html";
+    }
 });
 
 // --- RECUPERAR CONTRASEÑA ---
@@ -286,7 +293,7 @@ function enviarReset(){
 window.login = login;
 window.register = iniciarVerificacionCorreo; 
 window.verificarCodigoSms = verificarCodigoSms;
-window.formatearPlacas = formatearPlacas; // RESTAURADO PARA QUE FUNCIONE EL ONINPUT
+window.formatearPlacas = formatearPlacas;
 window.enviarReset = enviarReset;
 window.abrirModal = () => document.getElementById("modalReset").classList.add("activo");
 window.cerrarModal = () => document.getElementById("modalReset").classList.remove("activo");
