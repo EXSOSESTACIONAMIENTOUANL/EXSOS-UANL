@@ -2,6 +2,10 @@
    Login.js - VERSIÓN FINAL DEFINITIVA
    (Email Link + Validaciones Estrictas + Link SMS)
    ========================================== */
+/* ==========================================
+   Login.js - VERSIÓN FINAL DEFINITIVA
+   (Proyecto de Pruebas - Cuotas Restablecidas)
+   ========================================== */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { 
@@ -9,14 +13,18 @@ import {
     setPersistence, browserLocalPersistence, browserSessionPersistence, 
     onAuthStateChanged, signOut, RecaptchaVerifier,
     sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink,
-    updatePassword, linkWithPhoneNumber // <-- NUEVAS FUNCIONES IMPORTADAS
+    updatePassword, linkWithPhoneNumber
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
+// NUEVA CONFIGURACIÓN: exsos-pruebas
 const firebaseConfig = {
-  apiKey: "AIzaSyB8LeQ1UNG6XqOpVWAMyde05JOvlWRENvU",
-  authDomain: "exsos-login.firebaseapp.com",
-  projectId: "exsos-login",
-  appId: "1:254157261321:web:449f88c3567303afa846d8"
+  apiKey: "AIzaSyCjlT5tS1iEWvYzSIHRzg3jQLnyq5AAFJk",
+  authDomain: "exsos-pruebas.firebaseapp.com",
+  projectId: "exsos-pruebas",
+  storageBucket: "exsos-pruebas.firebasestorage.app",
+  messagingSenderId: "564255524295",
+  appId: "1:564255524295:web:ae4160b7a56304e6acc5e2",
+  measurementId: "G-B3KZX20LYS"
 };
 
 const app = initializeApp(firebaseConfig);
