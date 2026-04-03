@@ -3,7 +3,6 @@
    (Incluye Fechas, Placas, SMS y Firebase)
    ========================================== */
 
-/* Login y Registro unificado - VERSIÓN DEFINITIVA */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { 
     getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, 
@@ -44,7 +43,7 @@ function login() {
     .catch(() => mostrarMensaje("mensajeLogin", "Credenciales incorrectas"));
 }
 
-// --- REGISTRO (PASO 1: SMS) ---
+// --- REGISTRO (PASO 1: VALIDAR Y ENVIAR SMS) ---
 async function register() {
     const email = document.getElementById("regEmail").value;
     const password = document.getElementById("regPassword").value;
@@ -59,19 +58,17 @@ async function register() {
     const mes = document.querySelector("#selectMes .selected").innerText.trim();
     const anio = document.querySelector("#selectAnio .selected").innerText.trim();
 
-    // 1. Validar campos de texto
+    // Validar Textos
     if (!email || !password || telefono.length < 10 || !modelo || !placas) {
         return mostrarMensaje("mensajeRegistro", "Completa todos los campos de texto.");
     }
-
-    // 2. Validar fechas
+    // Validar Fechas
     if (dia === "Día" || mes === "Mes" || anio === "Año") {
         return mostrarMensaje("mensajeRegistro", "Selecciona tu fecha de nacimiento.");
     }
-
-    // 3. Validar archivos (AQUÍ ESTÁ LO QUE QUERÍAS)
+    // Validar Archivos
     if (!fotoCarro || !documento) {
-        return mostrarMensaje("mensajeRegistro", "Falta subir la foto del carro o el INE.");
+        return mostrarMensaje("mensajeRegistro", "Falta subir foto del carro o INE.");
     }
 
     btn.disabled = true;
@@ -93,7 +90,7 @@ async function register() {
     }
 }
 
-// --- VERIFICAR SMS Y CREAR CUENTA ---
+// --- REGISTRO (PASO 2: CONFIRMAR SMS Y CREAR) ---
 async function verificarCodigoSms() {
     const codigo = document.getElementById("codigoSms").value;
     const email = document.getElementById("regEmail").value;
@@ -101,7 +98,6 @@ async function verificarCodigoSms() {
 
     try {
         await confirmationResult.confirm(codigo);
-        // Si el SMS es válido, creamos el usuario
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         await sendEmailVerification(userCredential.user);
         mostrarMensaje("mensajeRegistro", "¡Cuenta creada! Verifica tu email.", "ok");
@@ -111,7 +107,16 @@ async function verificarCodigoSms() {
     }
 }
 
-// --- FORMATO DE PLACAS ---
+// --- RECUPERAR CONTRASEÑA ---
+function enviarReset(){
+  const email = document.getElementById("resetEmail").value;
+  if(!email) return mostrarMensaje("mensajeReset", "Escribe tu correo");
+  sendPasswordResetEmail(auth, email)
+    .then(() => mostrarMensaje("mensajeReset", "Correo enviado", "ok"))
+    .catch(err => mostrarMensaje("mensajeReset", "Error: " + err.code));
+}
+
+// --- UTILIDADES (PLACAS, FECHAS, MODALES) ---
 function formatearPlacas(input) {
     let valor = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
     let formateado = '';
@@ -121,7 +126,6 @@ function formatearPlacas(input) {
     input.value = formateado;
 }
 
-// --- LÓGICA DE LOS SELECTORES DE FECHA ---
 function actualizarDias() {
     const mes = document.querySelector("#selectMes .selected").textContent;
     const anio = document.querySelector("#selectAnio .selected").textContent;
@@ -182,7 +186,6 @@ document.addEventListener("click", () => {
     document.querySelectorAll(".custom-select").forEach(s => s.classList.remove("active"));
 });
 
-// --- MENSAJES Y RECUPERAR CONTRASEÑA ---
 function mostrarMensaje(id, texto, tipo="error") {
     const box = document.getElementById(id);
     if(box) {
@@ -191,14 +194,6 @@ function mostrarMensaje(id, texto, tipo="error") {
         box.style.display = "block";
         setTimeout(() => { box.style.display = "none"; }, 4000);
     }
-}
-
-function enviarReset(){
-  const email = document.getElementById("resetEmail").value;
-  if(!email) return mostrarMensaje("mensajeReset", "Escribe tu correo");
-  sendPasswordResetEmail(auth, email)
-    .then(() => mostrarMensaje("mensajeReset", "Correo enviado", "ok"))
-    .catch(err => mostrarMensaje("mensajeReset", "Error: " + err.code));
 }
 
 function abrirRegistro() {
@@ -215,7 +210,7 @@ onAuthStateChanged(auth, (user) => {
     if (user && user.emailVerified) window.location.href = "Home.html";
 });
 
-// --- EXPOSICIÓN GLOBAL PARA EL HTML ---
+// --- EXPOSICIÓN GLOBAL ---
 window.login = login;
 window.register = register;
 window.verificarCodigoSms = verificarCodigoSms;
