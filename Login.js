@@ -72,14 +72,17 @@ async function iniciarVerificacionCorreo() {
 }
 
 // --- PASO 2: VALIDAR TODOS LOS DATOS Y ENVIAR SMS ---
+// --- PASO 2: VALIDAR TODOS LOS DATOS Y ENVIAR SMS ---
 async function finalizarRegistro() {
+    // Obtenemos absolutamente todos los campos
+    const nombre = document.getElementById("regNombre").value.trim();
     const password = document.getElementById("regPassword").value;
-    const telefono = document.getElementById("regTelefono").value;
+    const telefono = document.getElementById("regTelefono").value.trim();
     
-    const modelo = document.getElementById("regModelo").value;
-    const color = document.getElementById("regColor").value;
-    const anioCarro = document.getElementById("regAnio").value;
-    const placas = document.getElementById("regPlacas").value;
+    const modelo = document.getElementById("regModelo").value.trim();
+    const color = document.getElementById("regColor").value.trim();
+    const anioCarro = document.getElementById("regAnio").value.trim();
+    const placas = document.getElementById("regPlacas").value.trim();
 
     const fotoCarro = document.getElementById("regFotoCarro").files[0];
     const documento = document.getElementById("regDocumento").files[0];
@@ -89,19 +92,27 @@ async function finalizarRegistro() {
     const mes = document.querySelector("#selectMes .selected").innerText.trim();
     const anio = document.querySelector("#selectAnio .selected").innerText.trim();
 
-    // 1. Validar campos de texto
-    if (!password || telefono.length < 10 || !modelo || !color || !anioCarro || !placas) {
-        return mostrarMensaje("mensajeRegistro", "Completa todos los campos de texto y teléfono.");
+    // CANDADO 1: Validar campos de texto (Si falta UNO, se detiene)
+    if (!nombre || !password || !modelo || !color || !anioCarro || !placas) {
+        return mostrarMensaje("mensajeRegistro", "Faltan datos. Completa todos los campos de texto.");
     }
-    // 2. Validar Fechas
+
+    // CANDADO 2: Validar que el teléfono tenga exactamente 10 dígitos
+    if (telefono.length < 10) {
+        return mostrarMensaje("mensajeRegistro", "El número de teléfono debe tener 10 dígitos.");
+    }
+
+    // CANDADO 3: Validar Fechas
     if (dia === "Día" || mes === "Mes" || anio === "Año") {
         return mostrarMensaje("mensajeRegistro", "Selecciona tu fecha de nacimiento completa.");
     }
-    // 3. Validar Archivos
+
+    // CANDADO 4: Validar Archivos (Fotos)
     if (!fotoCarro || !documento) {
-        return mostrarMensaje("mensajeRegistro", "Falta subir foto del carro o INE.");
+        return mostrarMensaje("mensajeRegistro", "Falta subir la foto del carro o el INE.");
     }
 
+    // Si pasa todos los candados, desactivamos el botón y enviamos el SMS
     btn.disabled = true;
     btn.innerText = "Enviando SMS...";
 
@@ -117,7 +128,8 @@ async function finalizarRegistro() {
     } catch (error) {
         btn.disabled = false;
         btn.innerText = "Enviar SMS de verificación";
-        mostrarMensaje("mensajeRegistro", "Error SMS: Revisa el número.");
+        mostrarMensaje("mensajeRegistro", "Error SMS: Verifica que el número sea correcto.");
+        console.error("Error al enviar SMS: ", error);
     }
 }
 
