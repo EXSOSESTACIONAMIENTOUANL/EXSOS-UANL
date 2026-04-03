@@ -110,24 +110,41 @@ async function enviarSmsVerificacion(user) {
     const numeroCompleto = "+52" + tel; 
 
     try {
-        if (!window.recaptchaVerifier) {
-            window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-                'size': 'invisible'
-            });
+        // Limpiamos cualquier verifier previo si existe
+        if (window.recaptchaVerifier) {
+            window.recaptchaVerifier.clear();
         }
+
+        // Inicializamos el reCAPTCHA asegurando que use el ID correcto
+        window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+            'size': 'invisible',
+            'callback': (response) => {
+                console.log("reCAPTCHA verificado");
+            }
+        });
+
+        // Renderizar explícitamente para evitar errores de contenedor oculto
+        await window.recaptchaVerifier.render();
 
         const result = await linkWithPhoneNumber(user, numeroCompleto, window.recaptchaVerifier);
         confirmationResult = result;
+        
         document.getElementById("seccionSms").style.display = "block";
-        mostrarMensaje("mensajeRegistro", "¡SMS Enviado! Ingresa el código.", "ok");
+        mostrarMensaje("mensajeRegistro", "¡SMS Enviado!", "ok");
+        
     } catch (error) {
+        console.error("Error detallado:", error);
+        
+        // Si el error es 'auth/reaptcha-check-failed', es porque el div no es visible
+        mostrarMensaje("mensajeRegistro", "Fallo de seguridad (Captcha). Reintenta.");
+        
         if (user) await user.delete();
-        mostrarMensaje("mensajeRegistro", "Error al enviar SMS. Revisa tu número.");
         const btn = document.querySelector("button[onclick='register()']");
         btn.disabled = false;
         btn.innerText = "Crear una cuenta";
     }
 }
+
 
 function verificarCodigoSms() {
     const codigo = document.getElementById("codigoSms").value;
