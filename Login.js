@@ -69,30 +69,36 @@ async function register() {
 
     const numeroCompleto = "+52" + telefono;
 
-    try {
-        if (!window.recaptchaVerifier) {
-            window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-                size: 'normal',
-                callback: (response) => {
-                    console.log("reCAPTCHA resuelto");
-                }
-            });
-        
-            await window.recaptchaVerifier.render(); // 🔥 IMPORTANTE
-        }
-        
+btn.disabled = true;
+btn.innerText = "Enviando SMS...";
 
-        // 🟢 Solo enviamos SMS. No creamos usuario aún.
-        confirmationResult = await signInWithPhoneNumber(auth, numeroCompleto, window.recaptchaVerifier);
-        
-        document.getElementById("seccionSms").style.display = "block";
-        mostrarMensaje("mensajeRegistro", "Código enviado. Verifícalo para crear tu cuenta.", "ok");
-        btn.innerText = "Crear una cuenta";
-    } catch (error) {
-        btn.disabled = false;
-        btn.innerText = "Crear una cuenta";
-        mostrarMensaje("mensajeRegistro", "Error al enviar SMS. Revisa tu número.");
+const numeroCompleto = "+52" + telefono;
+
+try {
+    // 🔥 MOSTRAR PRIMERO
+    document.getElementById("seccionSms").style.display = "block";
+
+    // 🔥 LIMPIAR SI EXISTE
+    if (window.recaptchaVerifier) {
+        window.recaptchaVerifier.clear();
     }
+
+    window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        size: 'normal'
+    });
+
+    await window.recaptchaVerifier.render();
+
+    confirmationResult = await signInWithPhoneNumber(auth, numeroCompleto, window.recaptchaVerifier);
+
+    mostrarMensaje("mensajeRegistro", "Código enviado", "ok");
+
+} catch (error) {
+    console.error(error);
+    btn.disabled = false;
+    btn.innerText = "Crear una cuenta";
+    mostrarMensaje("mensajeRegistro", error.message);
+}
 }
 
 // --- VERIFICAR SMS Y CREAR CUENTA (PASO 2 Y 3) ---
