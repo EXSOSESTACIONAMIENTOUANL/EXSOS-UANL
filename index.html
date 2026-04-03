@@ -127,6 +127,13 @@
         <span class="cerrar" onclick="cerrarRegistro()"></span>
   </div>
 </div>
-<script type="module" src="Login.js"></script>
+<div id="seccionSms" style="display:none; margin-top: 20px; border-top: 1px solid #555; padding-top: 15px;">
+        <h3 style="color: white; font-size: 16px;">Verifica tu Teléfono</h3>
+        <input type="text" id="codigoSms" placeholder="Código de 6 dígitos">
+        <button type="button" onclick="verificarCodigoSms()" style="background: #28a745; margin-top:10px;">Confirmar Código</button>
+    </div>
+
+    <div id="recaptcha-container"></div>
+
+    <script type="module" src="Login.js"></script>
 </body>
-</html>
