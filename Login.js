@@ -117,7 +117,7 @@ async function enviarSmsVerificacion(user) {
 
         // Inicializamos el reCAPTCHA asegurando que use el ID correcto
         window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-           'size': 'normal',
+           'size': 'invisible',
             'callback': (response) => {
                 console.log("reCAPTCHA verificado");
             }
