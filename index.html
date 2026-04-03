@@ -1,139 +1,74 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <title> interfaz IHM </title>
     <link rel="stylesheet" href="Login.css">
     <link rel="icon" href="https://i.postimg.cc/sD1s6x3P/mua.webp">
 </head>
-
 <body>
-
-<div class="fondo">
-
-    <div class="login-card" id="loginCard">
-
-        <div class="avatar">
-            <img src="perfil/perfil2.png" class="login-img">
+    <div class="fondo">
+        <div class="login-card" id="loginCard">
+            <div class="avatar"><img src="perfil/perfil2.png" class="login-img"></div>
+            <h2>Bienvenido</h2>
+            <input type="email" id="email" placeholder="Username">
+            <input type="password" id="password" placeholder="Password">
+            <button onclick="login()">Ingresar</button>
+            <div id="mensajeLogin" class="mensaje"></div>
+            <div class="opciones">
+                <label><input type="checkbox" id="remember"> Recuerdame</label>
+                <a href="#" onclick="abrirModal()">¿Olvidaste tu contraseña?</a>
+            </div>
+            <p class="registro">Aun no eres miembro? <span onclick="abrirRegistro()">Crea una cuenta</span></p>
         </div>
-        
-        <h2>Bienvenido</h2>
-
-        <input type="email" id="email" placeholder="Username">
-        <input type="password" id="password" placeholder="Password">
-
-        <button onclick="login()">Ingresar</button>
-
-        <div id="mensajeLogin" class="mensaje"></div>
-
-        <div class="opciones">
-            <label>
-                <input type="checkbox" id="remember"> Recuerdame
-            </label>
-            <a href="#" onclick="abrirModal()">¿Olvidaste tu contraseña?</a>
-        </div>
-
-        <p class="registro">
-            Aun no eres miembro?
-            <span onclick="abrirRegistro()">Crea una cuenta</span>
-        </p>
-
     </div>
 
-</div>
+    <div id="modalReset" class="modal">
+        <div class="modal-contenido">
+            <h3>Recuperar contraseña</h3>
+            <input type="email" id="resetEmail" placeholder="Ingresa tu correo">
+            <button id="btnReset" onclick="enviarReset()">Enviar correo</button>
+            <div id="loader" class="loader"></div>
+            <div id="mensajeReset" class="mensaje"></div>
+            <span class="cerrar" onclick="cerrarModal()">✖</span>
+        </div>
+    </div>
 
-<!-- MODAL RECUPERAR -->
-<div id="modalReset" class="modal">
+    <div id="modalRegistro" class="modalre">
+        <div class="modal-contenido registro-card">
+            <h2>Crear una cuenta</h2>
+            <input type="email" id="regEmail" placeholder="Correo electrónico">
+            <input type="text" id="regNombre" placeholder="Nombre de usuario">
+            <input type="text" id="regMatricula" placeholder="Matrícula (opcional)">
+            <input type="tel" id="regTelefono" placeholder="Número de teléfono (10 dígitos)" maxlength="10">
+            <input type="password" id="regPassword" placeholder="Contraseña">
 
-  <div class="modal-contenido">
-
-    <h3>Recuperar contraseña</h3>
-
-    <input type="email" id="resetEmail" placeholder="Ingresa tu correo">
-
-    <button id="btnReset" onclick="enviarReset()">Enviar correo</button>
-
-    <!-- LOADER -->
-    <div id="loader" class="loader"></div>
-
-    <!-- MENSAJE -->
-    <div id="mensajeReset" class="mensaje"></div>
-
-    <span class="cerrar" onclick="cerrarModal()">✖</span>
-
-  </div>
-
-</div>
-
-
-
-
-
-<!-- MODAL REGISTRO -->
-<div id="modalRegistro" class="modalre">
-  <div class="modal-contenido registro-card">
-    <h2>Crear una cuenta</h2>
-
-        <h3 style="margin-top: 15px; font-size: 16px; color: #fff; text-align: left;">Datos Personales</h3>
-        <input type="email" id="regEmail" placeholder="Correo electrónico">
-        <input type="text" id="regNombre" placeholder="Nombre de usuario">
-        <input type="text" id="regMatricula" placeholder="Matrícula (opcional)">
-        <input type="tel" id="regTelefono" placeholder="Número de teléfono (10 dígitos)" maxlength="10">
-                  <div id="seccionSms" style="display:none; margin-top: 20px; border-top: 1px solid #555; padding-top: 15px;">
-                <h3 style="font-size: 16px; color: #fff; text-align: left;">Verifica tu Teléfono</h3>
-                
-                <div id="recaptcha-container"></div> 
-            
-                <input type="text" id="codigoSms" placeholder="Código de 6 dígitos" maxlength="6">
-                <button type="button" onclick="verificarCodigoSms()" style="background: #28a745; color: white; padding: 10px; border: none; border-radius: 5px; cursor: pointer; width: 100%;">Confirmar Código SMS</button>
+            <label class="label-fecha">Fecha de Nacimiento</label>
+            <div class="fecha">
+                <div class="custom-select" id="selectDia"><div class="selected">Día</div><div class="options"></div></div>
+                <div class="custom-select" id="selectMes"><div class="selected">Mes</div><div class="options"></div></div>
+                <div class="custom-select" id="selectAnio"><div class="selected">Año</div><div class="options"></div></div>
             </div>
-        <input type="password" id="regPassword" placeholder="Contraseña">
 
-        <h3 style="margin-top: 15px; font-size: 16px; color: #fff; text-align: left;">Fecha de Nacimiento</h3>
-        <div class="fecha">
-            <div class="custom-select" id="selectDia"><div class="selected">Día</div><div class="options"></div></div>
-            <div class="custom-select" id="selectMes"><div class="selected">Mes</div><div class="options"></div></div>
-            <div class="custom-select" id="selectAnio"><div class="selected">Año</div><div class="options"></div></div>
+            <input type="text" id="regModelo" placeholder="Modelo del carro">
+            <input type="text" id="regPlacas" placeholder="Placas (ej. AAA-000-A)" maxlength="9" oninput="formatearPlacas(this)">
+
+            <button class="btn-crear" onclick="register()">Crear una cuenta</button>
+            
+            <div id="seccionSms" style="display:none; margin-top: 20px; border-top: 1px solid #555; padding-top: 15px;">
+                <h3 style="color: white; font-size: 16px;">Verifica tu Teléfono</h3>
+                <input type="text" id="codigoSms" placeholder="Código de 6 dígitos">
+                <button type="button" onclick="verificarCodigoSms()" style="background: #28a745; margin-top:10px;">Confirmar Código</button>
+            </div>
+
+            <div id="mensajeRegistro" class="mensaje"></div>
+            <p class="login-link">¿Ya tienes cuenta? <span onclick="cerrarRegistro()">Inicia sesión</span></p>
+            <span class="cerrar" onclick="cerrarRegistro()">✖</span>
         </div>
-
-        <h3 style="margin-top: 15px; font-size: 16px; color: #fff; text-align: left;">Datos del Vehículo</h3>
-        <input type="text" id="regModelo" placeholder="Modelo del carro (ej. Jetta)">
-        <input type="text" id="regColor" placeholder="Color del carro">
-        <input type="number" id="regAnio" placeholder="Año del carro (ej. 2020)" min="1980" max="2027">
-        <input type="text" id="regPlacas" placeholder="Placas (ej. AAA-111-A)" maxlength="9" oninput="formatearPlacas(this)">
-
-        <h3 style="margin-top: 10px; font-size: 16px; color: #fff; text-align: left;">Foto Frontal del Carro</h3>
-        <div class="file-box">
-            <label for="regFotoCarro" id="labelCarro" class="file-btn">Seleccionar archivo</label>
-            <span class="file-texto" id="textoCarro">Ningún archivo...</span>
-            <input type="file" id="regFotoCarro" accept="image/*" style="display: none;" onchange="document.getElementById('textoCarro').textContent = this.files[0] ? this.files[0].name : 'Ningún archivo...'">
-        </div>
-
-        <h3 style="margin-top: 10px; font-size: 16px; color: #fff; text-align: left;">Verificación de Identidad - INE</h3>
-        <div class="file-box">
-             <label for="regDocumento" id="labelINE" class="file-btn">Seleccionar archivo</label>
-            <span class="file-texto" id="textoINE">Ningún archivo...</span>
-            <input type="file" id="regDocumento" accept="image/*,.pdf" style="display: none;" onchange="document.getElementById('textoINE').textContent = this.files[0] ? this.files[0].name : 'Ningún archivo...'">
-        </div>
-
-        <button class="btn-crear" onclick="register()">Crear una cuenta</button>
-        <div id="mensajeRegistro" class="mensaje"></div>
-
-        <p class="login-link">
-            ¿Ya tienes cuenta? 
-            <span onclick="cerrarRegistro()">Inicia sesión</span>
-        </p>
-        <span class="cerrar" onclick="cerrarRegistro()"></span>
-  </div>
-</div>
-<div id="seccionSms" style="display:none; margin-top: 20px; border-top: 1px solid #555; padding-top: 15px;">
-        <h3 style="color: white; font-size: 16px;">Verifica tu Teléfono</h3>
-        <input type="text" id="codigoSms" placeholder="Código de 6 dígitos">
-        <button type="button" onclick="verificarCodigoSms()" style="background: #28a745; margin-top:10px;">Confirmar Código</button>
     </div>
 
     <div id="recaptcha-container"></div>
 
     <script type="module" src="Login.js"></script>
 </body>
+</html>
