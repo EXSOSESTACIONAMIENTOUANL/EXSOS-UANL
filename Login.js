@@ -48,8 +48,12 @@ async function register() {
     const email = document.getElementById("regEmail").value;
     const password = document.getElementById("regPassword").value;
     const telefono = document.getElementById("regTelefono").value;
+    
     const modelo = document.getElementById("regModelo").value;
+    const color = document.getElementById("regColor").value;
+    const anioCarro = document.getElementById("regAnio").value;
     const placas = document.getElementById("regPlacas").value;
+
     const fotoCarro = document.getElementById("regFotoCarro").files[0];
     const documento = document.getElementById("regDocumento").files[0];
     const btn = document.querySelector(".btn-crear");
@@ -58,15 +62,15 @@ async function register() {
     const mes = document.querySelector("#selectMes .selected").innerText.trim();
     const anio = document.querySelector("#selectAnio .selected").innerText.trim();
 
-    // Validar Textos
-    if (!email || !password || telefono.length < 10 || !modelo || !placas) {
+    // 1. Validar campos de texto (Incluyendo color y año del carro)
+    if (!email || !password || telefono.length < 10 || !modelo || !color || !anioCarro || !placas) {
         return mostrarMensaje("mensajeRegistro", "Completa todos los campos de texto.");
     }
-    // Validar Fechas
+    // 2. Validar Fechas
     if (dia === "Día" || mes === "Mes" || anio === "Año") {
         return mostrarMensaje("mensajeRegistro", "Selecciona tu fecha de nacimiento.");
     }
-    // Validar Archivos
+    // 3. Validar Archivos
     if (!fotoCarro || !documento) {
         return mostrarMensaje("mensajeRegistro", "Falta subir foto del carro o INE.");
     }
@@ -87,6 +91,7 @@ async function register() {
         btn.disabled = false;
         btn.innerText = "Crear una cuenta";
         mostrarMensaje("mensajeRegistro", "Error SMS: Revisa el número.");
+        console.error(error); // Para depurar en consola si falla
     }
 }
 
