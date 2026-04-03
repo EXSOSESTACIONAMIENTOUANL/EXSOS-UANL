@@ -1,4 +1,4 @@
-/* Inicio de sesion de Bryan - Versión Final Optimizada */
+/* Inicio de sesion de Bryan - Versión Corregida y Unificada */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { 
@@ -56,23 +56,15 @@ function login() {
         });
 }
 
-
-
-
-
-
+// --- REGISTRO ---
 async function register() {
-    // 1. Captura de elementos
     const email = document.getElementById("regEmail").value;
     const password = document.getElementById("regPassword").value;
     const telefono = document.getElementById("regTelefono").value;
     const fotoCarro = document.getElementById("regFotoCarro").files[0];
     const documento = document.getElementById("regDocumento").files[0];
-    
-    // Seleccionamos el botón específico que activó la función
     const btn = document.querySelector("button[onclick='register()']");
 
-    // 2. VALIDACIONES
     if (!email || !password || telefono.length < 10) {
         mostrarMensaje("mensajeRegistro", "Correo, contraseña y teléfono (10 dígitos) son obligatorios.");
         return;
@@ -92,92 +84,49 @@ async function register() {
         return;
     }
 
-    // Bloqueo de seguridad
     btn.disabled = true;
     btn.innerText = "Registrando...";
-    mostrarMensaje("mensajeRegistro", "Creando cuenta y enviando SMS...", "ok");
+    mostrarMensaje("mensajeRegistro", "Procesando... no cierres la ventana", "ok");
 
     try {
-        // Crear usuario
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        // Enviar correo (no bloqueante)
         sendEmailVerification(user);
+        await enviarSmsVerificacion(user); 
 
-        // LANZAR SMS
-        await enviarSmsVerificacion(user);
-        
-    } catch (error) {
+    } catch (firebaseError) {
         btn.disabled = false;
         btn.innerText = "Crear una cuenta";
         let mensaje = "Error al registrar";
-        if (error.code === "auth/email-already-in-use") mensaje = "El correo ya está en uso.";
+        if (firebaseError.code === "auth/email-already-in-use") mensaje = "El correo ya está en uso.";
         mostrarMensaje("mensajeRegistro", mensaje);
-        console.error("Error en registro:", error);
     }
 }
 
-// Modificación importante en enviarSmsVerificacion
+// --- SMS LOGIC ---
 async function enviarSmsVerificacion(user) {
     const tel = document.getElementById("regTelefono").value;
     const numeroCompleto = "+52" + tel; 
 
     try {
         if (!window.recaptchaVerifier) {
-            // Usamos 'invisible' pero aseguramos que el ID exista
             window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-                'size': 'invisible',
-                'callback': (response) => { console.log("Recaptcha listo"); }
+                'size': 'invisible'
             });
         }
 
         const result = await linkWithPhoneNumber(user, numeroCompleto, window.recaptchaVerifier);
         confirmationResult = result;
-        
-        // MOSTRAR CAMPOS SMS
         document.getElementById("seccionSms").style.display = "block";
-        mostrarMensaje("mensajeRegistro", "¡SMS Enviado! Ingresa el código abajo.", "ok");
-        
+        mostrarMensaje("mensajeRegistro", "¡SMS Enviado! Ingresa el código.", "ok");
     } catch (error) {
-        console.error("Error detallado SMS:", error);
-        mostrarMensaje("mensajeRegistro", "Error al enviar SMS: " + error.message);
-        
-        // Si el SMS falla, borramos al usuario para que no quede "en uso"
         if (user) await user.delete();
-        
+        mostrarMensaje("mensajeRegistro", "Error al enviar SMS. Revisa tu número.");
         const btn = document.querySelector("button[onclick='register()']");
         btn.disabled = false;
         btn.innerText = "Crear una cuenta";
     }
-}
-
-
-
-
-
-
-
-
-// --- SMS LOGIC ---
-function enviarSmsVerificacion(user) {
-    const tel = document.getElementById("regTelefono").value;
-    const numeroCompleto = "+52" + tel; 
-
-    if (!window.recaptchaVerifier) {
-        window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-            'size': 'invisible'
-        });
-    }
-
-    linkWithPhoneNumber(user, numeroCompleto, window.recaptchaVerifier)
-        .then((result) => {
-            confirmationResult = result;
-            document.getElementById("seccionSms").style.display = "block";
-            mostrarMensaje("mensajeRegistro", "Código SMS enviado al celular", "ok");
-        }).catch((error) => {
-            mostrarMensaje("mensajeRegistro", "Error al enviar SMS. Revisa el número.");
-        });
 }
 
 function verificarCodigoSms() {
@@ -186,7 +135,7 @@ function verificarCodigoSms() {
 
     confirmationResult.confirm(codigo)
         .then(() => {
-            mostrarMensaje("mensajeRegistro", "¡Teléfono verificado! Revisa tu correo.", "ok");
+            mostrarMensaje("mensajeRegistro", "¡Verificado! Revisa tu email.", "ok");
             setTimeout(() => {
                 signOut(auth).then(() => {
                     cerrarRegistro();
@@ -198,7 +147,38 @@ function verificarCodigoSms() {
         });
 }
 
-// --- PLACAS FORMATO NUEVO LEÓN ---
+// --- RECUPERAR CONTRASEÑA ---
+function enviarReset(){
+    const email = document.getElementById("resetEmail").value;
+    const mensaje = document.getElementById("mensajeReset");
+    const loader = document.getElementById("loader");
+    const boton = document.getElementById("btnReset");
+
+    if(!email){
+        mensaje.textContent = "Ingresa tu correo";
+        mensaje.className = "mensaje error";
+        return;
+    }
+
+    loader.style.display = "block";
+    boton.disabled = true;
+
+    sendPasswordResetEmail(auth, email)
+        .then(() => {
+            loader.style.display = "none";
+            mensaje.textContent = "Correo enviado correctamente";
+            mensaje.className = "mensaje ok";
+            boton.disabled = false;
+        })
+        .catch(error => {
+            loader.style.display = "none";
+            mensaje.textContent = "Error: " + error.code;
+            mensaje.className = "mensaje error";
+            boton.disabled = false;
+        });
+}
+
+// --- PLACAS Y MENSAJES ---
 function formatearPlacas(input) {
     let valor = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
     let formateado = '';
@@ -208,7 +188,6 @@ function formatearPlacas(input) {
     input.value = formateado;
 }
 
-// --- AUXILIARES ---
 function mostrarMensaje(id, texto, tipo="error") {
     const box = document.getElementById(id);
     if(!box) return;
@@ -218,6 +197,7 @@ function mostrarMensaje(id, texto, tipo="error") {
     setTimeout(() => { box.style.display = "none"; }, 5000);
 }
 
+// --- MODALES ---
 function abrirRegistro() {
     document.getElementById("modalRegistro").style.display = "flex";
     document.getElementById("loginCard").classList.add("oculto");
@@ -228,24 +208,16 @@ function cerrarRegistro() {
     document.getElementById("loginCard").classList.remove("oculto");
 }
 
-onAuthStateChanged(auth, (user) => {
-    if (user && user.emailVerified) {
-        window.location.href = "Home.html";
-    }
-});
-
-// --- LÓGICA DE SELECTORES DE FECHA ---
+// --- SELECTORES DE FECHA ---
 function actualizarDias() {
     const mes = document.querySelector("#selectMes .selected").textContent;
     const anio = document.querySelector("#selectAnio .selected").textContent;
     if (mes === "Mes" || anio === "Año") return;
-
     const mesesLista = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
     const mesNumero = mesesLista.indexOf(mes);
     const diasMes = new Date(anio, mesNumero + 1, 0).getDate();
     const options = document.querySelector("#selectDia .options");
     options.innerHTML = ""; 
-
     for (let i = 1; i <= diasMes; i++) {
         const div = document.createElement("div");
         div.textContent = i;
@@ -262,7 +234,6 @@ function crearOpciones(selectId, datos) {
     if(!select) return;
     const selected = select.querySelector(".selected");
     const options = select.querySelector(".options");
-
     datos.forEach(valor => {
         const div = document.createElement("div");
         div.textContent = valor;
@@ -273,7 +244,6 @@ function crearOpciones(selectId, datos) {
         });
         options.appendChild(div);
     });
-
     selected.addEventListener("click", (e) => {
         e.stopPropagation(); 
         document.querySelectorAll(".custom-select").forEach(s => s.classList.remove("active"));
@@ -281,25 +251,24 @@ function crearOpciones(selectId, datos) {
     });
 }
 
-// Inicializar las opciones al cargar la página
 window.addEventListener("load", () => {
     const dias = Array.from({length: 31}, (_, i) => i + 1);
     const meses = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
     const actual = new Date().getFullYear();
     const anios = [];
     for(let i = actual - 18; i >= actual - 80; i--) anios.push(i);
-
     crearOpciones("selectDia", dias);
     crearOpciones("selectMes", meses);
     crearOpciones("selectAnio", anios);
 });
 
-// Cerrar selectores si haces clic afuera
+onAuthStateChanged(auth, (user) => {
+    if (user && user.emailVerified) window.location.href = "Home.html";
+});
+
 document.addEventListener("click", () => {
     document.querySelectorAll(".custom-select").forEach(s => s.classList.remove("active"));
 });
-
-
 
 // --- EXPOSICIÓN GLOBAL ---
 window.login = login;
@@ -307,6 +276,7 @@ window.register = register;
 window.verificarCodigoSms = verificarCodigoSms;
 window.abrirRegistro = abrirRegistro;
 window.cerrarRegistro = cerrarRegistro;
+window.enviarReset = enviarReset;
 window.formatearPlacas = formatearPlacas;
 window.abrirModal = () => document.getElementById("modalReset").classList.add("activo");
 window.cerrarModal = () => document.getElementById("modalReset").classList.remove("activo");
