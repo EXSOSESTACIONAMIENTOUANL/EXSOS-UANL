@@ -33,12 +33,15 @@ window.addEventListener("DOMContentLoaded", () => {
 
 onAuthStateChanged(auth, (user) => {
     if(user){
-        cargarPerfil(); // 🔥 ahora se ejecuta cuando Firebase ya sabe quién eres
+        cargarPerfil(); 
         
-        // NUEVO: Conectar el botón de la pluma al usuario actual
+        // Conectar el botón de la pluma al usuario actual
         if(typeof window.conectarBotonUsuario === "function"){
             window.conectarBotonUsuario(user.uid);
         }
+    } else {
+        // 🔥 SI NO HAY SESIÓN, LO REGRESAMOS AL LOGIN
+        window.location.href = "index.html";
     }
 });
 
