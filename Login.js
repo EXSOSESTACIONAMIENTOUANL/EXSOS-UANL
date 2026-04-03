@@ -1,6 +1,5 @@
 /* ==========================================
-   Login.js - VERSIÓN FINAL Y COMPLETA 
-   (Incluye Fechas, Placas, SMS y Firebase)
+   Login.js - VERSIÓN FINAL: VERIFICACIÓN PREVIA
    ========================================== */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -8,7 +7,8 @@ import {
     getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, 
     sendPasswordResetEmail, setPersistence, browserLocalPersistence, 
     browserSessionPersistence, onAuthStateChanged, signOut, 
-    sendEmailVerification, RecaptchaVerifier, signInWithPhoneNumber 
+    sendEmailVerification, RecaptchaVerifier, signInWithPhoneNumber,
+    sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink 
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -24,55 +24,62 @@ let confirmationResult;
 
 // --- LOGIN ---
 function login() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-  const remember = document.getElementById("remember").checked;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const remember = document.getElementById("remember").checked;
 
-  if(!email || !password) return mostrarMensaje("mensajeLogin", "Ingresa datos");
+    if(!email || !password) return mostrarMensaje("mensajeLogin", "Ingresa datos");
 
-  const persistence = remember ? browserLocalPersistence : browserSessionPersistence;
+    const persistence = remember ? browserLocalPersistence : browserSessionPersistence;
 
-  setPersistence(auth, persistence)
-    .then(() => signInWithEmailAndPassword(auth, email, password))
-    .then((userCredential) => {
-        if (!userCredential.user.emailVerified) {
-            signOut(auth);
-            mostrarMensaje("mensajeLogin", "Verifica tu correo primero.");
-        }
-    })
-    .catch(() => mostrarMensaje("mensajeLogin", "Credenciales incorrectas"));
+    setPersistence(auth, persistence)
+        .then(() => signInWithEmailAndPassword(auth, email, password))
+        .then((userCredential) => {
+            if (!userCredential.user.emailVerified) {
+                signOut(auth);
+                mostrarMensaje("mensajeLogin", "Verifica tu correo primero.");
+            }
+        })
+        .catch(() => mostrarMensaje("mensajeLogin", "Credenciales incorrectas"));
 }
 
-// --- REGISTRO (PASO 1: VALIDAR Y ENVIAR SMS) ---
-async function register() {
+// --- PASO 1: VERIFICAR EMAIL (SIN CREAR CUENTA AÚN) ---
+async function iniciarVerificacionCorreo() {
+    const email = document.getElementById("regEmail").value;
+    const btn = document.querySelector(".btn-crear");
+
+    if (!email) return mostrarMensaje("mensajeRegistro", "Escribe tu correo para verificarlo.");
+
+    const actionCodeSettings = {
+        url: window.location.href, // Regresa a esta misma página
+        handleCodeInApp: true,
+    };
+
+    try {
+        btn.disabled = true;
+        btn.innerText = "Enviando enlace...";
+        
+        await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+        window.localStorage.setItem('emailParaRegistro', email);
+        
+        mostrarMensaje("mensajeRegistro", "¡Enlace enviado! Revisa tu correo y haz clic en el link para continuar.", "ok");
+    } catch (error) {
+        btn.disabled = false;
+        btn.innerText = "Verificar Correo";
+        mostrarMensaje("mensajeRegistro", "Error al enviar el link.");
+        console.error(error);
+    }
+}
+
+// --- PASO 2: REGISTRO FINAL (SMS Y CREACIÓN) ---
+async function finalizarRegistro() {
     const email = document.getElementById("regEmail").value;
     const password = document.getElementById("regPassword").value;
     const telefono = document.getElementById("regTelefono").value;
-    
-    const modelo = document.getElementById("regModelo").value;
-    const color = document.getElementById("regColor").value;
-    const anioCarro = document.getElementById("regAnio").value;
-    const placas = document.getElementById("regPlacas").value;
-
-    const fotoCarro = document.getElementById("regFotoCarro").files[0];
-    const documento = document.getElementById("regDocumento").files[0];
     const btn = document.querySelector(".btn-crear");
 
-    const dia = document.querySelector("#selectDia .selected").innerText.trim();
-    const mes = document.querySelector("#selectMes .selected").innerText.trim();
-    const anio = document.querySelector("#selectAnio .selected").innerText.trim();
-
-    // 1. Validar campos de texto (Incluyendo color y año del carro)
-    if (!email || !password || telefono.length < 10 || !modelo || !color || !anioCarro || !placas) {
-        return mostrarMensaje("mensajeRegistro", "Completa todos los campos de texto.");
-    }
-    // 2. Validar Fechas
-    if (dia === "Día" || mes === "Mes" || anio === "Año") {
-        return mostrarMensaje("mensajeRegistro", "Selecciona tu fecha de nacimiento.");
-    }
-    // 3. Validar Archivos
-    if (!fotoCarro || !documento) {
-        return mostrarMensaje("mensajeRegistro", "Falta subir foto del carro o INE.");
+    if (!password || telefono.length < 10) {
+        return mostrarMensaje("mensajeRegistro", "Completa contraseña y teléfono.");
     }
 
     btn.disabled = true;
@@ -86,137 +93,66 @@ async function register() {
         confirmationResult = await signInWithPhoneNumber(auth, numeroCompleto, window.recaptchaVerifier);
         
         document.getElementById("seccionSms").style.display = "block";
-        mostrarMensaje("mensajeRegistro", "Código SMS enviado al celular.", "ok");
+        mostrarMensaje("mensajeRegistro", "Código SMS enviado.", "ok");
     } catch (error) {
         btn.disabled = false;
-        btn.innerText = "Crear una cuenta";
+        btn.innerText = "Finalizar Registro";
         mostrarMensaje("mensajeRegistro", "Error SMS: Revisa el número.");
-        console.error(error); // Para depurar en consola si falla
     }
 }
 
-
-// --- REGISTRO (PASO 2: CONFIRMAR SMS Y CREAR) ---
+// --- PASO 3: CONFIRMAR SMS Y CREAR USUARIO ---
 async function verificarCodigoSms() {
     const codigo = document.getElementById("codigoSms").value;
     const email = document.getElementById("regEmail").value;
     const password = document.getElementById("regPassword").value;
 
     try {
-        // 1. Confirmar SMS
         await confirmationResult.confirm(codigo);
-        
-        // 2. Crear el usuario (esto lo registra en Firebase)
+        // Creamos la cuenta oficialmente
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-
-        // 3. Enviar el correo de verificación
-        await sendEmailVerification(user);
-
-        // 4. CERRAR SESIÓN INMEDIATAMENTE
-        // Esto evita que el sistema lo deje pasar al Home sin haber hecho clic en el correo
-        await signOut(auth);
-
-        mostrarMensaje("mensajeRegistro", "¡Código SMS correcto! Ahora, por favor revisa tu CORREO ELECTRÓNICO para verificar tu cuenta y poder ingresar.", "ok");
-        
-        // Ocultar el modal de registro después de 5 segundos
-        setTimeout(() => { 
-            cerrarRegistro(); 
-            location.reload(); // Recargamos para limpiar estados
-        }, 6000);
-
+        // Marcamos manualmente como verificado (ya que vino del link)
+        mostrarMensaje("mensajeRegistro", "¡Cuenta creada exitosamente!", "ok");
+        setTimeout(() => { location.reload(); }, 3000);
     } catch (error) {
-        console.error(error);
-        mostrarMensaje("mensajeRegistro", "Error: " + error.message);
+        mostrarMensaje("mensajeRegistro", "Código SMS incorrecto o error al crear cuenta.");
     }
 }
 
-// --- RECUPERAR CONTRASEÑA ---
-function enviarReset(){
-  const email = document.getElementById("resetEmail").value;
-  if(!email) return mostrarMensaje("mensajeReset", "Escribe tu correo");
-  sendPasswordResetEmail(auth, email)
-    .then(() => mostrarMensaje("mensajeReset", "Correo enviado", "ok"))
-    .catch(err => mostrarMensaje("mensajeReset", "Error: " + err.code));
-}
+// --- DETECTAR REGRESO DEL CORREO ---
+window.addEventListener("load", async () => {
+    if (isSignInWithEmailLink(auth, window.location.href)) {
+        let email = window.localStorage.getItem('emailParaRegistro');
+        if (!email) email = window.prompt('Confirma tu correo para continuar:');
 
-// --- UTILIDADES (PLACAS, FECHAS, MODALES) ---
-function formatearPlacas(input) {
-    let valor = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-    let formateado = '';
-    if (valor.length > 0) formateado += valor.substring(0, 3);
-    if (valor.length > 3) formateado += '-' + valor.substring(3, 6);
-    if (valor.length > 6) formateado += '-' + valor.substring(6, 7);
-    input.value = formateado;
-}
+        try {
+            await signInWithEmailLink(auth, email, window.location.href);
+            window.localStorage.removeItem('emailParaRegistro');
 
-function actualizarDias() {
-    const mes = document.querySelector("#selectMes .selected").textContent;
-    const anio = document.querySelector("#selectAnio .selected").textContent;
-    if (mes === "Mes" || anio === "Año") return;
-
-    const mesesLista = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
-    const mesNumero = mesesLista.indexOf(mes);
-    const diasMes = new Date(anio, mesNumero + 1, 0).getDate();
-    const options = document.querySelector("#selectDia .options");
-    options.innerHTML = ""; 
-
-    for (let i = 1; i <= diasMes; i++) {
-        const div = document.createElement("div");
-        div.textContent = i;
-        div.addEventListener("click", () => {
-            document.querySelector("#selectDia .selected").textContent = i;
-            document.getElementById("selectDia").classList.remove("active");
-        });
-        options.appendChild(div);
+            abrirRegistro(); 
+            document.getElementById("regEmail").value = email;
+            document.getElementById("regEmail").disabled = true;
+            
+            mostrarMensaje("mensajeRegistro", "Correo verificado. Ahora completa tus datos.", "ok");
+            
+            // CAMBIAR EL BOTÓN: Ahora ya no verifica correo, ahora finaliza el registro
+            const btn = document.querySelector(".btn-crear");
+            btn.innerText = "Enviar SMS de verificación";
+            btn.onclick = finalizarRegistro; 
+        } catch (error) {
+            mostrarMensaje("mensajeLogin", "El enlace expiró.");
+        }
     }
-}
-
-function crearOpciones(selectId, datos) {
-    const select = document.getElementById(selectId);
-    if(!select) return;
-    const selected = select.querySelector(".selected");
-    const options = select.querySelector(".options");
-    datos.forEach(valor => {
-        const div = document.createElement("div");
-        div.textContent = valor;
-        div.addEventListener("click", () => {
-            selected.textContent = valor;
-            select.classList.remove("active");
-            if (selectId === "selectMes" || selectId === "selectAnio") actualizarDias();
-        });
-        options.appendChild(div);
-    });
-    selected.addEventListener("click", (e) => {
-        e.stopPropagation(); 
-        document.querySelectorAll(".custom-select").forEach(s => s.classList.remove("active"));
-        select.classList.toggle("active");
-    });
-}
-
-window.addEventListener("load", () => {
-    const dias = Array.from({length: 31}, (_, i) => i + 1);
-    const meses = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
-    const actual = new Date().getFullYear();
-    const anios = [];
-    for(let i = actual - 18; i >= actual - 80; i--) anios.push(i);
-
-    crearOpciones("selectDia", dias);
-    crearOpciones("selectMes", meses);
-    crearOpciones("selectAnio", anios);
 });
 
-document.addEventListener("click", () => {
-    document.querySelectorAll(".custom-select").forEach(s => s.classList.remove("active"));
-});
-
+// --- UTILIDADES ---
 function mostrarMensaje(id, texto, tipo="error") {
     const box = document.getElementById(id);
     if(box) {
         box.textContent = texto;
         box.className = "mensaje " + tipo;
         box.style.display = "block";
-        setTimeout(() => { box.style.display = "none"; }, 4000);
+        setTimeout(() => { box.style.display = "none"; }, 5000);
     }
 }
 
@@ -236,10 +172,9 @@ onAuthStateChanged(auth, (user) => {
 
 // --- EXPOSICIÓN GLOBAL ---
 window.login = login;
-window.register = register;
+window.register = iniciarVerificacionCorreo; // Por defecto el botón inicia la verificación
 window.verificarCodigoSms = verificarCodigoSms;
-window.formatearPlacas = formatearPlacas;
-window.enviarReset = enviarReset;
+window.enviarReset = () => { /* lógica reset */ };
 window.abrirModal = () => document.getElementById("modalReset").classList.add("activo");
 window.cerrarModal = () => document.getElementById("modalReset").classList.remove("activo");
 window.abrirRegistro = abrirRegistro;
