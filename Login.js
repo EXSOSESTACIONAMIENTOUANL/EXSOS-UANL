@@ -72,9 +72,15 @@ async function register() {
     try {
         if (!window.recaptchaVerifier) {
             window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-                'size': 'normal'
+                size: 'normal',
+                callback: (response) => {
+                    console.log("reCAPTCHA resuelto");
+                }
             });
+        
+            await window.recaptchaVerifier.render(); // 🔥 IMPORTANTE
         }
+        
 
         // 🟢 Solo enviamos SMS. No creamos usuario aún.
         confirmationResult = await signInWithPhoneNumber(auth, numeroCompleto, window.recaptchaVerifier);
