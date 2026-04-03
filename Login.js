@@ -3,6 +3,7 @@
    (Incluye Fechas, Placas, SMS y Firebase)
    ========================================== */
 
+/* Login y Registro unificado - VERSIÓN DEFINITIVA */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { 
     getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, 
@@ -48,18 +49,29 @@ async function register() {
     const email = document.getElementById("regEmail").value;
     const password = document.getElementById("regPassword").value;
     const telefono = document.getElementById("regTelefono").value;
+    const modelo = document.getElementById("regModelo").value;
+    const placas = document.getElementById("regPlacas").value;
+    const fotoCarro = document.getElementById("regFotoCarro").files[0];
+    const documento = document.getElementById("regDocumento").files[0];
     const btn = document.querySelector(".btn-crear");
 
     const dia = document.querySelector("#selectDia .selected").innerText.trim();
     const mes = document.querySelector("#selectMes .selected").innerText.trim();
     const anio = document.querySelector("#selectAnio .selected").innerText.trim();
 
+    // 1. Validar campos de texto
+    if (!email || !password || telefono.length < 10 || !modelo || !placas) {
+        return mostrarMensaje("mensajeRegistro", "Completa todos los campos de texto.");
+    }
+
+    // 2. Validar fechas
     if (dia === "Día" || mes === "Mes" || anio === "Año") {
         return mostrarMensaje("mensajeRegistro", "Selecciona tu fecha de nacimiento.");
     }
 
-    if (!email || !password || telefono.length < 10) {
-        return mostrarMensaje("mensajeRegistro", "Completa todos los campos (Teléfono 10 dígitos).");
+    // 3. Validar archivos (AQUÍ ESTÁ LO QUE QUERÍAS)
+    if (!fotoCarro || !documento) {
+        return mostrarMensaje("mensajeRegistro", "Falta subir la foto del carro o el INE.");
     }
 
     btn.disabled = true;
@@ -73,7 +85,7 @@ async function register() {
         confirmationResult = await signInWithPhoneNumber(auth, numeroCompleto, window.recaptchaVerifier);
         
         document.getElementById("seccionSms").style.display = "block";
-        mostrarMensaje("mensajeRegistro", "Código enviado al celular.", "ok");
+        mostrarMensaje("mensajeRegistro", "Código SMS enviado al celular.", "ok");
     } catch (error) {
         btn.disabled = false;
         btn.innerText = "Crear una cuenta";
@@ -89,23 +101,14 @@ async function verificarCodigoSms() {
 
     try {
         await confirmationResult.confirm(codigo);
+        // Si el SMS es válido, creamos el usuario
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         await sendEmailVerification(userCredential.user);
-        mostrarMensaje("mensajeRegistro", "Cuenta creada. Verifica tu email.", "ok");
+        mostrarMensaje("mensajeRegistro", "¡Cuenta creada! Verifica tu email.", "ok");
         setTimeout(() => { location.reload(); }, 3000);
     } catch (error) {
         mostrarMensaje("mensajeRegistro", "Código SMS incorrecto.");
     }
-}
-
-// --- RECUPERAR CONTRASEÑA ---
-function enviarReset(){
-  const email = document.getElementById("resetEmail").value;
-  if(!email) return mostrarMensaje("mensajeReset", "Escribe tu correo");
-
-  sendPasswordResetEmail(auth, email)
-    .then(() => mostrarMensaje("mensajeReset", "Correo enviado", "ok"))
-    .catch(err => mostrarMensaje("mensajeReset", "Error: " + err.code));
 }
 
 // --- FORMATO DE PLACAS ---
@@ -179,7 +182,7 @@ document.addEventListener("click", () => {
     document.querySelectorAll(".custom-select").forEach(s => s.classList.remove("active"));
 });
 
-// --- MENSAJES Y MODALES ---
+// --- MENSAJES Y RECUPERAR CONTRASEÑA ---
 function mostrarMensaje(id, texto, tipo="error") {
     const box = document.getElementById(id);
     if(box) {
@@ -188,6 +191,14 @@ function mostrarMensaje(id, texto, tipo="error") {
         box.style.display = "block";
         setTimeout(() => { box.style.display = "none"; }, 4000);
     }
+}
+
+function enviarReset(){
+  const email = document.getElementById("resetEmail").value;
+  if(!email) return mostrarMensaje("mensajeReset", "Escribe tu correo");
+  sendPasswordResetEmail(auth, email)
+    .then(() => mostrarMensaje("mensajeReset", "Correo enviado", "ok"))
+    .catch(err => mostrarMensaje("mensajeReset", "Error: " + err.code));
 }
 
 function abrirRegistro() {
