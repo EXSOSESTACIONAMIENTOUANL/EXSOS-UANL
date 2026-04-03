@@ -95,22 +95,51 @@ async function register() {
     }
 }
 
+
 // --- REGISTRO (PASO 2: CONFIRMAR SMS Y CREAR) ---
 async function verificarCodigoSms() {
     const codigo = document.getElementById("codigoSms").value;
     const email = document.getElementById("regEmail").value;
     const password = document.getElementById("regPassword").value;
 
+    if (!codigo) return mostrarMensaje("mensajeRegistro", "Introduce el código SMS.");
+
     try {
+        // 1. Validar el código SMS
         await confirmationResult.confirm(codigo);
+        
+        // 2. Crear el usuario en Firebase Auth
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        await sendEmailVerification(userCredential.user);
-        mostrarMensaje("mensajeRegistro", "¡Cuenta creada! Verifica tu email.", "ok");
-        setTimeout(() => { location.reload(); }, 3000);
+        const user = userCredential.user;
+
+        // 3. Enviar correo de verificación
+        await sendEmailVerification(user);
+
+        // 4. IMPORTANTE: Cerrar sesión inmediatamente
+        // Firebase inicia sesión auto al crear cuenta, pero no queremos que entre al Home aún.
+        await signOut(auth);
+
+        mostrarMensaje("mensajeRegistro", "¡Cuenta creada con éxito! Por favor, revisa tu bandeja de entrada y verifica tu correo para poder iniciar sesión.", "ok");
+        
+        // Limpiar y cerrar registro tras unos segundos
+        setTimeout(() => { 
+            cerrarRegistro();
+            // Opcional: limpiar campos
+            document.getElementById("seccionSms").style.display = "none";
+        }, 5000);
+
     } catch (error) {
-        mostrarMensaje("mensajeRegistro", "Código SMS incorrecto.");
+        console.error("Error en registro:", error);
+        if (error.code === 'auth/invalid-verification-code') {
+            mostrarMensaje("mensajeRegistro", "El código SMS es incorrecto.");
+        } else if (error.code === 'auth/email-already-in-use') {
+            mostrarMensaje("mensajeRegistro", "El correo ya está registrado.");
+        } else {
+            mostrarMensaje("mensajeRegistro", "Error al crear cuenta: " + error.message);
+        }
     }
 }
+
 
 // --- RECUPERAR CONTRASEÑA ---
 function enviarReset(){
