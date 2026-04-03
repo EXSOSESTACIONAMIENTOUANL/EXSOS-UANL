@@ -1,3 +1,8 @@
+/* ==========================================
+   Login.js - VERSIÓN FINAL Y COMPLETA 
+   (Incluye Fechas, Placas, SMS y Firebase)
+   ========================================== */
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { 
     getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, 
@@ -21,9 +26,14 @@ let confirmationResult;
 function login() {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
+  const remember = document.getElementById("remember").checked;
+
   if(!email || !password) return mostrarMensaje("mensajeLogin", "Ingresa datos");
 
-  signInWithEmailAndPassword(auth, email, password)
+  const persistence = remember ? browserLocalPersistence : browserSessionPersistence;
+
+  setPersistence(auth, persistence)
+    .then(() => signInWithEmailAndPassword(auth, email, password))
     .then((userCredential) => {
         if (!userCredential.user.emailVerified) {
             signOut(auth);
@@ -33,7 +43,7 @@ function login() {
     .catch(() => mostrarMensaje("mensajeLogin", "Credenciales incorrectas"));
 }
 
-// --- REGISTRO ---
+// --- REGISTRO (PASO 1: SMS) ---
 async function register() {
     const email = document.getElementById("regEmail").value;
     const password = document.getElementById("regPassword").value;
@@ -61,8 +71,9 @@ async function register() {
         }
         const numeroCompleto = "+52" + telefono;
         confirmationResult = await signInWithPhoneNumber(auth, numeroCompleto, window.recaptchaVerifier);
+        
         document.getElementById("seccionSms").style.display = "block";
-        mostrarMensaje("mensajeRegistro", "Código enviado.", "ok");
+        mostrarMensaje("mensajeRegistro", "Código enviado al celular.", "ok");
     } catch (error) {
         btn.disabled = false;
         btn.innerText = "Crear una cuenta";
@@ -70,6 +81,7 @@ async function register() {
     }
 }
 
+// --- VERIFICAR SMS Y CREAR CUENTA ---
 async function verificarCodigoSms() {
     const codigo = document.getElementById("codigoSms").value;
     const email = document.getElementById("regEmail").value;
@@ -86,7 +98,17 @@ async function verificarCodigoSms() {
     }
 }
 
-// --- FUNCIONES AUXILIARES ---
+// --- RECUPERAR CONTRASEÑA ---
+function enviarReset(){
+  const email = document.getElementById("resetEmail").value;
+  if(!email) return mostrarMensaje("mensajeReset", "Escribe tu correo");
+
+  sendPasswordResetEmail(auth, email)
+    .then(() => mostrarMensaje("mensajeReset", "Correo enviado", "ok"))
+    .catch(err => mostrarMensaje("mensajeReset", "Error: " + err.code));
+}
+
+// --- FORMATO DE PLACAS ---
 function formatearPlacas(input) {
     let valor = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
     let formateado = '';
@@ -96,6 +118,68 @@ function formatearPlacas(input) {
     input.value = formateado;
 }
 
+// --- LÓGICA DE LOS SELECTORES DE FECHA ---
+function actualizarDias() {
+    const mes = document.querySelector("#selectMes .selected").textContent;
+    const anio = document.querySelector("#selectAnio .selected").textContent;
+    if (mes === "Mes" || anio === "Año") return;
+
+    const mesesLista = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+    const mesNumero = mesesLista.indexOf(mes);
+    const diasMes = new Date(anio, mesNumero + 1, 0).getDate();
+    const options = document.querySelector("#selectDia .options");
+    options.innerHTML = ""; 
+
+    for (let i = 1; i <= diasMes; i++) {
+        const div = document.createElement("div");
+        div.textContent = i;
+        div.addEventListener("click", () => {
+            document.querySelector("#selectDia .selected").textContent = i;
+            document.getElementById("selectDia").classList.remove("active");
+        });
+        options.appendChild(div);
+    }
+}
+
+function crearOpciones(selectId, datos) {
+    const select = document.getElementById(selectId);
+    if(!select) return;
+    const selected = select.querySelector(".selected");
+    const options = select.querySelector(".options");
+    datos.forEach(valor => {
+        const div = document.createElement("div");
+        div.textContent = valor;
+        div.addEventListener("click", () => {
+            selected.textContent = valor;
+            select.classList.remove("active");
+            if (selectId === "selectMes" || selectId === "selectAnio") actualizarDias();
+        });
+        options.appendChild(div);
+    });
+    selected.addEventListener("click", (e) => {
+        e.stopPropagation(); 
+        document.querySelectorAll(".custom-select").forEach(s => s.classList.remove("active"));
+        select.classList.toggle("active");
+    });
+}
+
+window.addEventListener("load", () => {
+    const dias = Array.from({length: 31}, (_, i) => i + 1);
+    const meses = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+    const actual = new Date().getFullYear();
+    const anios = [];
+    for(let i = actual - 18; i >= actual - 80; i--) anios.push(i);
+
+    crearOpciones("selectDia", dias);
+    crearOpciones("selectMes", meses);
+    crearOpciones("selectAnio", anios);
+});
+
+document.addEventListener("click", () => {
+    document.querySelectorAll(".custom-select").forEach(s => s.classList.remove("active"));
+});
+
+// --- MENSAJES Y MODALES ---
 function mostrarMensaje(id, texto, tipo="error") {
     const box = document.getElementById(id);
     if(box) {
@@ -106,15 +190,27 @@ function mostrarMensaje(id, texto, tipo="error") {
     }
 }
 
+function abrirRegistro() {
+    document.getElementById("modalRegistro").style.display = "flex";
+    document.getElementById("loginCard").classList.add("oculto");
+}
+
+function cerrarRegistro() {
+    document.getElementById("modalRegistro").style.display = "none";
+    document.getElementById("loginCard").classList.remove("oculto");
+}
+
 onAuthStateChanged(auth, (user) => {
     if (user && user.emailVerified) window.location.href = "Home.html";
 });
 
+// --- EXPOSICIÓN GLOBAL PARA EL HTML ---
 window.login = login;
 window.register = register;
 window.verificarCodigoSms = verificarCodigoSms;
 window.formatearPlacas = formatearPlacas;
+window.enviarReset = enviarReset;
 window.abrirModal = () => document.getElementById("modalReset").classList.add("activo");
 window.cerrarModal = () => document.getElementById("modalReset").classList.remove("activo");
-window.abrirRegistro = () => { document.getElementById("modalRegistro").style.display = "flex"; };
-window.cerrarRegistro = () => { document.getElementById("modalRegistro").style.display = "none"; };
+window.abrirRegistro = abrirRegistro;
+window.cerrarRegistro = cerrarRegistro;
