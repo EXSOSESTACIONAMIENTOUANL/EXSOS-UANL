@@ -61,48 +61,44 @@ async function register() {
     const email = document.getElementById("regEmail").value;
     const password = document.getElementById("regPassword").value;
     const telefono = document.getElementById("regTelefono").value;
-    const fotoCarro = document.getElementById("regFotoCarro").files[0];
-    const documento = document.getElementById("regDocumento").files[0];
     const btn = document.querySelector("button[onclick='register()']");
 
+    // Validaciones básicas
     if (!email || !password || telefono.length < 10) {
-        mostrarMensaje("mensajeRegistro", "Correo, contraseña y teléfono (10 dígitos) son obligatorios.");
+        mostrarMensaje("mensajeRegistro", "Correo, contraseña y teléfono son obligatorios.");
         return;
     }
 
-    if (!fotoCarro || !documento) {
-        mostrarMensaje("mensajeRegistro", "Debes subir la foto del carro y el documento INE.");
-        return;
-    }
-
-    const dia = document.querySelector("#selectDia .selected").textContent;
-    const mes = document.querySelector("#selectMes .selected").textContent;
-    const anio = document.querySelector("#selectAnio .selected").textContent;
-
-    if (dia === "Día" || mes === "Mes" || anio === "Año") {
-        mostrarMensaje("mensajeRegistro", "Selecciona tu fecha de nacimiento.");
-        return;
-    }
-
+    // Bloqueamos el botón y avisamos que enviaremos el SMS
     btn.disabled = true;
-    btn.innerText = "Registrando...";
-    mostrarMensaje("mensajeRegistro", "Procesando... no cierres la ventana", "ok");
+    mostrarMensaje("mensajeRegistro", "Enviando código de verificación...", "ok");
+
+    const numeroCompleto = "+52" + telefono;
 
     try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
+        if (!window.recaptchaVerifier) {
+            window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+                'size': 'invisible'
+            });
+        }
 
-        sendEmailVerification(user);
-        await enviarSmsVerificacion(user); 
-
-    } catch (firebaseError) {
+        // 🟢 PASO 1: Solo enviamos el SMS (sin crear usuario aún)
+        // Usamos signInWithPhoneNumber en lugar de linkWithPhoneNumber
+        import { signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        
+        confirmationResult = await signInWithPhoneNumber(auth, numeroCompleto, window.recaptchaVerifier);
+        
+        document.getElementById("seccionSms").style.display = "block";
+        mostrarMensaje("mensajeRegistro", "Código enviado. Verifícalo para crear tu cuenta.", "ok");
+    } catch (error) {
         btn.disabled = false;
-        btn.innerText = "Crear una cuenta";
-        let mensaje = "Error al registrar";
-        if (firebaseError.code === "auth/email-already-in-use") mensaje = "El correo ya está en uso.";
-        mostrarMensaje("mensajeRegistro", mensaje);
+        console.error(error);
+        mostrarMensaje("mensajeRegistro", "Error al enviar SMS. Revisa el número.");
     }
 }
+
+
+
 
 // --- SMS LOGIC ---
 async function enviarSmsVerificacion(user) {
@@ -146,24 +142,45 @@ async function enviarSmsVerificacion(user) {
 }
 
 
-function verificarCodigoSms() {
+async function verificarCodigoSms() {
     const codigo = document.getElementById("codigoSms").value;
+    const email = document.getElementById("regEmail").value;
+    const password = document.getElementById("regPassword").value;
+
     if(!codigo) return;
 
-    confirmationResult.confirm(codigo)
-        .then(() => {
-            mostrarMensaje("mensajeRegistro", "¡Verificado! Revisa tu email.", "ok");
+    try {
+        // 🟢 PASO 2: Validar el código SMS
+        const result = await confirmationResult.confirm(codigo);
+        const userSms = result.user; // Este es un usuario temporal por teléfono
+
+        mostrarMensaje("mensajeRegistro", "Teléfono validado. Creando cuenta de correo...", "ok");
+
+        // 🟢 PASO 3: Ahora que el SMS es real, creamos la cuenta de correo y contraseña
+        // Para unir ambos, usamos el ID o simplemente creamos el perfil definitivo
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const userFinal = userCredential.user;
+
+            await sendEmailVerification(userFinal);
+            
+            mostrarMensaje("mensajeRegistro", "¡Éxito! Cuenta creada. Verifica tu email.", "ok");
+            
             setTimeout(() => {
                 signOut(auth).then(() => {
                     cerrarRegistro();
                     location.reload(); 
                 });
             }, 3000);
-        }).catch(() => {
-            mostrarMensaje("mensajeRegistro", "Código SMS incorrecto.");
-        });
+        } catch (error) {
+            if (error.code === "auth/email-already-in-use") {
+                mostrarMensaje("mensajeRegistro", "El teléfono es válido, pero el correo ya existe.");
+            }
+        }
+    } catch (error) {
+        mostrarMensaje("mensajeRegistro", "Código SMS incorrecto.");
+    }
 }
-
 // --- RECUPERAR CONTRASEÑA ---
 function enviarReset(){
     const email = document.getElementById("resetEmail").value;
