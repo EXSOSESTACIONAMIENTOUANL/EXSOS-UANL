@@ -66,31 +66,33 @@
                 <input type="file" id="regFotoCarro" accept="image/*" style="display: none;" onchange="document.getElementById('textoCarro').textContent = this.files[0] ? this.files[0].name : 'Ningún archivo...'">
             </div>
 
-            <h3 style="margin-top: 10px; font-size: 16px; color: #fff; text-align: left;">Verificación de Identidad - INE</h3>
+<h3 style="margin-top: 10px; font-size: 16px; color: #fff; text-align: left;">Verificación de Identidad - INE</h3>
             <div class="file-box">
                  <label for="regDocumento" id="labelINE" class="file-btn">Seleccionar archivo</label>
                 <span class="file-texto" id="textoINE">Ningún archivo...</span>
                 <input type="file" id="regDocumento" accept="image/*,.pdf" style="display: none;" onchange="document.getElementById('textoINE').textContent = this.files[0] ? this.files[0].name : 'Ningún archivo...'">
             </div>
 
-            <div id="recaptcha-container" style="margin: 15px 0; display: flex; justify-content: center;"></div>
+        </div> 
 
-            <div id="seccionSms" style="display:none; margin-top: 10px; border-top: 1px solid #555; padding-top: 15px;">
-                <h3 style="color: white; font-size: 16px; text-align: left;">Verifica tu Teléfono</h3>
-                <input type="text" id="codigoSms" placeholder="Código SMS (6 dígitos)" style="width: 100%;">
-                <button type="button" onclick="verificarCodigoSms()" style="background: #28a745; width: 100%; margin-top:10px; border:none; padding:10px; border-radius:5px; color:white; cursor:pointer;">Confirmar Código SMS</button>
-            </div>
+        <div id="recaptcha-container" style="margin: 15px 0; display: flex; justify-content: center;"></div>
 
-            <button class="btn-crear" onclick="register()">Crear una cuenta</button>
-            <div id="mensajeRegistro" class="mensaje"></div>
-
-            <p class="login-link">
-                ¿Ya tienes cuenta? 
-                <span onclick="cerrarRegistro()">Inicia sesión</span>
-            </p>
-            <span class="cerrar" onclick="cerrarRegistro()">✖</span>
+        <div id="seccionSms" style="display:none; margin-top: 10px; border-top: 1px solid #555; padding-top: 15px;">
+            <h3 style="color: white; font-size: 16px; text-align: left;">Verifica tu Teléfono</h3>
+            <input type="text" id="codigoSms" placeholder="Código SMS (6 dígitos)" style="width: 100%;">
+            <button type="button" onclick="verificarCodigoSms()" style="background: #28a745; width: 100%; margin-top:10px; border:none; padding:10px; border-radius:5px; color:white; cursor:pointer;">Confirmar Código SMS</button>
         </div>
+
+        <button class="btn-crear" onclick="register()">Verificar Correo</button>
+        <div id="mensajeRegistro" class="mensaje"></div>
+
+        <p class="login-link">
+            ¿Ya tienes cuenta? 
+            <span onclick="cerrarRegistro()">Inicia sesión</span>
+        </p>
+        <span class="cerrar" onclick="cerrarRegistro()">✖</span>
     </div>
+</div>
 
     <script type="module" src="Login.js"></script>
 </body>
