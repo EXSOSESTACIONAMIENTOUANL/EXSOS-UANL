@@ -42,7 +42,16 @@ async function register() {
     const password = document.getElementById("regPassword").value;
     const telefono = document.getElementById("regTelefono") ? document.getElementById("regTelefono").value : "";
     const btn = document.querySelector(".btn-crear");
-
+    // Captura el texto interno de los selectores personalizados
+        const dia = document.querySelector("#selectDia .selected").innerText.trim();
+        const mes = document.querySelector("#selectMes .selected").innerText.trim();
+        const anio = document.querySelector("#selectAnio .selected").innerText.trim();
+    
+        // Validación estricta
+        if (dia === "Día" || mes === "Mes" || anio === "Año") {
+            mostrarMensaje("mensajeRegistro", "Por favor, completa la fecha de nacimiento.");
+            return;
+        }
     if (!email || !password || telefono.length < 10) {
         return mostrarMensaje("mensajeRegistro", "Correo, clave y teléfono (10 dígitos) obligatorios.");
     }
@@ -108,22 +117,32 @@ onAuthStateChanged(auth, (user) => {
     mostrarMensaje("mensajeLogin", "Por favor verifica tu correo primero.");
   }
 });
+function formatearPlacas(input) {
+    // Elimina cualquier carácter que no sea letra o número y convierte a mayúsculas
+    let valor = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    let formateado = '';
+
+    // Agrega AAA
+    if (valor.length > 0) formateado += valor.substring(0, 3);
+    // Agrega -000
+    if (valor.length > 3) formateado += '-' + valor.substring(3, 6);
+    // Agrega -A
+    if (valor.length > 6) formateado += '-' + valor.substring(6, 7);
+
+    input.value = formateado;
+}
 
 // Exponer funciones al HTML
+// Al final de Login.js
 window.login = login;
 window.register = register;
 window.verificarCodigoSms = verificarCodigoSms;
 window.enviarReset = enviarReset;
+window.formatearPlacas = formatearPlacas; // <--- Asegúrate de que esta línea exista
 window.abrirModal = () => document.getElementById("modalReset").classList.add("activo");
 window.cerrarModal = () => document.getElementById("modalReset").classList.remove("activo");
-window.abrirRegistro = () => {
-    document.getElementById("modalRegistro").style.display = "flex";
-    document.getElementById("loginCard").classList.add("oculto");
-};
-window.cerrarRegistro = () => {
-    document.getElementById("modalRegistro").style.display = "none";
-    document.getElementById("loginCard").classList.remove("oculto");
-};
+window.abrirRegistro = abrirRegistro;
+window.cerrarRegistro = cerrarRegistro;
 
 function mostrarMensaje(id, texto, tipo="error") {
     const box = document.getElementById(id);
