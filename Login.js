@@ -60,15 +60,19 @@ function login() {
 
 
 
+
 async function register() {
+    // 1. Captura de elementos
     const email = document.getElementById("regEmail").value;
     const password = document.getElementById("regPassword").value;
     const telefono = document.getElementById("regTelefono").value;
     const fotoCarro = document.getElementById("regFotoCarro").files[0];
     const documento = document.getElementById("regDocumento").files[0];
-    const btn = document.querySelector(".btn-crear");
+    
+    // Seleccionamos el botón específico que activó la función
+    const btn = document.querySelector("button[onclick='register()']");
 
-    // 1. VALIDACIÓN ESTRICTA DE TODOS LOS CAMPOS
+    // 2. VALIDACIONES
     if (!email || !password || telefono.length < 10) {
         mostrarMensaje("mensajeRegistro", "Correo, contraseña y teléfono (10 dígitos) son obligatorios.");
         return;
@@ -88,36 +92,63 @@ async function register() {
         return;
     }
 
-    // Bloquear botón para evitar duplicados
+    // Bloqueo de seguridad
     btn.disabled = true;
-    mostrarMensaje("mensajeRegistro", "Procesando... no cierres la ventana", "ok");
+    btn.innerText = "Registrando...";
+    mostrarMensaje("mensajeRegistro", "Creando cuenta y enviando SMS...", "ok");
 
     try {
-        // 2. INTENTAR CREAR LA CUENTA
+        // Crear usuario
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        try {
-            // 3. ENVIAR CORREO Y SMS
-            await sendEmailVerification(user);
-            await enviarSmsVerificacion(user); 
-            
-            mostrarMensaje("mensajeRegistro", "Cuenta creada. Revisa el SMS enviado.", "ok");
-        } catch (smsError) {
-            // 🔴 SI EL SMS FALLA: Borramos al usuario recién creado para que pueda reintentar
-            console.error("Fallo el SMS, borrando usuario...", smsError);
-            await user.delete(); 
-            mostrarMensaje("mensajeRegistro", "Error al enviar SMS. Por favor, revisa tu número e intenta de nuevo.");
-            btn.disabled = false;
+        // Enviar correo (no bloqueante)
+        sendEmailVerification(user);
+
+        // LANZAR SMS
+        await enviarSmsVerificacion(user);
+        
+    } catch (error) {
+        btn.disabled = false;
+        btn.innerText = "Crear una cuenta";
+        let mensaje = "Error al registrar";
+        if (error.code === "auth/email-already-in-use") mensaje = "El correo ya está en uso.";
+        mostrarMensaje("mensajeRegistro", mensaje);
+        console.error("Error en registro:", error);
+    }
+}
+
+// Modificación importante en enviarSmsVerificacion
+async function enviarSmsVerificacion(user) {
+    const tel = document.getElementById("regTelefono").value;
+    const numeroCompleto = "+52" + tel; 
+
+    try {
+        if (!window.recaptchaVerifier) {
+            // Usamos 'invisible' pero aseguramos que el ID exista
+            window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+                'size': 'invisible',
+                'callback': (response) => { console.log("Recaptcha listo"); }
+            });
         }
 
-    } catch (firebaseError) {
+        const result = await linkWithPhoneNumber(user, numeroCompleto, window.recaptchaVerifier);
+        confirmationResult = result;
+        
+        // MOSTRAR CAMPOS SMS
+        document.getElementById("seccionSms").style.display = "block";
+        mostrarMensaje("mensajeRegistro", "¡SMS Enviado! Ingresa el código abajo.", "ok");
+        
+    } catch (error) {
+        console.error("Error detallado SMS:", error);
+        mostrarMensaje("mensajeRegistro", "Error al enviar SMS: " + error.message);
+        
+        // Si el SMS falla, borramos al usuario para que no quede "en uso"
+        if (user) await user.delete();
+        
+        const btn = document.querySelector("button[onclick='register()']");
         btn.disabled = false;
-        let mensaje = "Error al registrar";
-        if (firebaseError.code === "auth/email-already-in-use") {
-            mensaje = "Este correo ya está en uso. Usa otro o recupera tu contraseña.";
-        }
-        mostrarMensaje("mensajeRegistro", mensaje);
+        btn.innerText = "Crear una cuenta";
     }
 }
 
