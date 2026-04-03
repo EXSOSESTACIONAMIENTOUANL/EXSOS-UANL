@@ -1196,20 +1196,9 @@ function actualizarEstiloBoton(modo) {
                     }
                 }
             }
-            onAuthStateChanged(auth, (user) => {
-    // Solo redirige si hay usuario Y el email está verificado
-    if (user) {
-        if (user.emailVerified) {
-            window.location.href = "Home.html";
-        } else {
-            // Si el usuario está logueado pero no verificado, lo sacamos
-            // Esto previene que entren si recargan la página justo después de crear cuenta
-            signOut(auth);
-        }
-    }
-});
+
             
 
-        </script>
+   
     </body>
 </html>
