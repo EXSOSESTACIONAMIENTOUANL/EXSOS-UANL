@@ -71,7 +71,7 @@ async function register() {
     try {
         if (!window.recaptchaVerifier) {
             window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-                'size': 'invisible'
+                'size': 'normal'
             });
         }
 
