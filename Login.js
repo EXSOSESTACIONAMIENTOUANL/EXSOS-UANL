@@ -13,13 +13,13 @@ import {
 import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCjlT5tS1iEWvYzSIHRzg3jQLnyq5AAFJk",
-  authDomain: "exsos-pruebas.firebaseapp.com",
-  projectId: "exsos-pruebas",
-  storageBucket: "exsos-pruebas.firebasestorage.app",
-  messagingSenderId: "564255524295",
-  appId: "1:564255524295:web:ae4160b7a56304e6acc5e2",
-  measurementId: "G-B3KZX20LYS"
+apiKey: "AIzaSyDr2FUS2IBW90alkYnAUUXvMNy2RQPjx6E",
+  authDomain: "ptueba-1-78027.firebaseapp.com",
+  projectId: "ptueba-1-78027",
+  storageBucket: "ptueba-1-78027.firebasestorage.app",
+  messagingSenderId: "463811943830",
+  appId: "1:463811943830:web:f529bdf1eea53445b0d1b7",
+  measurementId: "G-W5TBQT1DLK"
 };
 
 const app = initializeApp(firebaseConfig);
