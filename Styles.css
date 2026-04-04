@@ -2821,128 +2821,103 @@ font-size:1.7vw ;
 
 
 /* ======================================================== */
-/* 🔥 DISEÑO DEL PERFIL GIGANTE (SIN AFECTAR EL RESTO) 🔥   */
+/* 🔥 DISEÑO UNIFICADO DEL PERFIL (CARD ÚNICA) 🔥           */
 /* ======================================================== */
 
-/* La "X" siempre fija y enorme */
+/* Borramos rastros del formulario viejo izquierdo */
+.card-perfil { display: none !important; }
+
+.modal-perfil-full {
+    align-items: flex-start !important;
+    padding: 0 !important;
+    background: rgba(0,0,0,0.85) !important;
+    overflow-y: auto !important; 
+    -webkit-overflow-scrolling: touch !important;
+}
+
+/* La nueva Tarjeta Centrada */
+.card-perfil-unica {
+    width: 100%;
+    max-width: 480px; /* Tamaño perfecto para PC y Tablet */
+    background: #2b2d31;
+    position: relative;
+    margin: 40px auto; 
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+/* En celulares la tarjeta abarca toda la pantalla de forma bonita */
+@media (max-width: 600px) {
+    .card-perfil-unica {
+        margin: 0 auto;
+        border-radius: 0;
+        min-height: 100vh;
+        padding-bottom: 40px; 
+    }
+}
+
+/* Botón X Flotante Inmortal */
 #btnCerrarPerfil {
     position: fixed !important;
-    top: 3vw !important;
-    right: 4vw !important;
-    font-size: 6vw !important;
+    top: 15px !important;
+    right: 15px !important;
+    font-size: 26px !important;
     color: #fff !important;
     background: #ed4245 !important;
     border-radius: 50% !important;
-    width: 10vw !important;
-    height: 10vw !important;
+    width: 45px !important;
+    height: 45px !important;
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
     z-index: 1000000 !important;
-    border: 0.5vw solid white !important;
-    box-shadow: 0 1vw 3vw rgba(0,0,0,0.5) !important;
+    border: 2px solid white !important;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3) !important;
+    cursor: pointer;
 }
 
-/* Usamos 1050px para atrapar el modo "alejado" del celular */
-@media (max-width: 1050px) {
-    .modal-perfil-full {
-        align-items: flex-start !important;
-        padding: 0 !important;
-        background: #1e1f22 !important;
-        overflow-y: auto !important; 
-    }
+.preview-body {
+    padding: 0 25px 30px 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
 
-    .card-perfil {
-        flex-direction: column !important;
-        height: auto !important;
-        min-height: 100vh !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        padding: 15vw 5vw 10vw 5vw !important; /* Espacio para que la X no tape nada */
-        margin: 0 !important;
-        border-radius: 0 !important;
-        gap: 6vw !important;
-    }
+/* Efecto superpuesto de la foto con el banner */
+.perfil-foto-container {
+    margin-top: -55px; 
+    position: relative;
+    z-index: 2;
+}
 
-    .perfil-form, .perfil-preview {
-        width: 100% !important;
-        max-width: 100% !important;
-    }
+.preview-avatar {
+    width: 110px !important;
+    height: 110px !important;
+    border-radius: 50%;
+    border: 5px solid #2b2d31;
+    background: #2b2d31;
+    object-fit: cover;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    cursor: pointer;
+    transition: 0.2s;
+}
 
-    .perfil-header {
-        display: flex !important;
-        justify-content: center !important;
-        border-bottom: 0.2vw solid #3f4147 !important;
-        padding-bottom: 3vw !important;
-        margin-bottom: 3vw !important;
-    }
+.preview-avatar:hover {
+    filter: brightness(0.7);
+}
 
-    .perfil-header h2 {
-        font-size: 6vw !important; /* Título Gigante */
-        margin: 0 !important;
-    }
+.preview-name {
+    font-size: 26px;
+    font-weight: bold;
+    color: white;
+    margin-top: 10px;
+}
 
-    #btnGuardarPerfil { display: none !important; }
-    
-    .perfil-campo {
-        padding: 2vw 0 !important;
-    }
-
-    .perfil-campo label {
-        font-size: 3.5vw !important; /* Textos muy legibles */
-        margin-bottom: 1vw !important;
-    }
-
-    .perfil-campo input {
-        font-size: 4vw !important; /* Textos de usuario gigantes */
-        padding: 3vw !important;
-        border-radius: 2vw !important;
-    }
-
-    .perfil-form div[style*="display: flex"] {
-        flex-direction: column !important;
-        gap: 3vw !important;
-        margin-top: 4vw !important;
-    }
-
-    .perfil-form button {
-        width: 100% !important;
-        padding: 3.5vw !important;
-        font-size: 4vw !important; /* Botones muy fáciles de tocar */
-        border-radius: 2vw !important;
-    }
-
-    /* Modales Secundarios (Cambio Auto, etc.) */
-    .modal-boxp {
-        width: 90vw !important;
-        max-width: none !important;
-        padding: 5vw !important;
-        border-radius: 4vw !important;
-    }
-
-    .modal-boxp h2 { font-size: 5.5vw !important; margin-bottom: 2vw !important;}
-    .modal-boxp p { font-size: 3vw !important; margin-bottom: 4vw !important;}
-    .modal-boxp input { font-size: 4vw !important; padding: 3vw !important; margin-bottom: 2vw !important; border-radius: 2vw !important;}
-    
-    .modal-boxp div[style*="display: flex"] {
-        flex-direction: column !important;
-        gap: 3vw !important;
-    }
-    
-    .modal-boxp button {
-        padding: 3.5vw !important;
-        font-size: 4vw !important;
-        border-radius: 2vw !important;
-    }
-    
-    /* Ajustes Visuales de la Tarjeta Derecha */
-    .preview-name { font-size: 5vw !important; margin-top: 6vw !important;}
-    .preview-username { font-size: 4vw !important; }
-    .preview-detalles-auto p { font-size: 3.5vw !important; margin: 1vw 0 !important;}
-    .licencia-card h3 { font-size: 4.5vw !important; }
-    .licencia-preview-container { min-height: 40vw !important; border-radius: 2vw !important;}
-    .preview-avatar { width: 18vw !important; height: 18vw !important; top: -9vw !important; border-width: 1vw !important; }
-    .preview-card { border-radius: 3vw !important; }
-    .preview-banner { height: 25vw !important; border-radius: 3vw 3vw 0 0 !important; }
-    .btn-editar-banner { width: 8vw !important; height: 8vw !important; font-size: 4vw !important; }
+.preview-username {
+    font-size: 15px;
+    color: #b5bac1;
 }
