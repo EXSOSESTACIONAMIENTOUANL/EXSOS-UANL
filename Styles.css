@@ -2819,158 +2819,130 @@ font-size:1.7vw ;
     }
 }
 
+
 /* ======================================================== */
-/* 🔥 DISEÑO PARA CELULARES (RESPONSIVE) - LIMPIO 🔥 */
+/* 🔥 DISEÑO DEL PERFIL GIGANTE (SIN AFECTAR EL RESTO) 🔥   */
 /* ======================================================== */
 
-/* BOTÓN DE CERRAR PERFIL: Fijo siempre arriba a la derecha */
+/* La "X" siempre fija y enorme */
 #btnCerrarPerfil {
     position: fixed !important;
-    top: 15px !important;
-    right: 15px !important;
-    font-size: 24px !important;
-    color: white !important;
-    background-color: #ed4245 !important;
+    top: 3vw !important;
+    right: 4vw !important;
+    font-size: 6vw !important;
+    color: #fff !important;
+    background: #ed4245 !important;
     border-radius: 50% !important;
-    width: 40px !important;
-    height: 40px !important;
+    width: 10vw !important;
+    height: 10vw !important;
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
-    z-index: 999999 !important;
-    border: 2px solid white !important;
-    box-shadow: 0px 4px 10px rgba(0,0,0,0.5) !important;
-    text-decoration: none !important;
+    z-index: 1000000 !important;
+    border: 0.5vw solid white !important;
+    box-shadow: 0 1vw 3vw rgba(0,0,0,0.5) !important;
 }
 
-@media (max-width: 900px) {
-    /* 1. Modal de Perfil: Fondo oscuro sólido y scroll habilitado */
+/* Usamos 1050px para atrapar el modo "alejado" del celular */
+@media (max-width: 1050px) {
     .modal-perfil-full {
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        width: 100vw !important;
-        height: 100vh !important;
-        background: #1e1f22 !important; /* 🔥 FONDO OSCURO SÓLIDO PARA TAPAR LA PÁGINA DE ATRÁS */
-        overflow-y: auto !important; 
-        -webkit-overflow-scrolling: touch !important;
-        display: none; /* Lo oculta por defecto hasta que se active */
         align-items: flex-start !important;
         padding: 0 !important;
-        margin: 0 !important;
+        background: #1e1f22 !important;
+        overflow-y: auto !important; 
     }
 
-    .modal-perfil-full.activo {
-        display: flex !important; /* Lo muestra cuando tiene la clase activo */
-    }
-
-    /* 2. El Contenedor (Card): Apilado en columna y con margen superior */
     .card-perfil {
         flex-direction: column !important;
         height: auto !important;
-        min-height: 100% !important;
+        min-height: 100vh !important;
         width: 100% !important;
         max-width: 100% !important;
-        padding: 70px 15px 40px 15px !important; /* 🔥 70px ARRIBA para que no choque con la X */
+        padding: 15vw 5vw 10vw 5vw !important; /* Espacio para que la X no tape nada */
         margin: 0 !important;
-        background: transparent !important;
         border-radius: 0 !important;
-        box-sizing: border-box !important;
-        gap: 20px !important;
+        gap: 6vw !important;
     }
 
-    /* 3. Ajuste de las dos mitades (Formulario y Vista Previa) */
     .perfil-form, .perfil-preview {
         width: 100% !important;
         max-width: 100% !important;
-        margin: 0 !important;
-        padding: 0 !important;
     }
 
-    /* 4. Limpieza del Título */
     .perfil-header {
         display: flex !important;
         justify-content: center !important;
-        border-bottom: 1px solid #3f4147 !important;
-        padding-bottom: 15px !important;
-        margin-bottom: 10px !important;
+        border-bottom: 0.2vw solid #3f4147 !important;
+        padding-bottom: 3vw !important;
+        margin-bottom: 3vw !important;
     }
-    
+
     .perfil-header h2 {
-        font-size: 24px !important;
+        font-size: 6vw !important; /* Título Gigante */
         margin: 0 !important;
-        color: white !important;
     }
 
-    /* Escondemos el botón viejo de guardar porque estorba */
-    #btnGuardarPerfil { 
-        display: none !important; 
-    }
-
-    /* 5. Inputs grandes anti-zoom de iPhone */
+    #btnGuardarPerfil { display: none !important; }
+    
     .perfil-campo {
-        padding: 8px 0 !important;
+        padding: 2vw 0 !important;
+    }
+
+    .perfil-campo label {
+        font-size: 3.5vw !important; /* Textos muy legibles */
+        margin-bottom: 1vw !important;
     }
 
     .perfil-campo input {
-        font-size: 16px !important; 
-        padding: 12px !important;
+        font-size: 4vw !important; /* Textos de usuario gigantes */
+        padding: 3vw !important;
+        border-radius: 2vw !important;
     }
 
-    /* 6. Botones de Acción (Cambiar Auto, Correo, Tel) apilados */
     .perfil-form div[style*="display: flex"] {
         flex-direction: column !important;
-        gap: 12px !important;
-        margin-top: 20px !important;
+        gap: 3vw !important;
+        margin-top: 4vw !important;
     }
 
     .perfil-form button {
         width: 100% !important;
-        font-size: 16px !important;
-        padding: 15px !important;
-        border-radius: 10px !important;
+        padding: 3.5vw !important;
+        font-size: 4vw !important; /* Botones muy fáciles de tocar */
+        border-radius: 2vw !important;
     }
 
-    /* 7. Modales pequeños (Auto, Correo, Teléfono) */
+    /* Modales Secundarios (Cambio Auto, etc.) */
     .modal-boxp {
-        width: 90% !important;
-        max-width: 400px !important;
-        padding: 20px !important;
-        height: auto !important;
-        max-height: 85vh !important; 
-        overflow-y: auto !important;
-        border-radius: 15px !important;
-        margin: auto !important;
-        transform: translateY(0) !important;
+        width: 90vw !important;
+        max-width: none !important;
+        padding: 5vw !important;
+        border-radius: 4vw !important;
     }
 
-    .modal-boxp h2 { font-size: 22px !important; }
-    .modal-boxp p { font-size: 14px !important; margin-bottom: 15px !important;}
-    .modal-boxp input { font-size: 16px !important; padding: 12px !important; }
+    .modal-boxp h2 { font-size: 5.5vw !important; margin-bottom: 2vw !important;}
+    .modal-boxp p { font-size: 3vw !important; margin-bottom: 4vw !important;}
+    .modal-boxp input { font-size: 4vw !important; padding: 3vw !important; margin-bottom: 2vw !important; border-radius: 2vw !important;}
     
     .modal-boxp div[style*="display: flex"] {
         flex-direction: column !important;
-        gap: 10px !important;
+        gap: 3vw !important;
     }
-}
-
-/* ======================================================== */
-/* 8. CORRECCIÓN GENERAL DE LA LICENCIA (Todas las pantallas) */
-/* ======================================================== */
-.licencia-preview-container {
-    width: 100%;
-    min-height: 150px;
-    max-height: 250px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-    background: #111214;
-    border-radius: 10px;
-}
-
-.preview-licencia {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain; 
+    
+    .modal-boxp button {
+        padding: 3.5vw !important;
+        font-size: 4vw !important;
+        border-radius: 2vw !important;
+    }
+    
+    /* Ajustes Visuales de la Tarjeta Derecha */
+    .preview-name { font-size: 5vw !important; margin-top: 6vw !important;}
+    .preview-username { font-size: 4vw !important; }
+    .preview-detalles-auto p { font-size: 3.5vw !important; margin: 1vw 0 !important;}
+    .licencia-card h3 { font-size: 4.5vw !important; }
+    .licencia-preview-container { min-height: 40vw !important; border-radius: 2vw !important;}
+    .preview-avatar { width: 18vw !important; height: 18vw !important; top: -9vw !important; border-width: 1vw !important; }
+    .preview-card { border-radius: 3vw !important; }
+    .preview-banner { height: 25vw !important; border-radius: 3vw 3vw 0 0 !important; }
+    .btn-editar-banner { width: 8vw !important; height: 8vw !important; font-size: 4vw !important; }
 }
