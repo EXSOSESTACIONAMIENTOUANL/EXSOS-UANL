@@ -396,3 +396,16 @@ window.abrirModal = () => document.getElementById("modalReset").classList.add("a
 window.cerrarModal = () => document.getElementById("modalReset").classList.remove("activo");
 window.abrirRegistro = abrirRegistro;
 window.cerrarRegistro = cerrarRegistro;
+window.formatearPlacas = function(input) {
+    // 1. Quitar todo lo que no sea letra o número y convertir a mayúsculas
+    let valor = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    let formateado = '';
+    
+    // 2. Aplicar el formato AAA-111-A (Estilo Nuevo León)
+    if (valor.length > 0) formateado += valor.substring(0, 3);
+    if (valor.length > 3) formateado += '-' + valor.substring(3, 6);
+    if (valor.length > 6) formateado += '-' + valor.substring(6, 7);
+    
+    // 3. Regresar el valor formateado al cuadro de texto
+    input.value = formateado;
+}
