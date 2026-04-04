@@ -2819,3 +2819,98 @@ font-size:1.7vw ;
     }
 }
 
+/* ======================================================== */
+/* 🔥 CORRECCIONES DE DISEÑO PARA CELULARES (RESPONSIVE) 🔥 */
+/* ======================================================== */
+
+@media (max-width: 900px) {
+    /* 1. Modal de Perfil (Para que no se corte ni quede gigante) */
+    .modal-perfil-full {
+        align-items: flex-start; /* Para poder hacer scroll desde arriba */
+        padding-top: 20px;
+    }
+
+    .card-perfil {
+        flex-direction: column; /* Pone el formulario arriba y el preview abajo */
+        height: auto;           /* Quita la altura fija que lo rompía */
+        min-height: 100vh;
+        width: 100%;
+        padding: 15px;
+        gap: 20px;
+        border-radius: 0;       /* En celular mejor sin bordes redondeados feos */
+    }
+
+    .perfil-form, .perfil-preview {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    /* 2. Botones de Acción (Cambiar Auto, Correo, Tel) */
+    .perfil-form div[style*="display: flex"] {
+        flex-direction: column; /* Apila los botones de "Cambio" uno sobre otro */
+        gap: 15px !important;
+    }
+
+    .perfil-form button {
+        width: 100%; /* Botones de lado a lado para no fallar con el dedo */
+        font-size: 16px !important;
+        padding: 15px !important;
+    }
+
+    /* 3. Inputs del perfil (Letra más grande para que Apple/Android no hagan auto-zoom molesto) */
+    .perfil-campo input {
+        font-size: 16px !important; 
+        padding: 12px;
+    }
+
+    /* 4. Modales de "Cambio de Vehículo", "Correo" y "Teléfono" */
+    .modal-boxp {
+        width: 95% !important;
+        max-width: none !important;
+        padding: 20px !important;
+        height: auto !important; /* Evita que el modal sea gigante */
+        max-height: 90vh;        /* Si es muy largo, no se pasa de la pantalla */
+        overflow-y: auto;        /* Permite scroll dentro del modal si es necesario */
+        border-radius: 15px !important;
+        transform: translateY(0) !important;
+        justify-content: center; 
+    }
+
+    /* 5. Textos de los modales en celular */
+    .modal-boxp h2 {
+        font-size: 24px !important;
+    }
+    
+    .modal-boxp p {
+        font-size: 14px !important;
+    }
+
+    .modal-boxp input {
+        font-size: 16px !important; /* Antizoom de iOS */
+        padding: 12px !important;
+    }
+    
+    .modal-boxp div[style*="display: flex"] {
+        flex-direction: column; /* Apila botones Cancelar/Enviar */
+        gap: 10px;
+    }
+}
+
+/* ======================================================== */
+/* 6. CORRECCIÓN DE LA LICENCIA (Para que no se desborde)   */
+/* ======================================================== */
+.licencia-preview-container {
+    width: 100%;
+    min-height: 150px;
+    max-height: 250px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.preview-licencia {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain; /* Esto asegura que la foto se vea entera y no se estire */
+}
