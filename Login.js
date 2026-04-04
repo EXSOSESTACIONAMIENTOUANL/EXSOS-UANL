@@ -9,7 +9,7 @@ import {
     setPersistence, browserLocalPersistence, browserSessionPersistence, 
     onAuthStateChanged, signOut, RecaptchaVerifier,
     sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink,
-    updatePassword, linkWithPhoneNumber
+    updatePassword, linkWithPhoneNumber,getFirestore, doc, setDoc, getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -23,7 +23,8 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+const auth = getAuth(app);ç
+const db = getFirestore(app);
 let confirmationResult;
 
 // --- LOGIN ---
@@ -38,11 +39,37 @@ function login() {
 
     setPersistence(auth, persistence)
         .then(() => signInWithEmailAndPassword(auth, email, password))
-        .then((userCredential) => {
-            if (!userCredential.user.emailVerified) {
-                signOut(auth);
-                mostrarMensaje("mensajeLogin", "Verifica tu correo primero.");
+        .then(async (userCredential) => {
+            const user = userCredential.user;
+            
+            if (!user.emailVerified) {
+                await signOut(auth);
+                return mostrarMensaje("mensajeLogin", "Verifica tu correo primero.");
             }
+
+            // 🔥 VERIFICAR EL ESTADO EN FIRESTORE
+            const docRef = doc(db, "usuarios", user.uid);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                const estado = docSnap.data().estado;
+                
+                if (estado === "pendiente") {
+                    await signOut(auth); // Lo sacamos
+                    return mostrarMensaje("mensajeLogin", "Tu cuenta sigue en proceso de validación (24h).");
+                } 
+                else if (estado === "rechazado") {
+                    await signOut(auth); // Lo sacamos
+                    return mostrarMensaje("mensajeLogin", "Tu cuenta no fue aprobada por el administrador.");
+                }
+            } else {
+                // Si no existe el documento, cerramos sesión por seguridad
+                await signOut(auth);
+                return mostrarMensaje("mensajeLogin", "Error: Cuenta no encontrada en la base de datos.");
+            }
+
+            // Si es "aprobado" (o cualquier otra cosa), lo dejamos pasar.
+            // onAuthStateChanged se encargará de la redirección.
         })
         .catch(() => mostrarMensaje("mensajeLogin", "Credenciales incorrectas"));
 }
@@ -170,13 +197,31 @@ async function verificarCodigoSms() {
         await confirmationResult.confirm(codigo);
         await updatePassword(auth.currentUser, password);
         
-        mostrarMensaje("mensajeRegistro", "¡Cuenta creada exitosamente!", "ok");
-        setTimeout(() => { window.location.href = "Home.html"; }, 3000);
+        const user = auth.currentUser;
+
+        // 1. Guardar en Firestore con estado "pendiente" ANTES de cerrar sesión
+        await setDoc(doc(db, "usuarios", user.uid), {
+            correo: user.email,
+            telefono: document.getElementById("regTelefono").value.trim(),
+            nombre: document.getElementById("regNombre").value.trim(),
+            estado: "pendiente" // 🔥 AQUÍ ESTÁ LA MAGIA
+        }, { merge: true });
+
+        // 2. Cerrar sesión inmediatamente para que no entren
+        await signOut(auth);
+        
+        // 3. Mostrar el mensaje y ocultar el modal después de un rato
+        mostrarMensaje("mensajeRegistro", "¡Cuenta en validación! Recibirás respuesta en aprox. 24 horas.", "ok");
+        
+        setTimeout(() => { 
+            cerrarRegistro(); 
+            // NO REDIRIGIMOS A HOME
+        }, 5000);
+
     } catch (error) {
-        mostrarMensaje("mensajeRegistro", "Error SMS: " + error.code);
+        mostrarMensaje("mensajeRegistro", "Error SMS o Base de Datos: " + error.code);
     }
 }
-
 // --- FUNCIONES DE INTERFAZ (BOTONES, MODALES, FECHAS) ---
 function abrirRegistro() {
     document.getElementById("modalRegistro").style.display = "flex";
@@ -275,6 +320,22 @@ function enviarReset(){
     .then(() => mostrarMensaje("mensajeReset", "Correo enviado", "ok"))
     .catch(err => mostrarMensaje("mensajeReset", "Error: " + err.code));
 }
+onAuthStateChanged(auth, async (user) => {
+    if (user && user.emailVerified && user.phoneNumber && !isSignInWithEmailLink(auth, window.location.href)) {
+        
+        // Revisar estado antes de redirigir
+        const docRef = doc(db, "usuarios", user.uid);
+        const docSnap = await getDoc(docRef);
+        
+        if(docSnap.exists() && docSnap.data().estado === "aprobado") {
+            window.location.href = "Home.html";
+        } else {
+            // Si está pendiente o rechazado, cerramos la sesión silenciosamente
+            // para que se queden en el index
+            signOut(auth);
+        }
+    }
+});
 
 // EXPOSICIÓN GLOBAL
 window.login = login;
