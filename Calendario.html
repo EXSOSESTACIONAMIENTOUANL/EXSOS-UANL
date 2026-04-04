@@ -824,7 +824,46 @@ Asistente virtual Exsos
             </div>
         </div>
     </div>
+<div id="modalCambioCorreo" class="modal-confirmarp" style="z-index: 100000;">
+        <div class="modal-boxp" style="height: auto; padding: 25px; background: #2b2d31; color: white; border-radius: 15px; width: 90%; max-width: 400px; margin: auto;">
+            <h2 style="margin-bottom: 5px; font-size: 22px; text-align: center;">Actualizar Correo</h2>
+            <p style="font-size: 13px; color: #aaa; margin-bottom: 20px; text-align: center;">Se enviará un enlace de verificación al nuevo correo.</p>
+            
+            <input type="email" id="nuevoCorreoInput" placeholder="Ingresa tu nuevo correo" style="width: 100%; padding: 12px; border-radius: 8px; border: none; background: #111214; color: white; box-sizing: border-box;">
+            
+            <div style="display: flex; gap: 10px; margin-top: 25px;">
+                <button onclick="document.getElementById('modalCambioCorreo').classList.remove('activo')" style="flex: 1; padding: 12px; border-radius: 8px; border: none; cursor: pointer; background: #484a4e; color: white; font-weight: bold;">Cancelar</button>
+                <button id="btnConfirmarCorreo" style="flex: 1; background: #5865f2; color: white; padding: 12px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold;">Verificar Correo</button>
+            </div>
+        </div>
+    </div>
 
+    <div id="modalCambioTel" class="modal-confirmarp" style="z-index: 100000;">
+        <div class="modal-boxp" style="height: auto; padding: 25px; background: #2b2d31; color: white; border-radius: 15px; width: 90%; max-width: 400px; margin: auto;">
+            <h2 style="margin-bottom: 5px; font-size: 22px; text-align: center;">Actualizar Teléfono</h2>
+            
+            <div id="stepTel1">
+                <p style="font-size: 13px; color: #aaa; margin-bottom: 10px; text-align: center;">Te enviaremos un código SMS al nuevo número.</p>
+                <input type="text" id="nuevoTelInput" placeholder="Nuevo número a 10 dígitos" style="width: 100%; padding: 12px; border-radius: 8px; border: none; background: #111214; color: white; box-sizing: border-box;">
+                
+                <div id="recaptcha-perfil-container" style="margin-top: 15px; display: flex; justify-content: center;"></div>
+                
+                <div style="display: flex; gap: 10px; margin-top: 25px;">
+                    <button onclick="document.getElementById('modalCambioTel').classList.remove('activo')" style="flex: 1; padding: 12px; border-radius: 8px; border: none; cursor: pointer; background: #484a4e; color: white; font-weight: bold;">Cancelar</button>
+                    <button id="btnEnviarSmsPerfil" style="flex: 1; background: #5865f2; color: white; padding: 12px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold;">Enviar SMS</button>
+                </div>
+            </div>
+
+            <div id="stepTel2" style="display: none;">
+                <p style="font-size: 13px; color: #aaa; margin-bottom: 10px; text-align: center;">Ingresa el código de 6 dígitos que recibiste.</p>
+                <input type="text" id="codigoSmsPerfil" placeholder="Código SMS" style="width: 100%; padding: 12px; border-radius: 8px; border: none; background: #111214; color: white; box-sizing: border-box;">
+                
+                <div style="display: flex; gap: 10px; margin-top: 25px;">
+                    <button id="btnVerificarSmsPerfil" style="width: 100%; background: #00c853; color: white; padding: 12px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold;">Verificar y Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
 
