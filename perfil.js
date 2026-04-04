@@ -1,10 +1,14 @@
 /* ==========================================
-   perfil.js - VERSIÓN FINAL ANTICRASH
+   perfil.js - ACTUALIZACIONES, RECHAZOS Y SMS
    ========================================== */
 
 import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { 
+    getAuth, signOut, onAuthStateChanged, 
+    verifyBeforeUpdateEmail, RecaptchaVerifier, 
+    PhoneAuthProvider, updatePhoneNumber 
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, updateDoc, getDoc, deleteField } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDr2FUS2IBW90alkYnAUUXvMNy2RQPjx6E",
@@ -16,7 +20,6 @@ const firebaseConfig = {
   measurementId: "G-W5TBQT1DLK"
 };
 
-// 🔥 EVITAMOS EL CONGELAMIENTO DE BOTONES 🔥
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -30,6 +33,7 @@ let offsetY = 0;
 let scale = 1;
 const FOTO_DEFAULT = "perfil/user.png";
 const CORREO_DEFAULT = "correo@email.com";
+let verificacionSmsPerfilId = null;
 
 function procesarImagenBase64(file) {
     return new Promise((resolve, reject) => {
@@ -80,6 +84,13 @@ async function cargarPerfil(){
         if(docSnap.exists()){
             const data = docSnap.data();
 
+            // 🔥 1. ALERTA DE RECHAZO DE AUTO 🔥
+            if(data.solicitudCarro && data.solicitudCarro.estado === "rechazado") {
+                alert("❌ Tu solicitud de cambio de vehículo fue RECHAZADA. Vuelve a intentarlo con datos correctos.");
+                // Borramos la solicitud rechazada para limpiar la base de datos
+                await updateDoc(docRef, { solicitudCarro: deleteField() });
+            }
+
             const fotoFinal = data.foto || FOTO_DEFAULT;
             const correoFinal = data.correo || user.email || CORREO_DEFAULT;
 
@@ -126,8 +137,6 @@ function configurarEventos(){
     const inputBanner = document.getElementById("inputBannerPanel");
     const btnColor = document.getElementById("btnColor");
     const inputColor = document.getElementById("colorBannerPicker");
-    const btnCerrar = document.getElementById("btnCerrarSesion");
-    const btnEditar = document.getElementById("btnEditarPerfil");
     
     const btnMenu = document.getElementById("btnMenu");
     const overlay = document.getElementById("overlay");
@@ -179,7 +188,9 @@ function configurarEventos(){
     const btnConfirmar = document.getElementById("btnConfirmarCerrarSesion");
     if(btnConfirmar) btnConfirmar.addEventListener("click", confirmarCerrarSesion);
     
+    const btnEditar = document.getElementById("btnEditarPerfil");
     if(btnEditar) btnEditar.addEventListener("click", abrirPerfil);
+    const btnCerrar = document.getElementById("btnCerrarSesion");
     if(btnCerrar) btnCerrar.addEventListener("click", ()=>{ abrirModalCerrarSesion(); });
 
     if(btnColor && inputColor){
@@ -271,24 +282,13 @@ function configurarEventos(){
         });
     }
 
+    // ========================================================
+    // 🔥 LÓGICA DE ACTUALIZACIÓN DE AUTO 🔥
+    // ========================================================
     const btnSolicitarAuto = document.getElementById("btnSolicitarAuto");
     if(btnSolicitarAuto) {
         btnSolicitarAuto.addEventListener("click", () => {
             document.getElementById("modalCambioAuto").classList.add("activo");
-        });
-    }
-
-    const btnCorreoAccion = document.getElementById("btnActualizarCorreo");
-    if(btnCorreoAccion) {
-        btnCorreoAccion.addEventListener("click", () => {
-            alert("Para actualizar tu correo, por favor contacta a Administración Universitaria.");
-        });
-    }
-
-    const btnTel = document.getElementById("btnActualizarTel");
-    if(btnTel) {
-        btnTel.addEventListener("click", () => {
-            alert("Para cambiar tu teléfono de recuperación, acude al módulo de EXSOS.");
         });
     }
 
@@ -331,6 +331,127 @@ function configurarEventos(){
             } finally {
                 btnEnviarSolicitudAuto.disabled = false;
                 btnEnviarSolicitudAuto.innerText = "Enviar Solicitud";
+            }
+        });
+    }
+
+    // ========================================================
+    // 🔥 LÓGICA DE ACTUALIZACIÓN DE CORREO 🔥
+    // ========================================================
+    const btnCorreoAccion = document.getElementById("btnActualizarCorreo");
+    if(btnCorreoAccion) {
+        btnCorreoAccion.addEventListener("click", () => {
+            document.getElementById("modalCambioCorreo").classList.add("activo");
+        });
+    }
+
+    const btnConfirmarCorreo = document.getElementById("btnConfirmarCorreo");
+    if(btnConfirmarCorreo) {
+        btnConfirmarCorreo.addEventListener("click", async () => {
+            const nuevoCorreo = document.getElementById("nuevoCorreoInput").value.trim();
+            if(!nuevoCorreo || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(nuevoCorreo)) {
+                alert("Por favor ingresa un correo válido."); return;
+            }
+
+            btnConfirmarCorreo.disabled = true;
+            btnConfirmarCorreo.innerText = "Enviando...";
+
+            try {
+                // Enviar correo de validación mediante Firebase Auth
+                await verifyBeforeUpdateEmail(auth.currentUser, nuevoCorreo);
+                
+                // Si pasa sin error, guardarlo temporalmente o esperar a que valide
+                // Firebase cambiará el auth automáticamente cuando le de clic al link.
+                // Nosotros lo actualizamos en la BD una vez enviado para tener el registro.
+                await updateDoc(doc(db, "usuarios", auth.currentUser.uid), { correo: nuevoCorreo });
+                
+                alert("✉️ Enlace enviado. Revisa tu bandeja de entrada en el nuevo correo para confirmar el cambio. (Se actualizará automáticamente).");
+                document.getElementById("modalCambioCorreo").classList.remove("activo");
+
+            } catch (error) {
+                if(error.code === 'auth/email-already-in-use') {
+                    alert("❌ Este correo ya está registrado en otra cuenta. Por favor elige otro.");
+                } else if(error.code === 'auth/requires-recent-login') {
+                    alert("⚠️ Por seguridad, debes cerrar sesión y volver a entrar antes de cambiar tu correo.");
+                } else {
+                    alert("Error Firebase: " + error.code);
+                }
+            } finally {
+                btnConfirmarCorreo.disabled = false;
+                btnConfirmarCorreo.innerText = "Verificar Correo";
+            }
+        });
+    }
+
+    // ========================================================
+    // 🔥 LÓGICA DE ACTUALIZACIÓN DE TELÉFONO (SMS) 🔥
+    // ========================================================
+    const btnTel = document.getElementById("btnActualizarTel");
+    if(btnTel) {
+        btnTel.addEventListener("click", () => {
+            document.getElementById("modalCambioTel").classList.add("activo");
+            document.getElementById("stepTel1").style.display = "block";
+            document.getElementById("stepTel2").style.display = "none";
+        });
+    }
+
+    const btnEnviarSms = document.getElementById("btnEnviarSmsPerfil");
+    if(btnEnviarSms) {
+        btnEnviarSms.addEventListener("click", async () => {
+            const nuevoTel = document.getElementById("nuevoTelInput").value.trim();
+            if(nuevoTel.length !== 10) { alert("El teléfono debe tener 10 dígitos."); return; }
+
+            btnEnviarSms.disabled = true;
+            btnEnviarSms.innerText = "Verificando...";
+
+            try {
+                if (!window.recaptchaVerifierPerfil) {
+                    window.recaptchaVerifierPerfil = new RecaptchaVerifier(auth, 'recaptcha-perfil-container', { 'size': 'normal' });
+                }
+                const numeroCompleto = "+52" + nuevoTel;
+                const provider = new PhoneAuthProvider(auth);
+                
+                verificacionSmsPerfilId = await provider.verifyPhoneNumber(numeroCompleto, window.recaptchaVerifierPerfil);
+                
+                document.getElementById("stepTel1").style.display = "none";
+                document.getElementById("stepTel2").style.display = "block";
+                
+            } catch (error) {
+                btnEnviarSms.disabled = false;
+                btnEnviarSms.innerText = "Enviar SMS";
+                if(error.code === 'auth/credential-already-in-use') {
+                    alert("❌ Este número ya está asociado a otra cuenta.");
+                } else {
+                    alert("Error Firebase: " + error.message);
+                }
+            }
+        });
+    }
+
+    const btnVerificarSms = document.getElementById("btnVerificarSmsPerfil");
+    if(btnVerificarSms) {
+        btnVerificarSms.addEventListener("click", async () => {
+            const codigo = document.getElementById("codigoSmsPerfil").value.trim();
+            if(!codigo) { alert("Ingresa el código."); return; }
+
+            btnVerificarSms.disabled = true;
+            btnVerificarSms.innerText = "Actualizando...";
+
+            try {
+                const credencialNueva = PhoneAuthProvider.credential(verificacionSmsPerfilId, codigo);
+                await updatePhoneNumber(auth.currentUser, credencialNueva);
+                
+                // Actualizar BD
+                const nuevoTel = document.getElementById("nuevoTelInput").value.trim();
+                await updateDoc(doc(db, "usuarios", auth.currentUser.uid), { telefono: nuevoTel });
+
+                alert("✅ Tu número de teléfono se ha actualizado correctamente.");
+                document.getElementById("modalCambioTel").classList.remove("activo");
+
+            } catch (error) {
+                alert("❌ Código incorrecto o expirado.");
+                btnVerificarSms.disabled = false;
+                btnVerificarSms.innerText = "Verificar y Guardar";
             }
         });
     }
