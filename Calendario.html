@@ -763,7 +763,36 @@ Asistente virtual Exsos
             <label>Placas del auto</label>
             <input type="text" id="placasPerfil" readonly style="color: #888; cursor: not-allowed; background: #1a1b1e;">
         </div>
+<div style="display: flex; gap: 10px; margin-top: 25px; margin-bottom: 15px;">
+            <button id="btnSolicitarAuto" type="button" style="background: #e5a900; color: #152191; padding: 10px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; transition: 0.2s;">🚗 Cambiar Auto</button>
+            <button id="btnActualizarCorreo" type="button" style="background: #2b2d31; color: white; border: 1px solid #555; padding: 10px; border-radius: 8px; cursor: pointer; flex: 1; transition: 0.2s;">✉️ Correo</button>
+            <button id="btnActualizarTel" type="button" style="background: #2b2d31; color: white; border: 1px solid #555; padding: 10px; border-radius: 8px; cursor: pointer; flex: 1; transition: 0.2s;">📱 Teléfono</button>
+        </div>
 
+        <button id="btnCerrarSesion" class="btn-cerrar-sesion" style="width: 100%;">Cerrar sesión</button>
+      </div>
+    </div>
+    <div id="modalCambioAuto" class="modal-confirmarp" style="z-index: 100000;">
+        <div class="modal-boxp" style="height: auto; padding: 25px; background: #2b2d31; color: white; border-radius: 15px; width: 90%; max-width: 400px; margin: auto; transform: translateY(0);">
+            <h2 style="margin-bottom: 5px; font-size: 22px; text-align: center;">Cambio de Vehículo</h2>
+            <p style="font-size: 13px; color: #aaa; margin-bottom: 20px; text-align: center;">La actualización tomará hasta 24 hrs en ser validada por el administrador.</p>
+            
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <input type="text" id="nuevoModeloAuto" placeholder="Nuevo Modelo (Ej. Sentra)" style="padding: 12px; border-radius: 8px; border: none; background: #111214; color: white;">
+                <input type="text" id="nuevoColorAuto" placeholder="Nuevo Color" style="padding: 12px; border-radius: 8px; border: none; background: #111214; color: white;">
+                <input type="number" id="nuevoAnioAuto" placeholder="Nuevo Año" style="padding: 12px; border-radius: 8px; border: none; background: #111214; color: white;">
+                <input type="text" id="nuevasPlacasAuto" placeholder="Nuevas Placas (Ej. AAA-111-A)" oninput="formatearPlacas(this)" style="padding: 12px; border-radius: 8px; border: none; background: #111214; color: white;">
+                
+                <label style="font-size: 14px; color: #b5bac1; margin-top: 5px;">Nueva Foto Frontal del Auto</label>
+                <input type="file" id="nuevaFotoAuto" accept="image/*" style="color: white; font-size: 12px;">
+            </div>
+            
+            <div style="display: flex; gap: 10px; margin-top: 25px;">
+                <button onclick="document.getElementById('modalCambioAuto').classList.remove('activo')" style="flex: 1; padding: 12px; border-radius: 8px; border: none; cursor: pointer; background: #484a4e; color: white; font-weight: bold;">Cancelar</button>
+                <button id="btnEnviarSolicitudAuto" style="flex: 1; background: #5865f2; color: white; padding: 12px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold;">Enviar Solicitud</button>
+            </div>
+        </div>
+    </div>
         <button id="btnCerrarSesion" class="btn-cerrar-sesion">Cerrar sesión</button>
 
       </div>
