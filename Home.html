@@ -669,27 +669,36 @@ refSensorSalida.on("value", (snapshot) => {
     if(snapshot.exists()){ estadoSensorSalida = snapshot.val(); }
 });
 
-
-// --- Función Principal del Botón (CON GUARDADO DE HISTORIAL Y ANTI-ERRORES) ---
+ç
+// --- Función Principal del Botón (CON ANTI-DOBLE CLIC Y GUARDADO DE HISTORIAL) ---
 window.solicitarApertura = async function(){
     const alerta = document.getElementById("contenedorAlerta");
     const boton = document.getElementById("btnAbrirPluma");
+
+    // 🔥 1. ESCUDO ANTI-DOBLE CLIC: Si el botón ya está desactivado, ignoramos los clics extra
+    if (boton.disabled) return;
+    
+    // Bloqueamos el botón inmediatamente al primer clic
+    boton.disabled = true;
+    boton.style.opacity = "0.5";
+    boton.style.cursor = "not-allowed";
 
     if (modoBoton === "entrada") {
         // LÓGICA DE ENTRADA
         if(estadoSensorEntrada == 0){
             mostrarAlerta("⚠️ Posiciónate en la entrada", "#ff3b3b"); // Rojo
+            reactivarBoton(boton); // Reactivamos si no estaba en el sensor
         } else if(estadoSensorEntrada == 1){
             refPlumaEntrada.set(1);
             mostrarAlerta("✅ Bienvenido", "#00c853"); // Verde
             
             try {
-                // 🔥 Importamos las herramientas de v10 asegurando que no choquen 🔥
+                // Importamos las herramientas de v10
                 const { getApp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
                 const { getFirestore, collection, addDoc, getDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
                 const { getAuth } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
                 
-                const miApp = getApp(); // Usamos la app ya encendida
+                const miApp = getApp(); 
                 const dbFS = getFirestore(miApp);
                 const user = getAuth(miApp).currentUser;
 
@@ -702,7 +711,7 @@ window.solicitarApertura = async function(){
                         const fechaTxt = ahora.getFullYear() + "-" + String(ahora.getMonth() + 1).padStart(2, '0') + "-" + String(ahora.getDate()).padStart(2, '0');
                         const horaTxt = String(ahora.getHours()).padStart(2, '0') + ":" + String(ahora.getMinutes()).padStart(2, '0') + ":" + String(ahora.getSeconds()).padStart(2, '0');
 
-                        // Creamos la bitácora de Entrada
+                        // Guardamos UNA sola entrada
                         await addDoc(collection(dbFS, "historial_estacionamiento"), {
                             uid: user.uid,
                             nombre: userData.nombre || "Usuario",
@@ -722,6 +731,7 @@ window.solicitarApertura = async function(){
             // ACTUALIZAR ESTADO EN LA BD DESPUÉS DE ENTRAR
             setTimeout(() => {
                 if(refEstadoUsuario) refEstadoUsuario.set("salida");
+                reactivarBoton(boton); // 🔥 2. Volvemos a encender el botón después de 3 segundos
             }, 3000); 
         }
     } 
@@ -729,12 +739,13 @@ window.solicitarApertura = async function(){
         // LÓGICA DE SALIDA
         if(estadoSensorSalida == 0){
             mostrarAlerta("⚠️ Posiciónate en la salida", "#ff3b3b"); // Rojo
+            reactivarBoton(boton); // Reactivamos si no estaba en el sensor
         } else if(estadoSensorSalida == 1){
             refPlumaSalida.set(1);
             mostrarAlerta("👋 Excelente día", "#00c853"); // Verde
             
             try {
-                // 🔥 Actualizamos la Salida con código simplificado 🔥
+                // Actualizamos la Salida
                 const { getApp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
                 const { getFirestore, collection, query, where, getDocs, updateDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
                 const { getAuth } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
@@ -748,14 +759,12 @@ window.solicitarApertura = async function(){
                     const fechaTxt = ahora.getFullYear() + "-" + String(ahora.getMonth() + 1).padStart(2, '0') + "-" + String(ahora.getDate()).padStart(2, '0');
                     const horaTxt = String(ahora.getHours()).padStart(2, '0') + ":" + String(ahora.getMinutes()).padStart(2, '0') + ":" + String(ahora.getSeconds()).padStart(2, '0');
 
-                    // Hacemos una búsqueda simple para que Firebase no colapse por falta de índices
                     const q = query(collection(dbFS, "historial_estacionamiento"), where("uid", "==", user.uid));
                     const querySnapshot = await getDocs(q);
                     
                     let docReciente = null;
                     let maxTime = 0;
 
-                    // El navegador se encarga de filtrar cuál fue la entrada más reciente sin salida
                     querySnapshot.forEach((documento) => {
                         const data = documento.data();
                         if (data.horaSalida === null && data.timestampEntrada > maxTime) {
@@ -764,7 +773,6 @@ window.solicitarApertura = async function(){
                         }
                     });
 
-                    // Si encontramos su entrada, le sellamos la salida
                     if (docReciente) {
                         await updateDoc(doc(dbFS, "historial_estacionamiento", docReciente.id), {
                             fechaSalida: fechaTxt,
@@ -779,11 +787,20 @@ window.solicitarApertura = async function(){
             // ACTUALIZAR ESTADO EN LA BD DESPUÉS DE SALIR
             setTimeout(() => {
                 if(refEstadoUsuario) refEstadoUsuario.set("entrada");
+                reactivarBoton(boton); // 🔥 2. Volvemos a encender el botón después de 3 segundos
             }, 3000);
         }
     }
 };
 
+// 🔥 3. Función auxiliar para devolverle la vida al botón
+function reactivarBoton(boton) {
+    if (boton) {
+        boton.disabled = false;
+        boton.style.opacity = "1";
+        boton.style.cursor = "pointer";
+    }
+}
 
             
 
