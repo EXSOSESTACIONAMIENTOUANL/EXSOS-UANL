@@ -1,5 +1,5 @@
 /* ==========================================
-   perfil.js - ACTUALIZACIONES, RECHAZOS Y SMS
+   perfil.js - PERFIL UNIFICADO Y GUARDADO AUTOMÁTICO
    ========================================== */
 
 import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -84,37 +84,28 @@ async function cargarPerfil(){
         if(docSnap.exists()){
             const data = docSnap.data();
 
-            // 🔥 1. ALERTA DE RECHAZO DE AUTO 🔥
             if(data.solicitudCarro && data.solicitudCarro.estado === "rechazado") {
                 alert("❌ Tu solicitud de cambio de vehículo fue RECHAZADA. Vuelve a intentarlo con datos correctos.");
-                // Borramos la solicitud rechazada para limpiar la base de datos
                 await updateDoc(docRef, { solicitudCarro: deleteField() });
             }
 
             const fotoFinal = data.foto || FOTO_DEFAULT;
             const correoFinal = data.correo || user.email || CORREO_DEFAULT;
 
+            // Datos del menú lateral oculto
             if(document.getElementById("fotoPerfil")) document.getElementById("fotoPerfil").src = fotoFinal;
             if(document.getElementById("nombreUsuario")) document.getElementById("nombreUsuario").textContent = data.nombre || "Usuario";
             if(document.getElementById("correoUsuario")) document.getElementById("correoUsuario").textContent = correoFinal;
 
+            // Tarjeta Unificada
             if(document.getElementById("previewFoto")) document.getElementById("previewFoto").src = fotoFinal;
-            if(document.getElementById("previewAvatar")) document.getElementById("previewAvatar").src = fotoFinal;
             if(document.getElementById("previewNombre")) document.getElementById("previewNombre").textContent = data.nombre || "Usuario";
             if(document.getElementById("previewUser")) document.getElementById("previewUser").textContent = correoFinal;
-
+            if(document.getElementById("previewMatricula")) document.getElementById("previewMatricula").textContent = data.matricula || "Sin registrar";
             if(document.getElementById("previewModelo")) document.getElementById("previewModelo").textContent = data.modeloAuto || "Sin registrar";
             if(document.getElementById("previewColor")) document.getElementById("previewColor").textContent = data.colorAuto || "Sin registrar";
             if(document.getElementById("previewAnio")) document.getElementById("previewAnio").textContent = data.anioAuto || "Sin registrar";
             if(document.getElementById("previewPlacas")) document.getElementById("previewPlacas").textContent = data.placas || "Sin registrar";
-
-            if(document.getElementById("nuevoNombre")) document.getElementById("nuevoNombre").value = data.nombre || "";
-            if(document.getElementById("correoPerfil")) document.getElementById("correoPerfil").value = correoFinal;
-            if(document.getElementById("matriculaPerfil")) document.getElementById("matriculaPerfil").value = data.matricula || "";
-            if(document.getElementById("placasPerfil")) document.getElementById("placasPerfil").value = data.placas || "";
-            if(document.getElementById("modeloPerfil")) document.getElementById("modeloPerfil").value = data.modeloAuto || "";
-            if(document.getElementById("colorPerfil")) document.getElementById("colorPerfil").value = data.colorAuto || "";
-            if(document.getElementById("anioPerfil")) document.getElementById("anioPerfil").value = data.anioAuto || "";
 
             if(document.getElementById("previewLicencia")) {
                 if(data.ineUrl) document.getElementById("previewLicencia").src = data.ineUrl;
@@ -168,8 +159,6 @@ function configurarEventos(){
     });
 
     if(btnCerrarAvatares) btnCerrarAvatares.addEventListener("click", cerrarPanelAvatares);
-    const btnSalir = document.querySelector(".btn-salir");
-    if(btnSalir) btnSalir.addEventListener("click", cerrarPerfil);
     
     const btnCancelarBanner = document.querySelector("#editorBanner button:first-child");
     if(btnCancelarBanner) btnCancelarBanner.addEventListener("click", cancelarBanner);
@@ -178,8 +167,6 @@ function configurarEventos(){
     
     const btnCerrarPerfil = document.getElementById("btnCerrarPerfil");
     if(btnCerrarPerfil) btnCerrarPerfil.addEventListener("click", cerrarPerfil);
-    const btnGuardar = document.getElementById("btnGuardarPerfil");
-    if(btnGuardar) btnGuardar.addEventListener("click", guardarPerfil);
     const btnEditarBanner = document.getElementById("btnEditarBanner");
     if(btnEditarBanner) btnEditarBanner.addEventListener("click", abrirPanelBanners);
     
@@ -215,6 +202,7 @@ function configurarEventos(){
             actualizarBanner(color);
             const pickerBox = document.querySelector(".banner-color-picker");
             if(pickerBox) pickerBox.style.background = color;
+            guardarPerfil(); // AUTOGUARDADO
         });
     }
 
@@ -227,6 +215,8 @@ function configurarEventos(){
                 reader.onload = function(e){
                     const imagen = e.target.result;
                     actualizarFoto(imagen);
+                    cerrarPanelAvatares();
+                    guardarPerfil(); // AUTOGUARDADO
                 }
                 reader.readAsDataURL(archivo);
             }
@@ -257,6 +247,7 @@ function configurarEventos(){
         div.addEventListener("click", ()=>{
             actualizarBanner(div.style.backgroundColor, false);
             cerrarPanelBanners();
+            guardarPerfil(); // AUTOGUARDADO
         });
     });
 
@@ -264,6 +255,7 @@ function configurarEventos(){
         img.addEventListener("click", ()=>{
             actualizarBanner(img.src, true);
             cerrarPanelBanners();
+            guardarPerfil(); // AUTOGUARDADO
         });
     });
 
@@ -357,12 +349,7 @@ function configurarEventos(){
             btnConfirmarCorreo.innerText = "Enviando...";
 
             try {
-                // Enviar correo de validación mediante Firebase Auth
                 await verifyBeforeUpdateEmail(auth.currentUser, nuevoCorreo);
-                
-                // Si pasa sin error, guardarlo temporalmente o esperar a que valide
-                // Firebase cambiará el auth automáticamente cuando le de clic al link.
-                // Nosotros lo actualizamos en la BD una vez enviado para tener el registro.
                 await updateDoc(doc(db, "usuarios", auth.currentUser.uid), { correo: nuevoCorreo });
                 
                 alert("✉️ Enlace enviado. Revisa tu bandeja de entrada en el nuevo correo para confirmar el cambio. (Se actualizará automáticamente).");
@@ -441,7 +428,6 @@ function configurarEventos(){
                 const credencialNueva = PhoneAuthProvider.credential(verificacionSmsPerfilId, codigo);
                 await updatePhoneNumber(auth.currentUser, credencialNueva);
                 
-                // Actualizar BD
                 const nuevoTel = document.getElementById("nuevoTelInput").value.trim();
                 await updateDoc(doc(db, "usuarios", auth.currentUser.uid), { telefono: nuevoTel });
 
@@ -460,8 +446,6 @@ function configurarEventos(){
 function actualizarFoto(imagen){
     const preview = document.getElementById("previewFoto");
     if(preview) preview.src = imagen;
-    const avatar = document.getElementById("previewAvatar");
-    if(avatar) avatar.src = imagen;
     const fotoMenu = document.getElementById("fotoPerfil");
     if(fotoMenu) fotoMenu.src = imagen;
     fotoTemporal = imagen;
@@ -473,10 +457,6 @@ function abrirPerfil(){
 }
 
 function cerrarPerfil(){
-    if(hayCambios()){
-        abrirModalConfirmacion();
-        return;
-    }
     document.getElementById("modalPerfil").classList.remove("activo");
     document.body.style.overflow = "";
     cargarPerfil();
@@ -496,28 +476,13 @@ async function guardarPerfil() {
 
     try {
         await updateDoc(doc(db, "usuarios", uid), datosAActualizar);
-
         datosOriginales.foto = datosAActualizar.foto;
         datosOriginales.banner = datosAActualizar.banner;
         fotoTemporal = null;
         bannerTempFinal = null;
-
-        mostrarMensaje("✔ Fotos de perfil actualizadas", "#00c853");
     } catch (error) {
         console.error(error);
-        mostrarMensaje("Error al guardar", "red");
     }
-}
-
-function mostrarMensaje(texto, color){
-    const mensaje = document.getElementById("mensajePerfil");
-    if(!mensaje) return;
-    mensaje.textContent = texto;
-    mensaje.style.color = color;
-    mensaje.classList.remove("activo");
-    void mensaje.offsetWidth; 
-    mensaje.classList.add("activo");
-    setTimeout(()=>{ mensaje.classList.remove("activo"); }, 2000);
 }
 
 function abrirPanelAvatares(){ document.getElementById("panelAvatares").classList.add("activo"); }
@@ -528,6 +493,7 @@ document.querySelectorAll(".avatar-opcion").forEach(img => {
         const ruta = img.src;
         actualizarFoto(ruta); 
         cerrarPanelAvatares();
+        guardarPerfil(); // AUTOGUARDADO
     });
 });
 
@@ -541,6 +507,7 @@ if(inputAvatar){
                 const imagen = e.target.result;
                 actualizarFoto(imagen);
                 cerrarPanelAvatares();
+                guardarPerfil(); // AUTOGUARDADO
             }
             reader.readAsDataURL(archivo);
         }
@@ -614,6 +581,7 @@ function aplicarBanner() {
         cerrarEditorBanner();
         cerrarPanelBanners();
         bannerTemporal = null;
+        guardarPerfil(); // AUTOGUARDADO
     }
     img.src = bannerTemporal;
 }
@@ -673,36 +641,6 @@ function actualizarBarraZoom(slider){
     slider.style.background = `linear-gradient(to right, #5865f2 0%, #5865f2 ${porcentaje}%, #3a3c41 ${porcentaje}%, #3a3c41 100%)`;
 }
 
-function intentarCerrarPerfil(){
-    if(hayCambios()) abrirModalConfirmacion();
-    else cerrarPerfil();
-}
-
-function abrirModalConfirmacion(){ document.getElementById("modalConfirmar").classList.add("activo"); }
-function cerrarModalConfirmacion(){ document.getElementById("modalConfirmar").classList.remove("activo"); }
-function cancelarSalida(){ cerrarModalConfirmacion(); }
-function confirmarSalida(){
-    cerrarModalConfirmacion(); 
-    document.getElementById("modalPerfil").classList.remove("activo"); 
-    document.body.style.overflow = "";
-    cargarPerfil(); 
-    fotoTemporal = null; bannerTempFinal = null;
-}
-
-function hayCambios(){
-    const fotoActual = fotoTemporal || document.getElementById("previewFoto").src || "";
-    let bannerActual = bannerTempFinal;
-
-    if (!bannerActual) {
-        const estilo = document.getElementById("previewBanner").style.backgroundImage;
-        if (estilo && estilo !== "none") {
-            bannerActual = estilo.replace(/^url\(["']?/, "").replace(/["']?\)$/, "");
-        } else { bannerActual = ""; }
-    }
-
-    return (fotoActual !== datosOriginales.foto || bannerActual !== datosOriginales.banner);
-}
-
 function abrirModalCerrarSesion(){ document.getElementById("modalCerrarSesion").classList.add("activo"); }
 function cancelarCerrarSesion(){ document.getElementById("modalCerrarSesion").classList.remove("activo"); }
 function confirmarCerrarSesion(){ signOut(auth).then(() => { window.location.href = "index.html"; }); }
@@ -720,13 +658,10 @@ window.formatearPlacas = function(input) {
 // Variables Globales
 window.abrirPerfil = abrirPerfil;
 window.cerrarPerfil = cerrarPerfil;
-window.guardarPerfil = guardarPerfil;
 window.abrirPanelBanners = abrirPanelBanners;
 window.cerrarPanelBanners = cerrarPanelBanners;
 window.cancelarBanner = cancelarBanner;
 window.aplicarBanner = aplicarBanner;
 window.cerrarTodoBanner = cerrarTodoBanner;
-window.cancelarSalida = cancelarSalida;
-window.confirmarSalida = confirmarSalida;
 window.cancelarCerrarSesion = cancelarCerrarSesion;
 window.confirmarCerrarSesion = confirmarCerrarSesion;
