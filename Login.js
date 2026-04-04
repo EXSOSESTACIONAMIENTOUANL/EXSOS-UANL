@@ -1,5 +1,5 @@
 /* ==========================================
-   Login.js - VERSIÓN FINAL (Base64 + Seguridad Inhabilitados)
+   Login.js - VERSIÓN UNIFICADA (Base ptueba-1)
    ========================================== */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -12,8 +12,9 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+// 🔥 CREDENCIALES CORREGIDAS PARA QUE COINCIDAN CON EL ADMIN 🔥
 const firebaseConfig = {
-apiKey: "AIzaSyDr2FUS2IBW90alkYnAUUXvMNy2RQPjx6E",
+  apiKey: "AIzaSyDr2FUS2IBW90alkYnAUUXvMNy2RQPjx6E",
   authDomain: "ptueba-1-78027.firebaseapp.com",
   projectId: "ptueba-1-78027",
   storageBucket: "ptueba-1-78027.firebasestorage.app",
@@ -27,7 +28,6 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 let confirmationResult;
 
-// --- FUNCIÓN PARA CONVERTIR FOTOS A TEXTO (SIN STORAGE) ---
 function procesarImagen(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -50,7 +50,7 @@ function procesarImagen(file) {
     });
 }
 
-// --- LOGIN (AQUÍ ESTÁ EL MENSAJE NUEVO) ---
+// --- LOGIN ---
 function login() {
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
@@ -70,7 +70,6 @@ function login() {
                 return mostrarMensaje("mensajeLogin", "Verifica tu correo primero.");
             }
 
-            // 🔥 VERIFICAR EL ESTADO EN FIRESTORE
             const docRef = doc(db, "usuarios", user.uid);
             const docSnap = await getDoc(docRef);
 
@@ -87,26 +86,23 @@ function login() {
                 }
                 else if (estado === "inhabilitado") {
                     await signOut(auth); 
-                    // 🔥 AQUÍ ESTÁ EL MENSAJE QUE PEDISTE 🔥
+                    // 🔥 MENSAJE DE ATENCIÓN AL CLIENTE CON TELÉFONO 🔥
                     return mostrarMensaje("mensajeLogin", "🚫 Tu usuario está inhabilitado. Comunícate a atención al cliente: 81 8329 4000");
                 }
                 else if (estado === "aprobado") {
-                    // Si te acaban de reactivar, te manda a Home automáticamente
                     window.location.href = "Home.html";
                 }
             } else {
                 await signOut(auth);
-                return mostrarMensaje("mensajeLogin", "Error: Cuenta no encontrada.");
+                return mostrarMensaje("mensajeLogin", "Error: Cuenta no encontrada en la base de datos.");
             }
         })
         .catch((error) => {
-            // Te decimos exactamente en qué te equivocaste para evitar confusiones
-            if(error.code === 'auth/wrong-password') {
-                mostrarMensaje("mensajeLogin", "Contraseña incorrecta.");
-            } else if(error.code === 'auth/user-not-found') {
-                mostrarMensaje("mensajeLogin", "Este correo no está registrado.");
+            // 🔥 CÓDIGOS DE ERROR ACTUALIZADOS DE FIREBASE 🔥
+            if(error.code === 'auth/invalid-credential') {
+                mostrarMensaje("mensajeLogin", "El correo o la contraseña son incorrectos.");
             } else {
-                mostrarMensaje("mensajeLogin", "Credenciales incorrectas.");
+                mostrarMensaje("mensajeLogin", "Error: " + error.code);
             }
         });
 }
@@ -138,7 +134,6 @@ async function iniciarVerificacionCorreo() {
     }
 }
 
-// --- PASO 2: EL USUARIO REGRESA DEL CORREO ---
 window.addEventListener("load", async () => {
     const dias = Array.from({length: 31}, (_, i) => i + 1);
     const meses = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
@@ -177,7 +172,6 @@ window.addEventListener("load", async () => {
     }
 });
 
-// --- PASO 3: VALIDAR DATOS EXTRA Y ENVIAR SMS ---
 async function finalizarRegistro() {
     const nombre = document.getElementById("regNombre").value.trim();
     const password = document.getElementById("regPassword").value;
@@ -222,7 +216,6 @@ async function finalizarRegistro() {
     }
 }
 
-// --- PASO 4: CONFIRMAR SMS Y GUARDAR ---
 async function verificarCodigoSms() {
     const codigo = document.getElementById("codigoSms").value;
     const password = document.getElementById("regPassword").value;
@@ -237,7 +230,6 @@ async function verificarCodigoSms() {
         
         const user = auth.currentUser;
 
-        // Recopilamos datos
         const nombre = document.getElementById("regNombre").value.trim();
         const telefono = document.getElementById("regTelefono").value.trim();
         const matricula = document.getElementById("regMatricula").value.trim();
@@ -252,7 +244,6 @@ async function verificarCodigoSms() {
         const fotoCarroFile = document.getElementById("regFotoCarro").files[0];
         const documentoFile = document.getElementById("regDocumento").files[0];
 
-        // Usamos la función Base64
         const urlFotoCarro = await procesarImagen(fotoCarroFile);
         const urlDocumentoIne = await procesarImagen(documentoFile);
 
@@ -288,7 +279,6 @@ async function verificarCodigoSms() {
     }
 }
 
-// --- FUNCIONES DE INTERFAZ ---
 function abrirRegistro() {
     document.getElementById("modalRegistro").style.display = "flex";
     document.getElementById("loginCard").classList.add("oculto");
