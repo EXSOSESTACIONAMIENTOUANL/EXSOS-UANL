@@ -320,22 +320,7 @@ function enviarReset(){
     .then(() => mostrarMensaje("mensajeReset", "Correo enviado", "ok"))
     .catch(err => mostrarMensaje("mensajeReset", "Error: " + err.code));
 }
-onAuthStateChanged(auth, async (user) => {
-    if (user && user.emailVerified && user.phoneNumber && !isSignInWithEmailLink(auth, window.location.href)) {
-        
-        // Revisar estado antes de redirigir
-        const docRef = doc(db, "usuarios", user.uid);
-        const docSnap = await getDoc(docRef);
-        
-        if(docSnap.exists() && docSnap.data().estado === "aprobado") {
-            window.location.href = "Home.html";
-        } else {
-            // Si está pendiente o rechazado, cerramos la sesión silenciosamente
-            // para que se queden en el index
-            signOut(auth);
-        }
-    }
-});
+
 
 // EXPOSICIÓN GLOBAL
 window.login = login;
