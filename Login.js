@@ -12,7 +12,7 @@ import {
     updatePassword, linkWithPhoneNumber
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+
 
 // 2. CREDENCIALES
 const firebaseConfig = {
@@ -30,8 +30,32 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-const storage = getStorage(app); 
 let confirmationResult;
+
+function procesarImagen(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement("canvas");
+                const ctx = canvas.getContext("2d");
+                // Comprimimos la imagen a un ancho máximo de 600px
+                const MAX_WIDTH = 600;
+                const scaleSize = MAX_WIDTH / img.width;
+                canvas.width = MAX_WIDTH;
+                canvas.height = img.height * scaleSize;
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                // Exportar como texto Base64
+                resolve(canvas.toDataURL("image/jpeg", 0.6));
+            };
+        };
+        reader.onerror = error => reject(error);
+    });
+}
+
 
 // --- LOGIN ---
 function login() {
@@ -187,6 +211,7 @@ async function finalizarRegistro() {
     }
 }
 
+
 // --- PASO 4: CONFIRMAR SMS, SUBIR FOTOS Y CREAR CUENTA ---
 async function verificarCodigoSms() {
     const codigo = document.getElementById("codigoSms").value;
@@ -195,7 +220,7 @@ async function verificarCodigoSms() {
 
     try {
         btn.disabled = true;
-        btn.innerText = "Creando cuenta y subiendo archivos...";
+        btn.innerText = "Creando cuenta y procesando imágenes...";
 
         await confirmationResult.confirm(codigo);
         await updatePassword(auth.currentUser, password);
@@ -219,16 +244,11 @@ async function verificarCodigoSms() {
         const fotoCarroFile = document.getElementById("regFotoCarro").files[0];
         const documentoFile = document.getElementById("regDocumento").files[0];
 
-        // Subimos al Storage
-        const refCarro = ref(storage, `usuarios/${user.uid}/carro_${fotoCarroFile.name}`);
-        await uploadBytes(refCarro, fotoCarroFile);
-        const urlFotoCarro = await getDownloadURL(refCarro);
+        // 🔥 AHORA SÍ: Usamos el "Hack" para convertir las fotos a texto Base64
+        const urlFotoCarro = await procesarImagen(fotoCarroFile);
+        const urlDocumentoIne = await procesarImagen(documentoFile);
 
-        const refIne = ref(storage, `usuarios/${user.uid}/ine_${documentoFile.name}`);
-        await uploadBytes(refIne, documentoFile);
-        const urlDocumentoIne = await getDownloadURL(refIne);
-
-        // Guardamos en Firestore
+        // Guardamos todo directo en Firestore (incluyendo los textos de las imágenes)
         await setDoc(doc(db, "usuarios", user.uid), {
             correo: user.email,
             nombre: nombre,
@@ -239,8 +259,8 @@ async function verificarCodigoSms() {
             colorAuto: color,
             anioAuto: anioCarro,
             placas: placas,
-            fotoCarroUrl: urlFotoCarro,
-            ineUrl: urlDocumentoIne,
+            fotoCarroUrl: urlFotoCarro, // Se guarda el texto convertido
+            ineUrl: urlDocumentoIne,    // Se guarda el texto convertido
             estado: "pendiente"
         });
 
@@ -260,6 +280,8 @@ async function verificarCodigoSms() {
         mostrarMensaje("mensajeRegistro", "Error al guardar los datos: " + error.code);
     }
 }
+
+
 
 // --- FUNCIONES DE INTERFAZ ---
 function abrirRegistro() {
