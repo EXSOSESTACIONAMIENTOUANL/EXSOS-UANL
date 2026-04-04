@@ -25,7 +25,7 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);ç
+const auth = getAuth(app);
 const db = getFirestore(app);
 let confirmationResult;
 
@@ -309,9 +309,19 @@ function mostrarMensaje(id, texto, tipo="error") {
     }
 }
 
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
     if (user && user.emailVerified && user.phoneNumber && !isSignInWithEmailLink(auth, window.location.href)) {
-        window.location.href = "Home.html";
+        
+        // 🔥 Revisamos Firestore antes de mandarlo al Home
+        const docRef = doc(db, "usuarios", user.uid);
+        const docSnap = await getDoc(docRef);
+        
+        if(docSnap.exists() && docSnap.data().estado === "aprobado") {
+            window.location.href = "Home.html";
+        } else {
+            // Si está pendiente o rechazado, lo sacamos silenciosamente
+            signOut(auth);
+        }
     }
 });
 
