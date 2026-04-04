@@ -1,9 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc } 
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { onAuthStateChanged } 
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+// 🔥 Cambiamos setDoc por updateDoc para no borrar los demás datos del usuario
+import { getFirestore, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDr2FUS2IBW90alkYnAUUXvMNy2RQPjx6E",
@@ -15,7 +13,6 @@ const firebaseConfig = {
   measurementId: "G-W5TBQT1DLK"
 };
 
-
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -24,7 +21,6 @@ let datosOriginales = {};
 let bannerTemporal = null;
 let fotoTemporal = null;
 let bannerTempFinal = null;
-let licenciaTemporal = null;
 let offsetX = 0;  
 let offsetY = 0;
 let scale = 1;
@@ -38,7 +34,6 @@ window.addEventListener("DOMContentLoaded", () => {
 onAuthStateChanged(auth, (user) => {
     if(user){
         cargarPerfil(); 
-        
         if(typeof window.conectarBotonUsuario === "function"){
             window.conectarBotonUsuario(user.uid);
         }
@@ -74,42 +69,36 @@ async function cargarPerfil(){
             document.getElementById("previewNombre").textContent = data.nombre || "Usuario";
             document.getElementById("previewUser").textContent = correoFinal;
 
-            // 🔥 NUEVO: PREVIEW DEL AUTO 🔥
             if(document.getElementById("previewModelo")) document.getElementById("previewModelo").textContent = data.modeloAuto || "Sin registrar";
             if(document.getElementById("previewColor")) document.getElementById("previewColor").textContent = data.colorAuto || "Sin registrar";
             if(document.getElementById("previewAnio")) document.getElementById("previewAnio").textContent = data.anioAuto || "Sin registrar";
             if(document.getElementById("previewPlacas")) document.getElementById("previewPlacas").textContent = data.placas || "Sin registrar";
 
-            // INPUTS (EDITOR)
+            // Llenar inputs bloqueados
             document.getElementById("nuevoNombre").value = data.nombre || "";
             document.getElementById("correoPerfil").value = correoFinal;
             document.getElementById("matriculaPerfil").value = data.matricula || "";
             document.getElementById("placasPerfil").value = data.placas || "";
-            
-            // 🔥 NUEVO: INPUTS DEL AUTO 🔥
             if(document.getElementById("modeloPerfil")) document.getElementById("modeloPerfil").value = data.modeloAuto || "";
             if(document.getElementById("colorPerfil")) document.getElementById("colorPerfil").value = data.colorAuto || "";
             if(document.getElementById("anioPerfil")) document.getElementById("anioPerfil").value = data.anioAuto || "";
 
-            // Licencia & Banner
-            if(data.licencia) document.getElementById("previewLicencia").src = data.licencia;
+            // 🔥 CARGAR LA INE EN LA SECCIÓN DE LICENCIA 🔥
+            if(data.ineUrl) {
+                document.getElementById("previewLicencia").src = data.ineUrl;
+            } else if(data.licencia) {
+                document.getElementById("previewLicencia").src = data.licencia;
+            }
+            
+            // Cargar banner
             if(data.banner) actualizarBanner(data.banner);
 
-        } else {
-            // Si no existe, lo crea vacío
-            await setDoc(doc(db, "usuarios", uid), {
-                nombre: "Usuario",
-                correo: user.email || "",
-                matricula: "",
-                placas: "",
-                modeloAuto: "",
-                colorAuto: "",
-                anioAuto: "",
-                foto: FOTO_DEFAULT,
-                banner: "",
-                licencia: ""
-            });
-            await cargarPerfil();
+            // Guardamos solo las fotos originales para ver si hay cambios
+            datosOriginales = {
+                foto: fotoFinal,
+                banner: data.banner || ""
+            };
+
         }
     } catch(error){
         console.error(error);
@@ -118,11 +107,8 @@ async function cargarPerfil(){
 
 // ================= EVENTOS =================
 function configurarEventos(){
-    // ... [Variables de botones] ...
     const preview = document.getElementById("previewFoto");
     const input = document.getElementById("inputFoto");
-    const inputCorreo = document.getElementById("correoPerfil");
-    const inputLicencia = document.getElementById("inputLicencia");
     const colorPicker = document.getElementById("colorBannerPicker");
     const inputBanner = document.getElementById("inputBannerPanel");
     const btnColor = document.getElementById("btnColor");
@@ -136,7 +122,6 @@ function configurarEventos(){
     const panelNoti = document.getElementById("panelNotificaciones");
     const overlayAyuda = document.getElementById("overlayAyuda");
 
-    // Eventos Menú y Notificaciones...
     if(overlayAyuda) overlayAyuda.addEventListener("click", (e)=> e.stopPropagation());
     if(btnNoti && panelNoti) btnNoti.addEventListener("click", (e)=>{ e.stopPropagation(); panelNoti.classList.toggle("activo"); });
 
@@ -150,13 +135,10 @@ function configurarEventos(){
         });
     });
 
-    // 🔹 BOTONES AYUDA, AVATARES, MENÚ
     const btnAbrirAyuda = document.getElementById("btnAbrirAyuda");
     if(btnAbrirAyuda) btnAbrirAyuda.addEventListener("click", (e)=>{ e.preventDefault(); abrirAyuda(); });
     const btnCerrarAyuda = document.querySelector(".btn-cerrar");
     if(btnCerrarAyuda) btnCerrarAyuda.addEventListener("click", cerrarAyuda);
-    const btnEnviar = document.querySelector(".boton-enviar");
-    if(btnEnviar) btnEnviar.addEventListener("click", enviarMensaje);
     if(btnCerrarAvatares) btnCerrarAvatares.addEventListener("click", cerrarPanelAvatares);
     if(overlay) overlay.addEventListener("click", cerrarMenu);
     if(btnMenu) btnMenu.addEventListener("click", abrirMenu);
@@ -183,18 +165,6 @@ function configurarEventos(){
     if(btnEditar) btnEditar.addEventListener("click", abrirPerfil);
     if(btnCerrar) btnCerrar.addEventListener("click", ()=>{ abrirModalCerrarSesion(); });
 
-    // 🔥 EVENTOS EN TIEMPO REAL PARA EL AUTO 🔥
-    const inputModelo = document.getElementById("modeloPerfil");
-    if(inputModelo) inputModelo.addEventListener("input", (e) => document.getElementById("previewModelo").textContent = e.target.value || "Sin registrar");
-
-    const inputColorAuto = document.getElementById("colorPerfil");
-    if(inputColorAuto) inputColorAuto.addEventListener("input", (e) => document.getElementById("previewColor").textContent = e.target.value || "Sin registrar");
-
-    const inputAnio = document.getElementById("anioPerfil");
-    if(inputAnio) inputAnio.addEventListener("input", (e) => document.getElementById("previewAnio").textContent = e.target.value || "Sin registrar");
-
-
-    // COLORES BANNER
     if(btnColor && inputColor){
         btnColor.addEventListener("click", () => {
             inputColor.style.position = "fixed";
@@ -220,78 +190,6 @@ function configurarEventos(){
         });
     }
 
-    if(inputLicencia){
-        inputLicencia.addEventListener("change", e=>{
-            const archivo = e.target.files[0];
-            if(archivo){
-                const reader = new FileReader();
-                reader.onload = function(ev){
-                    const imagen = ev.target.result;
-                    document.getElementById("previewLicencia").src = imagen;
-                    licenciaTemporal = imagen;
-                };
-                reader.readAsDataURL(archivo);
-            }
-        });
-    }
-
-    if(inputCorreo){
-        inputCorreo.addEventListener("input", (e)=>{
-            const valor = e.target.value;
-            document.getElementById("previewUser").textContent = valor || CORREO_DEFAULT;
-            if(valor && !validarCorreo(valor)){
-                inputCorreo.style.borderBottom = "2px solid red";
-            } else {
-                inputCorreo.style.borderBottom = "2px solid #ccc";
-            }
-        });
-    }
-
-    const inputMatricula = document.getElementById("matriculaPerfil");
-    if(inputMatricula){
-        inputMatricula.addEventListener("input", e=>{
-            const val = e.target.value;
-            if(val && !validarMatricula(val)){
-                e.target.style.borderBottom = "2px solid red";
-            } else {
-                e.target.style.borderBottom = "2px solid #ccc";
-            }
-        });
-    }
-
-    const inputPlacas = document.getElementById("placasPerfil");
-    if(inputPlacas){
-        inputPlacas.addEventListener("input", e=>{
-            let val = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
-            let letras = val.match(/^[A-Z]+/)?.[0] || "";
-
-            if(letras.length === 2){
-                if(val.length > 2 && val.length <= 6){
-                    val = val.slice(0,2) + "-" + val.slice(2);
-                } else if(val.length > 6){
-                    val = val.slice(0,2) + "-" + val.slice(2,6) + "-" + val.slice(6,7);
-                }
-            } else {
-                if(val.length > 3 && val.length <= 6){
-                    val = val.slice(0,3) + "-" + val.slice(3);
-                } else if(val.length > 6){
-                    val = val.slice(0,3) + "-" + val.slice(3,6) + "-" + val.slice(6,7);
-                }
-            }
-
-            e.target.value = val;
-            
-            // 🔥 PREVIEW DE PLACAS EN TIEMPO REAL
-            document.getElementById("previewPlacas").textContent = val || "Sin registrar";
-
-            if(val && !validarPlacas(val)){
-                e.target.style.borderBottom = "2px solid red";
-            } else {
-                e.target.style.borderBottom = "2px solid #ccc";
-            }
-        });
-    }
-
     if(preview && input){
         preview.addEventListener("click", () => {abrirPanelAvatares(); });
         input.addEventListener("change", (e)=>{
@@ -304,15 +202,6 @@ function configurarEventos(){
                 }
                 reader.readAsDataURL(archivo);
             }
-        });
-    }
-
-    const inputNombre = document.getElementById("nuevoNombre");
-    if(inputNombre){
-        inputNombre.addEventListener("input", (e)=>{
-            const nombre = e.target.value || "Usuario";
-            const nombrePreview = document.getElementById("previewNombre");
-            if(nombrePreview) nombrePreview.textContent = nombre;
         });
     }
 
@@ -366,7 +255,6 @@ function configurarEventos(){
     }
 }
 
-// ================= ACTUALIZAR FOTO =================
 function actualizarFoto(imagen){
     const preview = document.getElementById("previewFoto");
     if(preview) preview.src = imagen;
@@ -377,32 +265,9 @@ function actualizarFoto(imagen){
     fotoTemporal = imagen;
 }
 
-// ================= MODAL =================
 function abrirPerfil(){
     document.body.style.overflow = "hidden";
     document.getElementById("modalPerfil").classList.add("activo");
-
-    const nombre = document.getElementById("nuevoNombre").value || "";
-    const correo = document.getElementById("correoPerfil").value || "";
-    const matricula = document.getElementById("matriculaPerfil").value || "";
-    const placas = document.getElementById("placasPerfil").value || "";
-    const modeloAuto = document.getElementById("modeloPerfil") ? document.getElementById("modeloPerfil").value : "";
-    const colorAuto = document.getElementById("colorPerfil") ? document.getElementById("colorPerfil").value : "";
-    const anioAuto = document.getElementById("anioPerfil") ? document.getElementById("anioPerfil").value : "";
-
-    const foto = document.getElementById("previewFoto").src || "";
-    const licencia = document.getElementById("previewLicencia").src || "";
-
-    const bannerStyle = document.getElementById("previewBanner").style.backgroundImage;
-    let bannerLimpio = "";
-
-    if (bannerStyle && bannerStyle !== "none") {
-        bannerLimpio = bannerStyle.replace(/^url\(["']?/, "").replace(/["']?\)$/, "");
-    }
-
-    datosOriginales = {
-        nombre, correo, matricula, placas, modeloAuto, colorAuto, anioAuto, foto, banner: bannerLimpio, licencia
-    };
 }
 
 function cerrarPerfil(){
@@ -417,57 +282,29 @@ function cerrarPerfil(){
     bannerTempFinal = null;
 }
 
-// ================= GUARDAR =================
+// ================= GUARDAR (SOLO FOTO Y BANNER) =================
 async function guardarPerfil() {
     const user = auth.currentUser;
-    if (!user) {
-        mostrarMensaje("Usuario no autenticado", "red");
-        return;
-    }
+    if (!user) return;
 
     const uid = user.uid;
 
-    const nombre = document.getElementById("nuevoNombre").value.trim();
-    const correo = document.getElementById("correoPerfil").value.trim();
-    const matricula = document.getElementById("matriculaPerfil").value.trim();
-    const placas = document.getElementById("placasPerfil").value.trim();
-    
-    // 🔥 NUEVOS VALORES
-    const modeloAuto = document.getElementById("modeloPerfil") ? document.getElementById("modeloPerfil").value.trim() : "";
-    const colorAuto = document.getElementById("colorPerfil") ? document.getElementById("colorPerfil").value.trim() : "";
-    const anioAuto = document.getElementById("anioPerfil") ? document.getElementById("anioPerfil").value.trim() : "";
-
-    if (!nombre) return mostrarMensaje("Ingresa un nombre", "red");
-    if (!correo) return mostrarMensaje("Ingresa un correo", "red");
-    if (correo && !validarCorreo(correo)) return mostrarMensaje("Correo no válido", "red");
-    if (matricula && !validarMatricula(matricula)) return mostrarMensaje("La matrícula debe contener solo números", "red");
-    if (placas && !validarPlacas(placas)) return mostrarMensaje("Formato válido: ABC-123 o ABC-123-A", "red");
-
-    const datos = {
-        nombre: nombre,
-        correo: correo || CORREO_DEFAULT,
-        matricula: matricula,
-        placas: placas,
-        modeloAuto: modeloAuto,
-        colorAuto: colorAuto,
-        anioAuto: anioAuto,
+    const datosAActualizar = {
         foto: fotoTemporal || document.getElementById("previewFoto").src,
-        banner: bannerTempFinal || datosOriginales.banner || "",
-        licencia: licenciaTemporal || document.getElementById("previewLicencia").src
+        banner: bannerTempFinal || datosOriginales.banner || ""
     };
 
     try {
-        await setDoc(doc(db, "usuarios", uid), datos);
-        document.getElementById("nombreUsuario").textContent = datos.nombre;
-        document.getElementById("correoUsuario").textContent = datos.correo;
-        document.getElementById("previewUser").textContent = datos.correo;
+        // 🔥 Usamos updateDoc para NO borrar ni modificar estado, placas o datos clave
+        await updateDoc(doc(db, "usuarios", uid), datosAActualizar);
 
-        datosOriginales = { ...datos };
+        datosOriginales.foto = datosAActualizar.foto;
+        datosOriginales.banner = datosAActualizar.banner;
+        
         fotoTemporal = null;
         bannerTempFinal = null;
-        licenciaTemporal = null;
 
-        mostrarMensaje("✔ Información guardada", "#00c853");
+        mostrarMensaje("✔ Fotos de perfil actualizadas", "#00c853");
     } catch (error) {
         console.error(error);
         mostrarMensaje("Error al guardar", "red");
@@ -482,9 +319,7 @@ function mostrarMensaje(texto, color){
     mensaje.classList.remove("activo");
     void mensaje.offsetWidth; 
     mensaje.classList.add("activo");
-    setTimeout(()=>{
-        mensaje.classList.remove("activo");
-    }, 2000);
+    setTimeout(()=>{ mensaje.classList.remove("activo"); }, 2000);
 }
 
 function abrirPanelAvatares(){ document.getElementById("panelAvatares").classList.add("activo"); }
@@ -513,10 +348,6 @@ if(inputAvatar){
         }
     });
 }
-
-function validarCorreo(correo){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo); }
-function validarMatricula(matricula){ return /^[0-9]+$/.test(matricula); }
-function validarPlacas(placas){ return /^([A-Z]{3}-\d{3}(-[A-Z])?|[A-Z]{2}-\d{4}(-[A-Z])?)$/.test(placas.toUpperCase()); }
 
 function abrirPanelBanners(){ document.getElementById("panelBanners").classList.add("activo"); }
 function cerrarPanelBanners(){ document.getElementById("panelBanners").classList.remove("activo"); }
@@ -657,21 +488,11 @@ function confirmarSalida(){
     document.getElementById("modalPerfil").classList.remove("activo"); 
     document.body.style.overflow = "";
     cargarPerfil(); 
-    fotoTemporal = null; bannerTempFinal = null; licenciaTemporal = null;
+    fotoTemporal = null; bannerTempFinal = null;
 }
 
 function hayCambios(){
-    const nombre = document.getElementById("nuevoNombre").value.trim();
-    const correo = document.getElementById("correoPerfil").value.trim();
-    const matricula = document.getElementById("matriculaPerfil").value.trim();
-    const placas = document.getElementById("placasPerfil").value.trim();
-    
-    const modelo = document.getElementById("modeloPerfil") ? document.getElementById("modeloPerfil").value.trim() : "";
-    const color = document.getElementById("colorPerfil") ? document.getElementById("colorPerfil").value.trim() : "";
-    const anio = document.getElementById("anioPerfil") ? document.getElementById("anioPerfil").value.trim() : "";
-
     const fotoActual = fotoTemporal || document.getElementById("previewFoto").src || "";
-    const licenciaActual = licenciaTemporal || document.getElementById("previewLicencia").src || "";
     let bannerActual = bannerTempFinal;
 
     if (!bannerActual) {
@@ -681,14 +502,7 @@ function hayCambios(){
         } else { bannerActual = ""; }
     }
 
-    return (
-        nombre !== datosOriginales.nombre || correo !== datosOriginales.correo ||
-        matricula !== datosOriginales.matricula || placas !== datosOriginales.placas ||
-        modelo !== datosOriginales.modeloAuto || color !== datosOriginales.colorAuto ||
-        anio !== datosOriginales.anioAuto ||
-        fotoActual !== datosOriginales.foto || bannerActual !== datosOriginales.banner ||
-        licenciaActual !== datosOriginales.licencia
-    );
+    return (fotoActual !== datosOriginales.foto || bannerActual !== datosOriginales.banner);
 }
 
 function abrirModalCerrarSesion(){ document.getElementById("modalCerrarSesion").classList.add("activo"); }
