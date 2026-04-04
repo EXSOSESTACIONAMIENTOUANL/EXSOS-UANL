@@ -2,22 +2,21 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// Credenciales (Asegurándonos de que son las del sistema de la app)
+// 🔥 CREDENCIALES CORREGIDAS PARA QUE COINCIDAN 🔥
 const firebaseConfig = {
-  apiKey: "AIzaSyCjlT5tS1iEWvYzSIHRzg3jQLnyq5AAFJk",
-  authDomain: "exsos-pruebas.firebaseapp.com",
-  projectId: "exsos-pruebas",
-  storageBucket: "exsos-pruebas.firebasestorage.app",
-  messagingSenderId: "564255524295",
-  appId: "1:564255524295:web:ae4160b7a56304e6acc5e2",
-  measurementId: "G-B3KZX20LYS"
+  apiKey: "AIzaSyDr2FUS2IBW90alkYnAUUXvMNy2RQPjx6E",
+  authDomain: "ptueba-1-78027.firebaseapp.com",
+  projectId: "ptueba-1-78027",
+  storageBucket: "ptueba-1-78027.firebasestorage.app",
+  messagingSenderId: "463811943830",
+  appId: "1:463811943830:web:f529bdf1eea53445b0d1b7",
+  measurementId: "G-W5TBQT1DLK"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Variable para detener la escucha de la base de datos si el usuario sale
 let vigiaEnTiempoReal = null;
 
 onAuthStateChanged(auth, (user) => {
@@ -31,17 +30,13 @@ onAuthStateChanged(auth, (user) => {
         if (docSnap.exists()) {
             const estado = docSnap.data().estado;
             
-            // Si el administrador cambia el estado a inhabilitado mientras el usuario está en Home.html
             if (estado === "inhabilitado") {
                 alert("⚠️ ATENCIÓN: Tu cuenta ha sido inhabilitada por el administrador. Serás desconectado por razones de seguridad.");
-                
-                // Forzamos el cierre de sesión y lo mandamos al inicio
                 signOut(auth).then(() => {
                     window.location.href = "index.html";
                 });
             }
         } else {
-            // Si el administrador borra el documento por completo de la base de datos
             signOut(auth).then(() => {
                 window.location.href = "index.html";
             });
@@ -50,13 +45,9 @@ onAuthStateChanged(auth, (user) => {
 
   } else {
     console.log("No hay sesión. Expulsando...");
-    
-    // Si no hay sesión, detenemos al vigía por si acaso y redirigimos
     if (vigiaEnTiempoReal) {
         vigiaEnTiempoReal();
     }
-    
-    // 🔴 REDIRECCIÓN SI NO ESTÁ LOGUEADO
     window.location.href = "index.html"; 
   }
 });
