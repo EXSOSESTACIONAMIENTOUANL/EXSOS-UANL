@@ -670,7 +670,8 @@ refSensorSalida.on("value", (snapshot) => {
 });
 
 // --- Función Principal del Botón ---
-window.solicitarApertura = function(){
+// --- Función Principal del Botón (CON GUARDADO DE HISTORIAL) ---
+window.solicitarApertura = async function(){
     const alerta = document.getElementById("contenedorAlerta");
     const boton = document.getElementById("btnAbrirPluma");
 
@@ -682,6 +683,38 @@ window.solicitarApertura = function(){
             refPlumaEntrada.set(1);
             mostrarAlerta("✅ Bienvenido", "#00c853"); // Verde
             
+            try {
+                // 🔥 Importamos las herramientas para guardar en la base de datos 🔥
+                const { getFirestore, collection, addDoc, getDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+                const { getAuth } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
+                const dbFS = getFirestore();
+                const user = getAuth().currentUser;
+
+                if (user) {
+                    // Obtenemos el nombre y placas del usuario
+                    const userDoc = await getDoc(doc(dbFS, "usuarios", user.uid));
+                    const userData = userDoc.data();
+                    
+                    const ahora = new Date();
+                    // Formato fácil de leer: YYYY-MM-DD
+                    const fechaTxt = ahora.getFullYear() + "-" + String(ahora.getMonth() + 1).padStart(2, '0') + "-" + String(ahora.getDate()).padStart(2, '0');
+                    // Formato: HH:MM:SS
+                    const horaTxt = String(ahora.getHours()).padStart(2, '0') + ":" + String(ahora.getMinutes()).padStart(2, '0') + ":" + String(ahora.getSeconds()).padStart(2, '0');
+
+                    // Creamos la bitácora de Entrada
+                    await addDoc(collection(dbFS, "historial_estacionamiento"), {
+                        uid: user.uid,
+                        nombre: userData.nombre,
+                        placas: userData.placas,
+                        fechaEntrada: fechaTxt,
+                        horaEntrada: horaTxt,
+                        fechaSalida: null,
+                        horaSalida: null,
+                        timestampEntrada: ahora.getTime() // Esto nos sirve para ordenar los últimos 5
+                    });
+                }
+            } catch (e) { console.log("Error al guardar historial:", e); }
+
             // ACTUALIZAR ESTADO EN LA BD DESPUÉS DE ENTRAR
             setTimeout(() => {
                 if(refEstadoUsuario) refEstadoUsuario.set("salida");
@@ -696,6 +729,37 @@ window.solicitarApertura = function(){
             refPlumaSalida.set(1);
             mostrarAlerta("👋 Excelente día", "#00c853"); // Verde
             
+            try {
+                // 🔥 Importamos las herramientas para actualizar la base de datos 🔥
+                const { getFirestore, collection, query, where, orderBy, limit, getDocs, updateDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+                const { getAuth } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
+                const dbFS = getFirestore();
+                const user = getAuth().currentUser;
+
+                if (user) {
+                    const ahora = new Date();
+                    const fechaTxt = ahora.getFullYear() + "-" + String(ahora.getMonth() + 1).padStart(2, '0') + "-" + String(ahora.getDate()).padStart(2, '0');
+                    const horaTxt = String(ahora.getHours()).padStart(2, '0') + ":" + String(ahora.getMinutes()).padStart(2, '0') + ":" + String(ahora.getSeconds()).padStart(2, '0');
+
+                    // Buscamos cuál fue la última entrada de este usuario que siga "abierta" (fechaSalida en null)
+                    const q = query(collection(dbFS, "historial_estacionamiento"), 
+                                    where("uid", "==", user.uid), 
+                                    where("horaSalida", "==", null), 
+                                    orderBy("timestampEntrada", "desc"), 
+                                    limit(1));
+                    
+                    const querySnapshot = await getDocs(q);
+                    
+                    // Actualizamos ese documento poniéndole la hora en la que acaba de salir
+                    querySnapshot.forEach(async (documento) => {
+                        await updateDoc(doc(dbFS, "historial_estacionamiento", documento.id), {
+                            fechaSalida: fechaTxt,
+                            horaSalida: horaTxt
+                        });
+                    });
+                }
+            } catch (e) { console.log("Error al actualizar salida:", e); }
+
             // ACTUALIZAR ESTADO EN LA BD DESPUÉS DE SALIR
             setTimeout(() => {
                 if(refEstadoUsuario) refEstadoUsuario.set("entrada");
