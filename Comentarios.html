@@ -192,7 +192,7 @@ Asistente virtual Exsos
         <span id="btnGuardarPerfil" class="guardar-btn">Guardar</span>
       </div>
 
-      <div class="perfil-body">
+<div class="perfil-body">
 
         <div id="mensajePerfil"></div>
 
@@ -203,59 +203,75 @@ Asistente virtual Exsos
 
         <div class="perfil-campo">
             <label>Nombre</label>
-            <input type="text" id="nuevoNombre" placeholder="Nombre de Usuario">
+            <input type="text" id="nuevoNombre" readonly style="color: #888; cursor: not-allowed; background: #1a1b1e;">
         </div>
 
         <div class="perfil-campo">
             <label>Correo</label>
-            <input type="email" id="correoPerfil" placeholder="Institucional o personal">
+            <input type="email" id="correoPerfil" readonly style="color: #888; cursor: not-allowed; background: #1a1b1e;">
         </div>
 
         <div class="perfil-campo">
             <label>Matrícula</label>
-            <input type="text" id="matriculaPerfil" placeholder="En caso de ser estudiante o docente">
+            <input type="text" id="matriculaPerfil" readonly style="color: #888; cursor: not-allowed; background: #1a1b1e;">
+        </div>
+          
+        <div class="perfil-campo">
+            <label>Modelo del Auto</label>
+            <input type="text" id="modeloPerfil" readonly style="color: #888; cursor: not-allowed; background: #1a1b1e;">
+        </div>
+
+        <div class="perfil-campo">
+            <label>Color del Auto</label>
+            <input type="text" id="colorPerfil" readonly style="color: #888; cursor: not-allowed; background: #1a1b1e;">
+        </div>
+
+        <div class="perfil-campo">
+            <label>Año del Auto</label>
+            <input type="number" id="anioPerfil" readonly style="color: #888; cursor: not-allowed; background: #1a1b1e;">
         </div>
 
         <div class="perfil-campo">
             <label>Placas del auto</label>
-            <input type="text" id="placasPerfil" placeholder="Registre su auto">
+            <input type="text" id="placasPerfil" readonly style="color: #888; cursor: not-allowed; background: #1a1b1e;">
         </div>
 
         <button id="btnCerrarSesion" class="btn-cerrar-sesion">Cerrar sesión</button>
 
-        </div>
+      </div>
     </div>
 
-    <!-- DERECHA (PREVIEW) -->
     <div class="perfil-preview">
 
         <div class="preview-card">
 
         <div class="preview-banner" id="previewBanner">
-        <button class="btn-editar-banner" id="btnEditarBanner">🖉</button>
+            <button class="btn-editar-banner" id="btnEditarBanner">🖉</button>
         </div>
 
         <div class="preview-body">
-                <img id="previewAvatar" src="perfil/user.png" class="preview-avatar">
+            <img id="previewAvatar" src="perfil/user.png" class="preview-avatar">
 
-                <div id="previewNombre" class="preview-name">Usuario</div>
-                <div id="previewUser" class="preview-username">usuario@email.com</div>
+            <div id="previewNombre" class="preview-name">Usuario</div>
+            <div id="previewUser" class="preview-username">usuario@email.com</div>
 
+            <div class="preview-detalles-auto" style="margin-top: 15px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px; text-align: left; font-size: 14px; color: #ddd; width: 90%; margin-left: auto; margin-right: auto;">
+                <p style="margin: 5px 0;"><strong>🚗 Auto:</strong> <span id="previewModelo">Sin registrar</span></p>
+                <p style="margin: 5px 0;"><strong>🎨 Color:</strong> <span id="previewColor">Sin registrar</span></p>
+                <p style="margin: 5px 0;"><strong>📅 Año:</strong> <span id="previewAnio">Sin registrar</span></p>
+                <p style="margin: 5px 0;"><strong>🏷️ Placas:</strong> <span id="previewPlacas">Sin registrar</span></p>
+            </div>
         </div>
 
-
         <div class="licencia-card">
-    <h3>Licencia de manejo</h3>
-
-    <div class="licencia-preview-container">
-        <img id="previewLicencia" src="perfil/licencia-default.png" class="preview-licencia">
+            <h3>Licencia de manejo / INE</h3>
+            <div class="licencia-preview-container">
+                <img id="previewLicencia" src="perfil/licencia-default.png" class="preview-licencia">
+            </div>
+        </div>
+        
+      </div>
     </div>
-
-    <label class="btn-subir-licencia">
-        Subir licencia
-        <input type="file" id="inputLicencia" accept="image/*">
-    </label>
-</div>
 
 
 
