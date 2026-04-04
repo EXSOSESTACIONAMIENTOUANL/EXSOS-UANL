@@ -13,6 +13,7 @@ const firebaseConfig = {
   measurementId: "G-W5TBQT1DLK"
 };
 
+
 // 🔥 TRUCO MÁGICO: Si Firebase ya se inició en otro archivo, solo úsalo, no lo dupliques
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
