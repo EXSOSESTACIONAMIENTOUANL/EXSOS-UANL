@@ -9,8 +9,10 @@ import {
     setPersistence, browserLocalPersistence, browserSessionPersistence, 
     onAuthStateChanged, signOut, RecaptchaVerifier,
     sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink,
-    updatePassword, linkWithPhoneNumber,getFirestore, doc, setDoc, getDoc
+    updatePassword, linkWithPhoneNumber
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+// 🔥 NUEVO IMPORT DE FIRESTORE:
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCjlT5tS1iEWvYzSIHRzg3jQLnyq5AAFJk",
