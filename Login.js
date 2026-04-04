@@ -2,6 +2,10 @@
    Login.js - VERSIÓN FINAL (Flujo en 2 Pasos)
    Paso 1: Solo Correo -> Paso 2: Resto de Datos + SMS
    ========================================== */
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+let confirmationResult;
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { 
@@ -11,10 +15,12 @@ import {
     sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink,
     updatePassword, linkWithPhoneNumber
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-// 🔥 NUEVO IMPORT DE FIRESTORE:
 import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+// 🔥 NUEVO: Importamos Storage para subir las fotos
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
 const firebaseConfig = {
+
   apiKey: "AIzaSyCjlT5tS1iEWvYzSIHRzg3jQLnyq5AAFJk",
   authDomain: "exsos-pruebas.firebaseapp.com",
   projectId: "exsos-pruebas",
@@ -27,7 +33,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const storage = getStorage(app); // 🔥 Inicializamos Storage
 let confirmationResult;
+
 
 // --- LOGIN ---
 function login() {
@@ -57,25 +65,22 @@ function login() {
                 const estado = docSnap.data().estado;
                 
                 if (estado === "pendiente") {
-                    await signOut(auth); // Lo sacamos
-                    return mostrarMensaje("mensajeLogin", "Tu cuenta sigue en proceso de validación (24h).");
+                    await signOut(auth); 
+                    return mostrarMensaje("mensajeLogin", "⏳ Tu cuenta sigue en proceso de validación (24h).");
                 } 
                 else if (estado === "rechazado") {
-                    await signOut(auth); // Lo sacamos
-                    return mostrarMensaje("mensajeLogin", "Tu cuenta no fue aprobada por el administrador.");
+                    await signOut(auth); 
+                    return mostrarMensaje("mensajeLogin", "❌ Tu cuenta fue rechazada. Verifica tus datos.");
                 }
             } else {
-                // Si no existe el documento, cerramos sesión por seguridad
                 await signOut(auth);
-                return mostrarMensaje("mensajeLogin", "Error: Cuenta no encontrada en la base de datos.");
+                return mostrarMensaje("mensajeLogin", "Error: Cuenta no encontrada.");
             }
 
-            // Si es "aprobado" (o cualquier otra cosa), lo dejamos pasar.
-            // onAuthStateChanged se encargará de la redirección.
+            // Si pasa todo, el onAuthStateChanged lo mandará a Home.html
         })
         .catch(() => mostrarMensaje("mensajeLogin", "Credenciales incorrectas"));
 }
-
 // --- PASO 1: VERIFICAR EMAIL (SOLO SE VE EL INPUT DE CORREO) ---
 async function iniciarVerificacionCorreo() {
     const email = document.getElementById("regEmail").value;
@@ -190,38 +195,81 @@ async function finalizarRegistro() {
     }
 }
 
-// --- PASO 4: CONFIRMAR SMS Y CREAR CUENTA ---
+
+// --- PASO 4: CONFIRMAR SMS, SUBIR FOTOS Y CREAR CUENTA ---
 async function verificarCodigoSms() {
     const codigo = document.getElementById("codigoSms").value;
     const password = document.getElementById("regPassword").value;
+    const btn = document.querySelector(".btn-crear");
 
     try {
+        btn.disabled = true;
+        btn.innerText = "Creando cuenta y subiendo archivos...";
+
         await confirmationResult.confirm(codigo);
         await updatePassword(auth.currentUser, password);
         
         const user = auth.currentUser;
 
-        // 1. Guardar en Firestore con estado "pendiente" ANTES de cerrar sesión
+        // 1. Recopilar todos los datos del formulario de nuevo
+        const nombre = document.getElementById("regNombre").value.trim();
+        const telefono = document.getElementById("regTelefono").value.trim();
+        const matricula = document.getElementById("regMatricula").value.trim();
+        const modelo = document.getElementById("regModelo").value.trim();
+        const color = document.getElementById("regColor").value.trim();
+        const anioCarro = document.getElementById("regAnio").value.trim();
+        const placas = document.getElementById("regPlacas").value.trim();
+        
+        const dia = document.querySelector("#selectDia .selected").innerText.trim();
+        const mes = document.querySelector("#selectMes .selected").innerText.trim();
+        const anio = document.querySelector("#selectAnio .selected").innerText.trim();
+        const fechaNacimiento = `${dia}/${mes}/${anio}`;
+
+        const fotoCarroFile = document.getElementById("regFotoCarro").files[0];
+        const documentoFile = document.getElementById("regDocumento").files[0];
+
+        // 2. Subir foto del carro a Storage
+        const refCarro = ref(storage, `usuarios/${user.uid}/carro_${fotoCarroFile.name}`);
+        await uploadBytes(refCarro, fotoCarroFile);
+        const urlFotoCarro = await getDownloadURL(refCarro);
+
+        // 3. Subir documento INE a Storage
+        const refIne = ref(storage, `usuarios/${user.uid}/ine_${documentoFile.name}`);
+        await uploadBytes(refIne, documentoFile);
+        const urlDocumentoIne = await getDownloadURL(refIne);
+
+        // 4. Guardar TODO en Firestore con estado "pendiente"
         await setDoc(doc(db, "usuarios", user.uid), {
             correo: user.email,
-            telefono: document.getElementById("regTelefono").value.trim(),
-            nombre: document.getElementById("regNombre").value.trim(),
-            estado: "pendiente" // 🔥 AQUÍ ESTÁ LA MAGIA
-        }, { merge: true });
+            nombre: nombre,
+            telefono: telefono,
+            matricula: matricula,
+            fechaNacimiento: fechaNacimiento,
+            modeloAuto: modelo,
+            colorAuto: color,
+            anioAuto: anioCarro,
+            placas: placas,
+            fotoCarroUrl: urlFotoCarro,
+            ineUrl: urlDocumentoIne,
+            estado: "pendiente" // 🔥 ESTADO INICIAL
+        });
 
-        // 2. Cerrar sesión inmediatamente para que no entren
+        // 5. Cerramos sesión para que no entre a la app
         await signOut(auth);
         
-        // 3. Mostrar el mensaje y ocultar el modal después de un rato
-        mostrarMensaje("mensajeRegistro", "¡Cuenta en validación! Recibirás respuesta en aprox. 24 horas.", "ok");
+        // 6. Mostramos el mensaje y lo mandamos al inicio (Login)
+        mostrarMensaje("mensajeRegistro", "¡Registro completado! Tu cuenta será validada en las próximas 24 horas.", "ok");
         
         setTimeout(() => { 
-            cerrarRegistro(); 
-            // NO REDIRIGIMOS A HOME
+            cerrarRegistro(); // Cierra el modal y lo deja en el login
+            btn.disabled = false;
+            btn.innerText = "Finalizar y enviar SMS";
         }, 5000);
 
     } catch (error) {
-        mostrarMensaje("mensajeRegistro", "Error SMS o Base de Datos: " + error.code);
+        btn.disabled = false;
+        btn.innerText = "Confirmar Código SMS";
+        mostrarMensaje("mensajeRegistro", "Error al guardar los datos: " + error.code);
     }
 }
 // --- FUNCIONES DE INTERFAZ (BOTONES, MODALES, FECHAS) ---
