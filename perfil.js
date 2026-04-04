@@ -1,18 +1,11 @@
 /* ==========================================
-   Login.js - VERSIÓN FINAL (Base ptueba-1)
+   perfil.js - VERSIÓN FINAL ANTICRASH
    ========================================== */
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { 
-    getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, 
-    setPersistence, browserLocalPersistence, browserSessionPersistence, 
-    onAuthStateChanged, signOut, RecaptchaVerifier,
-    sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink,
-    updatePassword, linkWithPhoneNumber
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// 🔥 CREDENCIALES CORREGIDAS PARA QUE COINCIDAN CON EL ADMIN 🔥
 const firebaseConfig = {
   apiKey: "AIzaSyDr2FUS2IBW90alkYnAUUXvMNy2RQPjx6E",
   authDomain: "ptueba-1-78027.firebaseapp.com",
@@ -23,12 +16,22 @@ const firebaseConfig = {
   measurementId: "G-W5TBQT1DLK"
 };
 
-const app = initializeApp(firebaseConfig);
+// 🔥 EVITAMOS EL CONGELAMIENTO DE BOTONES 🔥
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
 const db = getFirestore(app);
-let confirmationResult;
 
-function procesarImagen(file) {
+let datosOriginales = {};
+let bannerTemporal = null;
+let fotoTemporal = null;
+let bannerTempFinal = null;
+let offsetX = 0;  
+let offsetY = 0;
+let scale = 1;
+const FOTO_DEFAULT = "perfil/user.png";
+const CORREO_DEFAULT = "correo@email.com";
+
+function procesarImagenBase64(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
@@ -50,362 +53,559 @@ function procesarImagen(file) {
     });
 }
 
-// --- LOGIN ---
-function login() {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    const remember = document.getElementById("remember").checked;
+window.addEventListener("DOMContentLoaded", () => {
+    configurarEventos(); 
+});
 
-    if(!email || !password) return mostrarMensaje("mensajeLogin", "Ingresa datos");
+onAuthStateChanged(auth, (user) => {
+    if(user){
+        cargarPerfil(); 
+        if(typeof window.conectarBotonUsuario === "function"){
+            window.conectarBotonUsuario(user.uid);
+        }
+    } else {
+        window.location.href = "index.html";
+    }
+});
 
-    const persistence = remember ? browserLocalPersistence : browserSessionPersistence;
+async function cargarPerfil(){
+    const user = auth.currentUser;
+    if(!user) return;
+    const uid = user.uid;
 
-    setPersistence(auth, persistence)
-        .then(() => signInWithEmailAndPassword(auth, email, password))
-        .then(async (userCredential) => {
-            const user = userCredential.user;
+    try {
+        const docRef = doc(db, "usuarios", uid);
+        const docSnap = await getDoc(docRef);
+
+        if(docSnap.exists()){
+            const data = docSnap.data();
+
+            const fotoFinal = data.foto || FOTO_DEFAULT;
+            const correoFinal = data.correo || user.email || CORREO_DEFAULT;
+
+            if(document.getElementById("fotoPerfil")) document.getElementById("fotoPerfil").src = fotoFinal;
+            if(document.getElementById("nombreUsuario")) document.getElementById("nombreUsuario").textContent = data.nombre || "Usuario";
+            if(document.getElementById("correoUsuario")) document.getElementById("correoUsuario").textContent = correoFinal;
+
+            if(document.getElementById("previewFoto")) document.getElementById("previewFoto").src = fotoFinal;
+            if(document.getElementById("previewAvatar")) document.getElementById("previewAvatar").src = fotoFinal;
+            if(document.getElementById("previewNombre")) document.getElementById("previewNombre").textContent = data.nombre || "Usuario";
+            if(document.getElementById("previewUser")) document.getElementById("previewUser").textContent = correoFinal;
+
+            if(document.getElementById("previewModelo")) document.getElementById("previewModelo").textContent = data.modeloAuto || "Sin registrar";
+            if(document.getElementById("previewColor")) document.getElementById("previewColor").textContent = data.colorAuto || "Sin registrar";
+            if(document.getElementById("previewAnio")) document.getElementById("previewAnio").textContent = data.anioAuto || "Sin registrar";
+            if(document.getElementById("previewPlacas")) document.getElementById("previewPlacas").textContent = data.placas || "Sin registrar";
+
+            if(document.getElementById("nuevoNombre")) document.getElementById("nuevoNombre").value = data.nombre || "";
+            if(document.getElementById("correoPerfil")) document.getElementById("correoPerfil").value = correoFinal;
+            if(document.getElementById("matriculaPerfil")) document.getElementById("matriculaPerfil").value = data.matricula || "";
+            if(document.getElementById("placasPerfil")) document.getElementById("placasPerfil").value = data.placas || "";
+            if(document.getElementById("modeloPerfil")) document.getElementById("modeloPerfil").value = data.modeloAuto || "";
+            if(document.getElementById("colorPerfil")) document.getElementById("colorPerfil").value = data.colorAuto || "";
+            if(document.getElementById("anioPerfil")) document.getElementById("anioPerfil").value = data.anioAuto || "";
+
+            if(document.getElementById("previewLicencia")) {
+                if(data.ineUrl) document.getElementById("previewLicencia").src = data.ineUrl;
+                else if(data.licencia) document.getElementById("previewLicencia").src = data.licencia;
+            }
             
-            if (!user.emailVerified) {
-                await signOut(auth);
-                return mostrarMensaje("mensajeLogin", "Verifica tu correo primero.");
-            }
+            if(data.banner) actualizarBanner(data.banner);
 
-            const docRef = doc(db, "usuarios", user.uid);
-            const docSnap = await getDoc(docRef);
-
-            if (docSnap.exists()) {
-                const estado = docSnap.data().estado;
-                
-                if (estado === "pendiente") {
-                    await signOut(auth); 
-                    return mostrarMensaje("mensajeLogin", "⏳ Tu cuenta sigue en proceso de validación (24h).");
-                } 
-                // 🔥 AQUÍ ESTÁ EL MENSAJE DE RECHAZO ACTUALIZADO 🔥
-                else if (estado === "rechazado") {
-                    await signOut(auth); 
-                    return mostrarMensaje("mensajeLogin", "❌ Tu cuenta fue rechazada. Vuelve a intentarlo con datos correctos.");
-                }
-                else if (estado === "inhabilitado") {
-                    await signOut(auth); 
-                    return mostrarMensaje("mensajeLogin", "🚫 Tu usuario está inhabilitado. Comunícate a atención al cliente: 81 8329 4000");
-                }
-                else if (estado === "aprobado") {
-                    window.location.href = "Home.html";
-                }
-            } else {
-                await signOut(auth);
-                return mostrarMensaje("mensajeLogin", "Error: Cuenta no encontrada en la base de datos.");
-            }
-        })
-        .catch((error) => {
-            if(error.code === 'auth/invalid-credential') {
-                mostrarMensaje("mensajeLogin", "El correo o la contraseña son incorrectos.");
-            } else {
-                mostrarMensaje("mensajeLogin", "Error: " + error.code);
-            }
-        });
+            datosOriginales = { foto: fotoFinal, banner: data.banner || "" };
+        }
+    } catch(error){
+        console.error(error);
+    }
 }
 
-// --- PASO 1: VERIFICAR EMAIL ---
-async function iniciarVerificacionCorreo() {
-    const email = document.getElementById("regEmail").value;
-    const btn = document.querySelector(".btn-crear");
+function configurarEventos(){
+    const preview = document.getElementById("previewFoto");
+    const input = document.getElementById("inputFoto");
+    const colorPicker = document.getElementById("colorBannerPicker");
+    const inputBanner = document.getElementById("inputBannerPanel");
+    const btnColor = document.getElementById("btnColor");
+    const inputColor = document.getElementById("colorBannerPicker");
+    const btnCerrar = document.getElementById("btnCerrarSesion");
+    const btnEditar = document.getElementById("btnEditarPerfil");
+    
+    const btnMenu = document.getElementById("btnMenu");
+    const overlay = document.getElementById("overlay");
+    const btnCerrarAvatares = document.querySelector("#panelAvatares .cerrar-panel");
+    const btnNoti = document.getElementById("btnNotificaciones");
+    const panelNoti = document.getElementById("panelNotificaciones");
+    const overlayAyuda = document.getElementById("overlayAyuda");
 
-    if (!email) return mostrarMensaje("mensajeRegistro", "Escribe tu correo para verificarlo.");
+    if(btnMenu) btnMenu.addEventListener("click", () => { if(window.abrirMenu) window.abrirMenu(); });
+    if(overlay) overlay.addEventListener("click", () => { if(window.cerrarMenu) window.cerrarMenu(); });
 
-    const actionCodeSettings = {
-        url: window.location.href, 
-        handleCodeInApp: true,
+    const btnAbrirAyuda = document.getElementById("btnAbrirAyuda");
+    if(btnAbrirAyuda) btnAbrirAyuda.addEventListener("click", (e)=>{ e.preventDefault(); if(window.abrirAyuda) window.abrirAyuda(); });
+    const btnCerrarAyuda = document.querySelector(".btn-cerrar");
+    if(btnCerrarAyuda) btnCerrarAyuda.addEventListener("click", () => { if(window.cerrarAyuda) window.cerrarAyuda(); });
+
+    if(overlayAyuda) overlayAyuda.addEventListener("click", (e)=> e.stopPropagation());
+    if(btnNoti && panelNoti) btnNoti.addEventListener("click", (e)=>{ 
+        e.stopPropagation(); 
+        if(window.toggleNotificaciones) window.toggleNotificaciones(); 
+        else panelNoti.classList.toggle("activo"); 
+    });
+
+    document.querySelectorAll(".cabecera-noti").forEach(cabecera=>{
+        cabecera.addEventListener("click", ()=>{
+            const seccion = cabecera.dataset.seccion;
+            if(window.toggleSeccion) window.toggleSeccion(seccion);
+        });
+    });
+
+    if(btnCerrarAvatares) btnCerrarAvatares.addEventListener("click", cerrarPanelAvatares);
+    const btnSalir = document.querySelector(".btn-salir");
+    if(btnSalir) btnSalir.addEventListener("click", cerrarPerfil);
+    
+    const btnCancelarBanner = document.querySelector("#editorBanner button:first-child");
+    if(btnCancelarBanner) btnCancelarBanner.addEventListener("click", cancelarBanner);
+    const btnAplicarBanner = document.querySelector("#editorBanner button:last-child");
+    if(btnAplicarBanner) btnAplicarBanner.addEventListener("click", aplicarBanner);
+    
+    const btnCerrarPerfil = document.getElementById("btnCerrarPerfil");
+    if(btnCerrarPerfil) btnCerrarPerfil.addEventListener("click", cerrarPerfil);
+    const btnGuardar = document.getElementById("btnGuardarPerfil");
+    if(btnGuardar) btnGuardar.addEventListener("click", guardarPerfil);
+    const btnEditarBanner = document.getElementById("btnEditarBanner");
+    if(btnEditarBanner) btnEditarBanner.addEventListener("click", abrirPanelBanners);
+    
+    const btnCancelar = document.getElementById("btnCancelarCerrarSesion");
+    if(btnCancelar) btnCancelar.addEventListener("click", cancelarCerrarSesion);
+    const btnConfirmar = document.getElementById("btnConfirmarCerrarSesion");
+    if(btnConfirmar) btnConfirmar.addEventListener("click", confirmarCerrarSesion);
+    
+    if(btnEditar) btnEditar.addEventListener("click", abrirPerfil);
+    if(btnCerrar) btnCerrar.addEventListener("click", ()=>{ abrirModalCerrarSesion(); });
+
+    if(btnColor && inputColor){
+        btnColor.addEventListener("click", () => {
+            inputColor.style.position = "fixed";
+            inputColor.style.left = "50%";
+            inputColor.style.top = "50%";
+            inputColor.style.transform = "translate(-50%, -50%)";
+            inputColor.click();
+            setTimeout(()=>{
+                inputColor.style.position = "";
+                inputColor.style.left = "";
+                inputColor.style.top = "";
+                inputColor.style.transform = "";
+            }, 100);
+        });
+    }
+
+    if(colorPicker){
+        colorPicker.addEventListener("input", (e)=>{
+            const color = e.target.value;
+            actualizarBanner(color);
+            const pickerBox = document.querySelector(".banner-color-picker");
+            if(pickerBox) pickerBox.style.background = color;
+        });
+    }
+
+    if(preview && input){
+        preview.addEventListener("click", () => { abrirPanelAvatares(); });
+        input.addEventListener("change", (e)=>{
+            const archivo = e.target.files[0];
+            if(archivo){
+                const reader = new FileReader();
+                reader.onload = function(e){
+                    const imagen = e.target.result;
+                    actualizarFoto(imagen);
+                }
+                reader.readAsDataURL(archivo);
+            }
+        });
+    }
+
+    document.addEventListener("keydown", (e)=>{
+        if(e.key === "Escape"){
+            const editor = document.getElementById("editorBanner");
+            if(editor && editor.classList.contains("activo")){
+                cerrarEditorBanner();
+                return;
+            }
+            cerrarPerfil();
+        }
+    });
+
+    const modal = document.getElementById("modalPerfil");
+    if(modal){
+        modal.addEventListener("click", (e)=>{
+            if(e.target.id === "modalPerfil"){
+                cerrarPerfil();
+            }
+        });
+    }
+
+    document.querySelectorAll(".banner-opcion").forEach(div=>{
+        div.addEventListener("click", ()=>{
+            actualizarBanner(div.style.backgroundColor, false);
+            cerrarPanelBanners();
+        });
+    });
+
+    document.querySelectorAll(".banner-opcion-img").forEach(img=>{
+        img.addEventListener("click", ()=>{
+            actualizarBanner(img.src, true);
+            cerrarPanelBanners();
+        });
+    });
+
+    if(inputBanner){
+        inputBanner.addEventListener("change", (e)=>{
+            const archivo = e.target.files[0];
+            if(archivo){
+                const reader = new FileReader();
+                reader.onload = function(e){
+                    bannerTemporal = e.target.result;
+                    abrirEditorBanner(bannerTemporal);
+                    inputBanner.value = ""; 
+                }
+                reader.readAsDataURL(archivo);
+            }
+        });
+    }
+
+    const btnSolicitarAuto = document.getElementById("btnSolicitarAuto");
+    if(btnSolicitarAuto) {
+        btnSolicitarAuto.addEventListener("click", () => {
+            document.getElementById("modalCambioAuto").classList.add("activo");
+        });
+    }
+
+    const btnCorreoAccion = document.getElementById("btnActualizarCorreo");
+    if(btnCorreoAccion) {
+        btnCorreoAccion.addEventListener("click", () => {
+            alert("Para actualizar tu correo, por favor contacta a Administración Universitaria.");
+        });
+    }
+
+    const btnTel = document.getElementById("btnActualizarTel");
+    if(btnTel) {
+        btnTel.addEventListener("click", () => {
+            alert("Para cambiar tu teléfono de recuperación, acude al módulo de EXSOS.");
+        });
+    }
+
+    const btnEnviarSolicitudAuto = document.getElementById("btnEnviarSolicitudAuto");
+    if(btnEnviarSolicitudAuto) {
+        btnEnviarSolicitudAuto.addEventListener("click", async () => {
+            const modelo = document.getElementById("nuevoModeloAuto").value.trim();
+            const color = document.getElementById("nuevoColorAuto").value.trim();
+            const anio = document.getElementById("nuevoAnioAuto").value.trim();
+            const placas = document.getElementById("nuevasPlacasAuto").value.trim();
+            const fotoFile = document.getElementById("nuevaFotoAuto").files[0];
+
+            if(!modelo || !color || !anio || !placas || !fotoFile) {
+                alert("Por favor completa todos los datos y sube la foto de tu nuevo vehículo.");
+                return;
+            }
+
+            btnEnviarSolicitudAuto.disabled = true;
+            btnEnviarSolicitudAuto.innerText = "Enviando...";
+
+            try {
+                const fotoNuevaUrl = await procesarImagenBase64(fotoFile);
+                await updateDoc(doc(db, "usuarios", auth.currentUser.uid), {
+                    solicitudCarro: {
+                        modelo: modelo,
+                        color: color,
+                        anio: anio,
+                        placas: placas,
+                        fotoUrl: fotoNuevaUrl,
+                        estado: "pendiente"
+                    }
+                });
+
+                document.getElementById("modalCambioAuto").classList.remove("activo");
+                alert("✅ Tu solicitud fue enviada correctamente. El administrador la revisará en un lapso de 24 horas.");
+                
+            } catch (error) {
+                console.error(error);
+                alert("Error al enviar la solicitud. Revisa tu conexión.");
+            } finally {
+                btnEnviarSolicitudAuto.disabled = false;
+                btnEnviarSolicitudAuto.innerText = "Enviar Solicitud";
+            }
+        });
+    }
+}
+
+function actualizarFoto(imagen){
+    const preview = document.getElementById("previewFoto");
+    if(preview) preview.src = imagen;
+    const avatar = document.getElementById("previewAvatar");
+    if(avatar) avatar.src = imagen;
+    const fotoMenu = document.getElementById("fotoPerfil");
+    if(fotoMenu) fotoMenu.src = imagen;
+    fotoTemporal = imagen;
+}
+
+function abrirPerfil(){
+    document.body.style.overflow = "hidden";
+    document.getElementById("modalPerfil").classList.add("activo");
+}
+
+function cerrarPerfil(){
+    if(hayCambios()){
+        abrirModalConfirmacion();
+        return;
+    }
+    document.getElementById("modalPerfil").classList.remove("activo");
+    document.body.style.overflow = "";
+    cargarPerfil();
+    fotoTemporal = null;
+    bannerTempFinal = null;
+}
+
+async function guardarPerfil() {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const uid = user.uid;
+    const datosAActualizar = {
+        foto: fotoTemporal || document.getElementById("previewFoto").src,
+        banner: bannerTempFinal || datosOriginales.banner || ""
     };
 
     try {
-        btn.disabled = true;
-        btn.innerText = "Enviando enlace...";
-        
-        await sendSignInLinkToEmail(auth, email, actionCodeSettings);
-        window.localStorage.setItem('emailParaRegistro', email);
-        
-        mostrarMensaje("mensajeRegistro", "¡Enlace enviado! Revisa tu correo y haz clic en el link.", "ok");
+        await updateDoc(doc(db, "usuarios", uid), datosAActualizar);
+
+        datosOriginales.foto = datosAActualizar.foto;
+        datosOriginales.banner = datosAActualizar.banner;
+        fotoTemporal = null;
+        bannerTempFinal = null;
+
+        mostrarMensaje("✔ Fotos de perfil actualizadas", "#00c853");
     } catch (error) {
-        btn.disabled = false;
-        btn.innerText = "Verificar Correo";
-        mostrarMensaje("mensajeRegistro", "Error al enviar el link. " + error.code);
+        console.error(error);
+        mostrarMensaje("Error al guardar", "red");
     }
 }
 
-window.addEventListener("load", async () => {
-    const dias = Array.from({length: 31}, (_, i) => i + 1);
-    const meses = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
-    const actual = new Date().getFullYear();
-    const anios = [];
-    for(let i = actual - 18; i >= actual - 80; i--) anios.push(i);
+function mostrarMensaje(texto, color){
+    const mensaje = document.getElementById("mensajePerfil");
+    if(!mensaje) return;
+    mensaje.textContent = texto;
+    mensaje.style.color = color;
+    mensaje.classList.remove("activo");
+    void mensaje.offsetWidth; 
+    mensaje.classList.add("activo");
+    setTimeout(()=>{ mensaje.classList.remove("activo"); }, 2000);
+}
 
-    crearOpciones("selectDia", dias);
-    crearOpciones("selectMes", meses);
-    crearOpciones("selectAnio", anios);
+function abrirPanelAvatares(){ document.getElementById("panelAvatares").classList.add("activo"); }
+function cerrarPanelAvatares(){ document.getElementById("panelAvatares").classList.remove("activo"); }
 
-    if (isSignInWithEmailLink(auth, window.location.href)) {
-        let email = window.localStorage.getItem('emailParaRegistro');
-        if (!email) email = window.prompt('Confirma tu correo para continuar:');
-
-        try {
-            await signInWithEmailLink(auth, email, window.location.href);
-            window.localStorage.removeItem('emailParaRegistro');
-
-            document.getElementById("modalRegistro").style.display = "flex";
-            document.getElementById("loginCard").classList.add("oculto");
-            document.getElementById("datosExtra").style.display = "block";
-            
-            document.getElementById("regEmail").value = email;
-            document.getElementById("regEmail").disabled = true; 
-            
-            mostrarMensaje("mensajeRegistro", "Correo verificado. Ahora completa el resto de tus datos.", "ok");
-            
-            const btn = document.querySelector(".btn-crear");
-            btn.innerText = "Finalizar y enviar SMS";
-            btn.onclick = finalizarRegistro; 
-            btn.disabled = false;
-        } catch (error) {
-            mostrarMensaje("mensajeLogin", "El enlace expiró o es inválido.");
-        }
-    }
+document.querySelectorAll(".avatar-opcion").forEach(img => {
+    img.addEventListener("click", () => {
+        const ruta = img.src;
+        actualizarFoto(ruta); 
+        cerrarPanelAvatares();
+    });
 });
 
-async function finalizarRegistro() {
-    const nombre = document.getElementById("regNombre").value.trim();
-    const password = document.getElementById("regPassword").value;
-    const telefono = document.getElementById("regTelefono").value.trim();
-    const modelo = document.getElementById("regModelo").value.trim();
-    const color = document.getElementById("regColor").value.trim();
-    const anioCarro = document.getElementById("regAnio").value.trim();
-    const placas = document.getElementById("regPlacas").value.trim();
-    const fotoCarro = document.getElementById("regFotoCarro").files[0];
-    const documento = document.getElementById("regDocumento").files[0];
-    const btn = document.querySelector(".btn-crear");
-    const dia = document.querySelector("#selectDia .selected").innerText.trim();
-    const mes = document.querySelector("#selectMes .selected").innerText.trim();
-    const anio = document.querySelector("#selectAnio .selected").innerText.trim();
-
-    if (!nombre || !password || !modelo || !color || !anioCarro || !placas) return mostrarMensaje("mensajeRegistro", "Completa todos los campos de texto.");
-    if (password.length < 6) return mostrarMensaje("mensajeRegistro", "La contraseña debe tener al menos 6 caracteres.");
-    if (telefono.length < 10) return mostrarMensaje("mensajeRegistro", "El número debe tener 10 dígitos.");
-    if (dia === "Día" || mes === "Mes" || anio === "Año") return mostrarMensaje("mensajeRegistro", "Selecciona tu fecha de nacimiento.");
-    if (!fotoCarro || !documento) return mostrarMensaje("mensajeRegistro", "Falta subir la foto del carro o el INE.");
-
-    btn.disabled = true;
-    btn.innerText = "Enviando SMS...";
-
-    try {
-        if (!window.recaptchaVerifier) {
-            window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { 'size': 'normal' });
-        }
-        const numeroCompleto = "+52" + telefono;
-        confirmationResult = await linkWithPhoneNumber(auth.currentUser, numeroCompleto, window.recaptchaVerifier);
-        
-        document.getElementById("seccionSms").style.display = "block";
-        mostrarMensaje("mensajeRegistro", "Código SMS enviado.", "ok");
-    } catch (error) {
-        btn.disabled = false;
-        btn.innerText = "Finalizar y enviar SMS";
-        if (error.code === 'auth/provider-already-linked' || error.code === 'auth/credential-already-in-use') {
-            mostrarMensaje("mensajeRegistro", "Este número de teléfono ya está registrado en otra cuenta.");
-        } else {
-            mostrarMensaje("mensajeRegistro", "Error Firebase: " + error.code);
-        }
-    }
-}
-
-async function verificarCodigoSms() {
-    const codigo = document.getElementById("codigoSms").value;
-    const password = document.getElementById("regPassword").value;
-    const btn = document.querySelector(".btn-crear");
-
-    try {
-        btn.disabled = true;
-        btn.innerText = "Creando cuenta y procesando imágenes...";
-
-        await confirmationResult.confirm(codigo);
-        await updatePassword(auth.currentUser, password);
-        
-        const user = auth.currentUser;
-
-        const nombre = document.getElementById("regNombre").value.trim();
-        const telefono = document.getElementById("regTelefono").value.trim();
-        const matricula = document.getElementById("regMatricula").value.trim();
-        const modelo = document.getElementById("regModelo").value.trim();
-        const color = document.getElementById("regColor").value.trim();
-        const anioCarro = document.getElementById("regAnio").value.trim();
-        const placas = document.getElementById("regPlacas").value.trim();
-        const dia = document.querySelector("#selectDia .selected").innerText.trim();
-        const mes = document.querySelector("#selectMes .selected").innerText.trim();
-        const anio = document.querySelector("#selectAnio .selected").innerText.trim();
-        const fechaNacimiento = `${dia}/${mes}/${anio}`;
-        const fotoCarroFile = document.getElementById("regFotoCarro").files[0];
-        const documentoFile = document.getElementById("regDocumento").files[0];
-
-        const urlFotoCarro = await procesarImagen(fotoCarroFile);
-        const urlDocumentoIne = await procesarImagen(documentoFile);
-
-        await setDoc(doc(db, "usuarios", user.uid), {
-            correo: user.email,
-            nombre: nombre,
-            telefono: telefono,
-            matricula: matricula,
-            fechaNacimiento: fechaNacimiento,
-            modeloAuto: modelo,
-            colorAuto: color,
-            anioAuto: anioCarro,
-            placas: placas,
-            fotoCarroUrl: urlFotoCarro,
-            ineUrl: urlDocumentoIne,
-            estado: "pendiente"
-        });
-
-        await signOut(auth);
-        
-        mostrarMensaje("mensajeRegistro", "¡Registro completado! Tu cuenta será validada en las próximas 24 horas.", "ok");
-        
-        setTimeout(() => { 
-            cerrarRegistro(); 
-            btn.disabled = false;
-            btn.innerText = "Finalizar y enviar SMS";
-        }, 5000);
-
-    } catch (error) {
-        btn.disabled = false;
-        btn.innerText = "Confirmar Código SMS";
-        mostrarMensaje("mensajeRegistro", "Error al guardar los datos: " + error.code);
-    }
-}
-
-function abrirRegistro() {
-    document.getElementById("modalRegistro").style.display = "flex";
-    document.getElementById("loginCard").classList.add("oculto");
-    
-    const datosExtra = document.getElementById("datosExtra");
-    if (datosExtra) datosExtra.style.display = "none";
-    document.getElementById("seccionSms").style.display = "none";
-
-    const btn = document.querySelector(".btn-crear");
-    btn.innerText = "Verificar Correo";
-    btn.disabled = false;
-    btn.onclick = iniciarVerificacionCorreo;
-}
-
-function cerrarRegistro() {
-    document.getElementById("modalRegistro").style.display = "none";
-    document.getElementById("loginCard").classList.remove("oculto");
-}
-
-function formatearPlacas(input) {
-    let valor = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-    let formateado = '';
-    if (valor.length > 0) formateado += valor.substring(0, 3);
-    if (valor.length > 3) formateado += '-' + valor.substring(3, 6);
-    if (valor.length > 6) formateado += '-' + valor.substring(6, 7);
-    input.value = formateado;
-}
-
-function actualizarDias() {
-    const mes = document.querySelector("#selectMes .selected").textContent;
-    const anio = document.querySelector("#selectAnio .selected").textContent;
-    if (mes === "Mes" || anio === "Año") return;
-    const mesesLista = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
-    const mesNumero = mesesLista.indexOf(mes);
-    const diasMes = new Date(anio, mesNumero + 1, 0).getDate();
-    const options = document.querySelector("#selectDia .options");
-    options.innerHTML = ""; 
-    for (let i = 1; i <= diasMes; i++) {
-        const div = document.createElement("div"); div.textContent = i;
-        div.addEventListener("click", () => {
-            document.querySelector("#selectDia .selected").textContent = i;
-            document.getElementById("selectDia").classList.remove("active");
-        });
-        options.appendChild(div);
-    }
-}
-
-function crearOpciones(selectId, datos) {
-    const select = document.getElementById(selectId);
-    if(!select) return;
-    const selected = select.querySelector(".selected");
-    const options = select.querySelector(".options");
-    datos.forEach(valor => {
-        const div = document.createElement("div"); div.textContent = valor;
-        div.addEventListener("click", () => {
-            selected.textContent = valor;
-            select.classList.remove("active");
-            if (selectId === "selectMes" || selectId === "selectAnio") actualizarDias();
-        });
-        options.appendChild(div);
-    });
-    selected.addEventListener("click", (e) => {
-        e.stopPropagation(); 
-        document.querySelectorAll(".custom-select").forEach(s => s.classList.remove("active"));
-        select.classList.toggle("active");
-    });
-}
-
-document.addEventListener("click", () => {
-    document.querySelectorAll(".custom-select").forEach(s => s.classList.remove("active"));
-});
-
-function mostrarMensaje(id, texto, tipo="error") {
-    const box = document.getElementById(id);
-    if(box) {
-        box.textContent = texto;
-        box.className = "mensaje " + tipo;
-        box.style.display = "block";
-        setTimeout(() => { box.style.display = "none"; }, 5000);
-    }
-}
-
-onAuthStateChanged(auth, async (user) => {
-    if (user && user.emailVerified && user.phoneNumber && !isSignInWithEmailLink(auth, window.location.href)) {
-        const docRef = doc(db, "usuarios", user.uid);
-        const docSnap = await getDoc(docRef);
-        
-        if(docSnap.exists()) {
-            const estado = docSnap.data().estado;
-            if(estado === "aprobado") {
-                window.location.href = "Home.html";
-            } else {
-                signOut(auth);
+const inputAvatar = document.getElementById("inputAvatarPanel");
+if(inputAvatar){
+    inputAvatar.addEventListener("change", (e)=>{
+        const archivo = e.target.files[0];
+        if(archivo){
+            const reader = new FileReader();
+            reader.onload = function(e){
+                const imagen = e.target.result;
+                actualizarFoto(imagen);
+                cerrarPanelAvatares();
             }
-        } else {
-            signOut(auth);
+            reader.readAsDataURL(archivo);
         }
-    }
-});
-
-function enviarReset(){
-  const email = document.getElementById("resetEmail").value;
-  if(!email) return mostrarMensaje("mensajeReset", "Escribe tu correo");
-  sendPasswordResetEmail(auth, email)
-    .then(() => mostrarMensaje("mensajeReset", "Correo enviado", "ok"))
-    .catch(err => mostrarMensaje("mensajeReset", "Error: " + err.code));
+    });
 }
 
-// EXPOSICIÓN GLOBAL
-window.login = login;
-window.register = iniciarVerificacionCorreo; 
-window.verificarCodigoSms = verificarCodigoSms;
-window.formatearPlacas = formatearPlacas;
-window.enviarReset = enviarReset;
-window.abrirModal = () => document.getElementById("modalReset").classList.add("activo");
-window.cerrarModal = () => document.getElementById("modalReset").classList.remove("activo");
-window.abrirRegistro = abrirRegistro;
-window.cerrarRegistro = cerrarRegistro;
+function abrirPanelBanners(){ document.getElementById("panelBanners").classList.add("activo"); }
+function cerrarPanelBanners(){ document.getElementById("panelBanners").classList.remove("activo"); }
+
+function actualizarBanner(valor) {
+    const previewBanner = document.getElementById("previewBanner");
+    const menuBanner = document.getElementById("bannerMenu");
+    [previewBanner, menuBanner].forEach(banner => {
+        if (!banner) return;
+        if (valor.startsWith("#")) {
+            banner.style.background = valor;
+            banner.style.backgroundImage = "none";
+        } else {
+            banner.style.background = "transparent";
+            banner.style.backgroundImage = `url("${valor}")`;
+            banner.style.backgroundSize = "cover";
+            banner.style.backgroundPosition = "center";
+            banner.style.backgroundRepeat = "no-repeat";
+        }
+    });
+    bannerTempFinal = valor;
+}
+
+function abrirEditorBanner(imagen){
+    const editor = document.getElementById("editorBanner");
+    const preview = document.getElementById("imagenBannerMovible");
+    const slider = document.getElementById("zoomSlider");
+    editor.classList.add("activo");
+    document.body.style.overflow = "hidden";
+    preview.style.backgroundImage = `url(${imagen})`;
+    offsetX = 0; offsetY = 0; scale = 1;
+    preview.style.backgroundPosition = `center`;
+    preview.style.backgroundSize = `${scale * 100}%`;
+    if(slider){
+        slider.value = 1;
+        actualizarBarraZoom(slider); 
+    }
+    activarMovimientoBanner();
+}
+
+function cancelarBanner(){
+    bannerTemporal = null;
+    cerrarEditorBanner();
+}
+
+function aplicarBanner() {
+    if (!bannerTemporal) return;
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    const img = new Image();
+    img.onload = function() {
+        canvas.width = 800; canvas.height = 300;
+        const imgRatio = img.width / img.height;
+        const canvasRatio = canvas.width / canvas.height;
+        let sx, sy, sWidth, sHeight;
+        if (imgRatio > canvasRatio) {
+            sHeight = img.height; sWidth = sHeight * canvasRatio;
+            sx = (img.width - sWidth) / 2; sy = 0;
+        } else {
+            sWidth = img.width; sHeight = sWidth / canvasRatio;
+            sx = 0; sy = (img.height - sHeight) / 2;
+        }
+        ctx.drawImage(img, sx, sy, sWidth, sHeight, 0, 0, canvas.width, canvas.height);
+        const resultado = canvas.toDataURL("image/png");
+        actualizarBanner(resultado);
+        cerrarEditorBanner();
+        cerrarPanelBanners();
+        bannerTemporal = null;
+    }
+    img.src = bannerTemporal;
+}
+
+function cerrarEditorBanner(){ document.getElementById("editorBanner").classList.remove("activo"); }
+
+function activarMovimientoBanner(){
+    let isDragging = false;
+    let img = document.getElementById("imagenBannerMovible");
+    if(!img) return;
+    const nuevo = img.cloneNode(true);
+    img.replaceWith(nuevo);
+    img = nuevo;
+    img.addEventListener("mousedown", ()=>{ isDragging = true; img.style.cursor = "grabbing"; });
+    document.addEventListener("mouseup", ()=>{ isDragging = false; img.style.cursor = "grab"; });
+    document.addEventListener("mousemove", (e)=>{
+        if(!isDragging) return;
+        offsetX += e.movementX; offsetY += e.movementY;
+        img.style.backgroundPosition = `${offsetX}px ${offsetY}px`;
+    });
+
+    const slider = document.getElementById("zoomSlider");
+    if(slider){
+        slider.value = scale;
+        slider.addEventListener("input", (e)=>{
+            scale = parseFloat(e.target.value);
+            img.style.backgroundSize = `${scale * 100}%`;
+            actualizarBarraZoom(slider); 
+        });
+    }
+
+    let lastTouchX = 0; let lastTouchY = 0;
+    img.addEventListener("touchstart", (e)=>{
+        isDragging = true;
+        const touch = e.touches[0];
+        lastTouchX = touch.clientX; lastTouchY = touch.clientY;
+    });
+    img.addEventListener("touchmove", (e)=>{
+        if(!isDragging) return;
+        const touch = e.touches[0];
+        const deltaX = touch.clientX - lastTouchX; const deltaY = touch.clientY - lastTouchY;
+        offsetX += deltaX; offsetY += deltaY;
+        img.style.backgroundPosition = `${offsetX}px ${offsetY}px`;
+        lastTouchX = touch.clientX; lastTouchY = touch.clientY;
+    });
+    img.addEventListener("touchend", ()=>{ isDragging = false; });
+    img.addEventListener("touchmove", (e)=>{ e.preventDefault(); }, { passive: false });
+}
+
+function cerrarTodoBanner(){
+    cerrarEditorBanner(); cerrarPanelBanners();
+    bannerTemporal = null; offsetX = 0; offsetY = 0; scale = 1;
+}
+
+function actualizarBarraZoom(slider){
+    const porcentaje = ((slider.value - slider.min) / (slider.max - slider.min)) * 100;
+    slider.style.background = `linear-gradient(to right, #5865f2 0%, #5865f2 ${porcentaje}%, #3a3c41 ${porcentaje}%, #3a3c41 100%)`;
+}
+
+function intentarCerrarPerfil(){
+    if(hayCambios()) abrirModalConfirmacion();
+    else cerrarPerfil();
+}
+
+function abrirModalConfirmacion(){ document.getElementById("modalConfirmar").classList.add("activo"); }
+function cerrarModalConfirmacion(){ document.getElementById("modalConfirmar").classList.remove("activo"); }
+function cancelarSalida(){ cerrarModalConfirmacion(); }
+function confirmarSalida(){
+    cerrarModalConfirmacion(); 
+    document.getElementById("modalPerfil").classList.remove("activo"); 
+    document.body.style.overflow = "";
+    cargarPerfil(); 
+    fotoTemporal = null; bannerTempFinal = null;
+}
+
+function hayCambios(){
+    const fotoActual = fotoTemporal || document.getElementById("previewFoto").src || "";
+    let bannerActual = bannerTempFinal;
+
+    if (!bannerActual) {
+        const estilo = document.getElementById("previewBanner").style.backgroundImage;
+        if (estilo && estilo !== "none") {
+            bannerActual = estilo.replace(/^url\(["']?/, "").replace(/["']?\)$/, "");
+        } else { bannerActual = ""; }
+    }
+
+    return (fotoActual !== datosOriginales.foto || bannerActual !== datosOriginales.banner);
+}
+
+function abrirModalCerrarSesion(){ document.getElementById("modalCerrarSesion").classList.add("activo"); }
+function cancelarCerrarSesion(){ document.getElementById("modalCerrarSesion").classList.remove("activo"); }
+function confirmarCerrarSesion(){ signOut(auth).then(() => { window.location.href = "index.html"; }); }
+
+// 🔥 FUNCION DE PLACAS AUTOMATICAS 🔥
 window.formatearPlacas = function(input) {
-    // 1. Quitar todo lo que no sea letra o número y convertir a mayúsculas
     let valor = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
     let formateado = '';
-    
-    // 2. Aplicar el formato AAA-111-A (Estilo Nuevo León)
     if (valor.length > 0) formateado += valor.substring(0, 3);
     if (valor.length > 3) formateado += '-' + valor.substring(3, 6);
     if (valor.length > 6) formateado += '-' + valor.substring(6, 7);
-    
-    // 3. Regresar el valor formateado al cuadro de texto
     input.value = formateado;
-}
+};
+
+// Variables Globales
+window.abrirPerfil = abrirPerfil;
+window.cerrarPerfil = cerrarPerfil;
+window.guardarPerfil = guardarPerfil;
+window.abrirPanelBanners = abrirPanelBanners;
+window.cerrarPanelBanners = cerrarPanelBanners;
+window.cancelarBanner = cancelarBanner;
+window.aplicarBanner = aplicarBanner;
+window.cerrarTodoBanner = cerrarTodoBanner;
+window.cancelarSalida = cancelarSalida;
+window.confirmarSalida = confirmarSalida;
+window.cancelarCerrarSesion = cancelarCerrarSesion;
+window.confirmarCerrarSesion = confirmarCerrarSesion;
