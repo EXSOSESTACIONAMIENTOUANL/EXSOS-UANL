@@ -1,12 +1,8 @@
 /* ==========================================
-   Login.js - VERSIÓN FINAL (Flujo en 2 Pasos)
-   Paso 1: Solo Correo -> Paso 2: Resto de Datos + SMS
+   Login.js - VERSIÓN FINAL (Flujo Completo con Fotos y Estado)
    ========================================== */
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-let confirmationResult;
 
+// 1. IMPORTACIONES SIEMPRE HASTA ARRIBA
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { 
     getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, 
@@ -16,11 +12,10 @@ import {
     updatePassword, linkWithPhoneNumber
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-// 🔥 NUEVO: Importamos Storage para subir las fotos
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
+// 2. CREDENCIALES
 const firebaseConfig = {
-
   apiKey: "AIzaSyCjlT5tS1iEWvYzSIHRzg3jQLnyq5AAFJk",
   authDomain: "exsos-pruebas.firebaseapp.com",
   projectId: "exsos-pruebas",
@@ -30,12 +25,12 @@ const firebaseConfig = {
   measurementId: "G-B3KZX20LYS"
 };
 
+// 3. INICIALIZACIÓN
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-const storage = getStorage(app); // 🔥 Inicializamos Storage
+const storage = getStorage(app); 
 let confirmationResult;
-
 
 // --- LOGIN ---
 function login() {
@@ -76,12 +71,11 @@ function login() {
                 await signOut(auth);
                 return mostrarMensaje("mensajeLogin", "Error: Cuenta no encontrada.");
             }
-
-            // Si pasa todo, el onAuthStateChanged lo mandará a Home.html
         })
         .catch(() => mostrarMensaje("mensajeLogin", "Credenciales incorrectas"));
 }
-// --- PASO 1: VERIFICAR EMAIL (SOLO SE VE EL INPUT DE CORREO) ---
+
+// --- PASO 1: VERIFICAR EMAIL ---
 async function iniciarVerificacionCorreo() {
     const email = document.getElementById("regEmail").value;
     const btn = document.querySelector(".btn-crear");
@@ -108,9 +102,8 @@ async function iniciarVerificacionCorreo() {
     }
 }
 
-// --- PASO 2: EL USUARIO REGRESA DEL CORREO (SE MUESTRA TODO EL FORMULARIO) ---
+// --- PASO 2: EL USUARIO REGRESA DEL CORREO ---
 window.addEventListener("load", async () => {
-    // Cargar opciones de fechas
     const dias = Array.from({length: 31}, (_, i) => i + 1);
     const meses = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
     const actual = new Date().getFullYear();
@@ -121,7 +114,6 @@ window.addEventListener("load", async () => {
     crearOpciones("selectMes", meses);
     crearOpciones("selectAnio", anios);
 
-    // ¿Viene del enlace del correo?
     if (isSignInWithEmailLink(auth, window.location.href)) {
         let email = window.localStorage.getItem('emailParaRegistro');
         if (!email) email = window.prompt('Confirma tu correo para continuar:');
@@ -130,11 +122,8 @@ window.addEventListener("load", async () => {
             await signInWithEmailLink(auth, email, window.location.href);
             window.localStorage.removeItem('emailParaRegistro');
 
-            // Abrimos el modal automáticamente
             document.getElementById("modalRegistro").style.display = "flex";
             document.getElementById("loginCard").classList.add("oculto");
-
-            // AHORA SÍ, MOSTRAMOS EL RESTO DE LOS DATOS
             document.getElementById("datosExtra").style.display = "block";
             
             document.getElementById("regEmail").value = email;
@@ -142,7 +131,6 @@ window.addEventListener("load", async () => {
             
             mostrarMensaje("mensajeRegistro", "Correo verificado. Ahora completa el resto de tus datos.", "ok");
             
-            // El botón ahora sirve para validar datos y mandar SMS
             const btn = document.querySelector(".btn-crear");
             btn.innerText = "Finalizar y enviar SMS";
             btn.onclick = finalizarRegistro; 
@@ -169,7 +157,6 @@ async function finalizarRegistro() {
     const mes = document.querySelector("#selectMes .selected").innerText.trim();
     const anio = document.querySelector("#selectAnio .selected").innerText.trim();
 
-    // Validaciones estrictas
     if (!nombre || !password || !modelo || !color || !anioCarro || !placas) return mostrarMensaje("mensajeRegistro", "Completa todos los campos de texto.");
     if (password.length < 6) return mostrarMensaje("mensajeRegistro", "La contraseña debe tener al menos 6 caracteres.");
     if (telefono.length < 10) return mostrarMensaje("mensajeRegistro", "El número debe tener 10 dígitos.");
@@ -191,10 +178,13 @@ async function finalizarRegistro() {
     } catch (error) {
         btn.disabled = false;
         btn.innerText = "Finalizar y enviar SMS";
-        mostrarMensaje("mensajeRegistro", "Error Firebase: " + error.code);
+        if (error.code === 'auth/provider-already-linked' || error.code === 'auth/credential-already-in-use') {
+            mostrarMensaje("mensajeRegistro", "Este número de teléfono ya está registrado en otra cuenta.");
+        } else {
+            mostrarMensaje("mensajeRegistro", "Error Firebase: " + error.code);
+        }
     }
 }
-
 
 // --- PASO 4: CONFIRMAR SMS, SUBIR FOTOS Y CREAR CUENTA ---
 async function verificarCodigoSms() {
@@ -211,7 +201,7 @@ async function verificarCodigoSms() {
         
         const user = auth.currentUser;
 
-        // 1. Recopilar todos los datos del formulario de nuevo
+        // Recopilamos datos
         const nombre = document.getElementById("regNombre").value.trim();
         const telefono = document.getElementById("regTelefono").value.trim();
         const matricula = document.getElementById("regMatricula").value.trim();
@@ -228,17 +218,16 @@ async function verificarCodigoSms() {
         const fotoCarroFile = document.getElementById("regFotoCarro").files[0];
         const documentoFile = document.getElementById("regDocumento").files[0];
 
-        // 2. Subir foto del carro a Storage
+        // Subimos al Storage
         const refCarro = ref(storage, `usuarios/${user.uid}/carro_${fotoCarroFile.name}`);
         await uploadBytes(refCarro, fotoCarroFile);
         const urlFotoCarro = await getDownloadURL(refCarro);
 
-        // 3. Subir documento INE a Storage
         const refIne = ref(storage, `usuarios/${user.uid}/ine_${documentoFile.name}`);
         await uploadBytes(refIne, documentoFile);
         const urlDocumentoIne = await getDownloadURL(refIne);
 
-        // 4. Guardar TODO en Firestore con estado "pendiente"
+        // Guardamos en Firestore
         await setDoc(doc(db, "usuarios", user.uid), {
             correo: user.email,
             nombre: nombre,
@@ -251,17 +240,15 @@ async function verificarCodigoSms() {
             placas: placas,
             fotoCarroUrl: urlFotoCarro,
             ineUrl: urlDocumentoIne,
-            estado: "pendiente" // 🔥 ESTADO INICIAL
+            estado: "pendiente"
         });
 
-        // 5. Cerramos sesión para que no entre a la app
         await signOut(auth);
         
-        // 6. Mostramos el mensaje y lo mandamos al inicio (Login)
         mostrarMensaje("mensajeRegistro", "¡Registro completado! Tu cuenta será validada en las próximas 24 horas.", "ok");
         
         setTimeout(() => { 
-            cerrarRegistro(); // Cierra el modal y lo deja en el login
+            cerrarRegistro(); 
             btn.disabled = false;
             btn.innerText = "Finalizar y enviar SMS";
         }, 5000);
@@ -272,17 +259,16 @@ async function verificarCodigoSms() {
         mostrarMensaje("mensajeRegistro", "Error al guardar los datos: " + error.code);
     }
 }
-// --- FUNCIONES DE INTERFAZ (BOTONES, MODALES, FECHAS) ---
+
+// --- FUNCIONES DE INTERFAZ ---
 function abrirRegistro() {
     document.getElementById("modalRegistro").style.display = "flex";
     document.getElementById("loginCard").classList.add("oculto");
     
-    // Por defecto ocultamos los datos extra (Paso 1)
     const datosExtra = document.getElementById("datosExtra");
     if (datosExtra) datosExtra.style.display = "none";
     document.getElementById("seccionSms").style.display = "none";
 
-    // Reiniciamos el botón
     const btn = document.querySelector(".btn-crear");
     btn.innerText = "Verificar Correo";
     btn.disabled = false;
@@ -367,7 +353,6 @@ onAuthStateChanged(auth, async (user) => {
         if(docSnap.exists() && docSnap.data().estado === "aprobado") {
             window.location.href = "Home.html";
         } else {
-            // Si está pendiente o rechazado, lo sacamos silenciosamente
             signOut(auth);
         }
     }
@@ -380,7 +365,6 @@ function enviarReset(){
     .then(() => mostrarMensaje("mensajeReset", "Correo enviado", "ok"))
     .catch(err => mostrarMensaje("mensajeReset", "Error: " + err.code));
 }
-
 
 // EXPOSICIÓN GLOBAL
 window.login = login;
