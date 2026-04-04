@@ -2823,21 +2823,72 @@ font-size:1.7vw ;
 /* 🔥 CORRECCIONES DE DISEÑO PARA CELULARES (RESPONSIVE) 🔥 */
 /* ======================================================== */
 
+/* ======================================================== */
+/* 🔥 CORRECCIONES DE DISEÑO PARA CELULARES (RESPONSIVE) 🔥 */
+/* ======================================================== */
+
 @media (max-width: 900px) {
-    /* 1. Modal de Perfil (Para que no se corte ni quede gigante) */
+    /* 1. Modal de Perfil: Comportamiento de "Página Nueva" */
     .modal-perfil-full {
-        align-items: flex-start; /* Para poder hacer scroll desde arriba */
-        padding-top: 20px;
+        align-items: flex-start;
+        padding: 0; /* Quitamos padding para aprovechar toda la pantalla */
+        background: #1e1f22; /* Fondo sólido oscuro */
+        overflow-y: auto; /* Permite deslizar si el contenido es muy largo */
+        position: fixed; /* Asegura que cubra todo */
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
     }
 
     .card-perfil {
-        flex-direction: column; /* Pone el formulario arriba y el preview abajo */
-        height: auto;           /* Quita la altura fija que lo rompía */
-        min-height: 100vh;
+        flex-direction: column;
+        height: auto;
+        min-height: 100%;
         width: 100%;
-        padding: 15px;
-        gap: 20px;
-        border-radius: 0;       /* En celular mejor sin bordes redondeados feos */
+        padding: 20px 15px 50px 15px; /* Espacio extra abajo para que no se corte */
+        margin: 0;
+        border-radius: 0;
+        background: transparent; /* Hereda el fondo del modal */
+        gap: 30px;
+    }
+
+    /* 2. Reposicionamiento del Botón Cerrar (La "X") */
+    .perfil-header {
+        display: flex;
+        justify-content: center; /* Centramos el título "Editar perfil" */
+        align-items: center;
+        position: relative;
+        padding-bottom: 15px;
+    }
+    
+    .perfil-header h2 {
+        font-size: 20px;
+        margin: 0;
+        text-align: center;
+    }
+
+    /* Ocultamos el botón de Guardar porque ya actualiza automático con Firebase */
+    #btnGuardarPerfil {
+        display: none; 
+    }
+
+    /* La "X" se vuelve flotante arriba a la derecha */
+    #btnCerrarPerfil {
+        position: fixed;
+        top: 15px;
+        right: 20px;
+        font-size: 35px;
+        color: #fff;
+        background: rgba(0,0,0,0.5);
+        border-radius: 50%;
+        width: 45px;
+        height: 45px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000000; /* Siempre encima de TODO */
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     }
 
     .perfil-form, .perfil-preview {
@@ -2845,53 +2896,49 @@ font-size:1.7vw ;
         max-width: 100%;
     }
 
-    /* 2. Botones de Acción (Cambiar Auto, Correo, Tel) */
+    /* 3. Botones de Acción (Cambiar Auto, Correo, Tel) */
     .perfil-form div[style*="display: flex"] {
-        flex-direction: column; /* Apila los botones de "Cambio" uno sobre otro */
-        gap: 15px !important;
+        flex-direction: column; /* Apila los botones */
+        gap: 12px !important;
+        margin-top: 15px !important;
     }
 
     .perfil-form button {
-        width: 100%; /* Botones de lado a lado para no fallar con el dedo */
+        width: 100%;
         font-size: 16px !important;
         padding: 15px !important;
+        border-radius: 10px !important;
     }
 
-    /* 3. Inputs del perfil (Letra más grande para que Apple/Android no hagan auto-zoom molesto) */
+    /* 4. Inputs del perfil (Letra más grande anti-zoom) */
+    .perfil-campo {
+        padding: 8px 0; /* Menos espacio entre inputs para que quepan mejor */
+    }
+
     .perfil-campo input {
         font-size: 16px !important; 
         padding: 12px;
     }
 
-    /* 4. Modales de "Cambio de Vehículo", "Correo" y "Teléfono" */
+    /* 5. Modales Secundarios ("Cambio de Vehículo", etc.) */
     .modal-boxp {
-        width: 95% !important;
-        max-width: none !important;
+        width: 90% !important;
+        max-width: 400px !important;
         padding: 20px !important;
-        height: auto !important; /* Evita que el modal sea gigante */
-        max-height: 90vh;        /* Si es muy largo, no se pasa de la pantalla */
-        overflow-y: auto;        /* Permite scroll dentro del modal si es necesario */
+        height: auto !important;
+        max-height: 85vh; 
+        overflow-y: auto;
         border-radius: 15px !important;
         transform: translateY(0) !important;
-        justify-content: center; 
+        margin: auto;
     }
 
-    /* 5. Textos de los modales en celular */
-    .modal-boxp h2 {
-        font-size: 24px !important;
-    }
-    
-    .modal-boxp p {
-        font-size: 14px !important;
-    }
-
-    .modal-boxp input {
-        font-size: 16px !important; /* Antizoom de iOS */
-        padding: 12px !important;
-    }
+    .modal-boxp h2 { font-size: 22px !important; }
+    .modal-boxp p { font-size: 14px !important; margin-bottom: 15px !important;}
+    .modal-boxp input { font-size: 16px !important; padding: 12px !important; }
     
     .modal-boxp div[style*="display: flex"] {
-        flex-direction: column; /* Apila botones Cancelar/Enviar */
+        flex-direction: column;
         gap: 10px;
     }
 }
