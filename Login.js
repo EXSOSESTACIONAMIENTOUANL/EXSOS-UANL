@@ -397,8 +397,6 @@ function enviarReset(){
     .catch(err => mostrarMensaje("mensajeReset", "Error: " + err.code));
 }
 
-
-
 // EXPOSICIÓN GLOBAL
 window.login = login;
 window.register = iniciarVerificacionCorreo; 
