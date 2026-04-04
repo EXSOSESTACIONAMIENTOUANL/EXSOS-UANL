@@ -1,8 +1,7 @@
 /* ==========================================
-   Login.js - VERSIÓN FINAL (Flujo Completo con Fotos y Estado)
+   Login.js - VERSIÓN FINAL (Base64 + Seguridad Inhabilitados)
    ========================================== */
 
-// 1. IMPORTACIONES SIEMPRE HASTA ARRIBA
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { 
     getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, 
@@ -13,25 +12,22 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-
-// 2. CREDENCIALES
 const firebaseConfig = {
-  apiKey: "AIzaSyDr2FUS2IBW90alkYnAUUXvMNy2RQPjx6E",
-  authDomain: "ptueba-1-78027.firebaseapp.com",
-  projectId: "ptueba-1-78027",
-  storageBucket: "ptueba-1-78027.firebasestorage.app",
-  messagingSenderId: "463811943830",
-  appId: "1:463811943830:web:f529bdf1eea53445b0d1b7",
-  measurementId: "G-W5TBQT1DLK"
+  apiKey: "AIzaSyCjlT5tS1iEWvYzSIHRzg3jQLnyq5AAFJk",
+  authDomain: "exsos-pruebas.firebaseapp.com",
+  projectId: "exsos-pruebas",
+  storageBucket: "exsos-pruebas.firebasestorage.app",
+  messagingSenderId: "564255524295",
+  appId: "1:564255524295:web:ae4160b7a56304e6acc5e2",
+  measurementId: "G-B3KZX20LYS"
 };
 
-
-// 3. INICIALIZACIÓN
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 let confirmationResult;
 
+// --- FUNCIÓN PARA CONVERTIR FOTOS A TEXTO (SIN STORAGE) ---
 function procesarImagen(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -42,13 +38,11 @@ function procesarImagen(file) {
             img.onload = () => {
                 const canvas = document.createElement("canvas");
                 const ctx = canvas.getContext("2d");
-                // Comprimimos la imagen a un ancho máximo de 600px
                 const MAX_WIDTH = 600;
                 const scaleSize = MAX_WIDTH / img.width;
                 canvas.width = MAX_WIDTH;
                 canvas.height = img.height * scaleSize;
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                // Exportar como texto Base64
                 resolve(canvas.toDataURL("image/jpeg", 0.6));
             };
         };
@@ -56,8 +50,7 @@ function procesarImagen(file) {
     });
 }
 
-
-// --- LOGIN ---
+// --- LOGIN (AQUÍ ESTÁ EL MENSAJE NUEVO) ---
 function login() {
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
@@ -92,12 +85,30 @@ function login() {
                     await signOut(auth); 
                     return mostrarMensaje("mensajeLogin", "❌ Tu cuenta fue rechazada. Verifica tus datos.");
                 }
+                else if (estado === "inhabilitado") {
+                    await signOut(auth); 
+                    // 🔥 AQUÍ ESTÁ EL MENSAJE QUE PEDISTE 🔥
+                    return mostrarMensaje("mensajeLogin", "🚫 Tu usuario está inhabilitado. Comunícate a atención al cliente: 81 8329 4000");
+                }
+                else if (estado === "aprobado") {
+                    // Si te acaban de reactivar, te manda a Home automáticamente
+                    window.location.href = "Home.html";
+                }
             } else {
                 await signOut(auth);
                 return mostrarMensaje("mensajeLogin", "Error: Cuenta no encontrada.");
             }
         })
-        .catch(() => mostrarMensaje("mensajeLogin", "Credenciales incorrectas"));
+        .catch((error) => {
+            // Te decimos exactamente en qué te equivocaste para evitar confusiones
+            if(error.code === 'auth/wrong-password') {
+                mostrarMensaje("mensajeLogin", "Contraseña incorrecta.");
+            } else if(error.code === 'auth/user-not-found') {
+                mostrarMensaje("mensajeLogin", "Este correo no está registrado.");
+            } else {
+                mostrarMensaje("mensajeLogin", "Credenciales incorrectas.");
+            }
+        });
 }
 
 // --- PASO 1: VERIFICAR EMAIL ---
@@ -211,8 +222,7 @@ async function finalizarRegistro() {
     }
 }
 
-
-// --- PASO 4: CONFIRMAR SMS, SUBIR FOTOS Y CREAR CUENTA ---
+// --- PASO 4: CONFIRMAR SMS Y GUARDAR ---
 async function verificarCodigoSms() {
     const codigo = document.getElementById("codigoSms").value;
     const password = document.getElementById("regPassword").value;
@@ -235,20 +245,17 @@ async function verificarCodigoSms() {
         const color = document.getElementById("regColor").value.trim();
         const anioCarro = document.getElementById("regAnio").value.trim();
         const placas = document.getElementById("regPlacas").value.trim();
-        
         const dia = document.querySelector("#selectDia .selected").innerText.trim();
         const mes = document.querySelector("#selectMes .selected").innerText.trim();
         const anio = document.querySelector("#selectAnio .selected").innerText.trim();
         const fechaNacimiento = `${dia}/${mes}/${anio}`;
-
         const fotoCarroFile = document.getElementById("regFotoCarro").files[0];
         const documentoFile = document.getElementById("regDocumento").files[0];
 
-        // 🔥 AHORA SÍ: Usamos el "Hack" para convertir las fotos a texto Base64
+        // Usamos la función Base64
         const urlFotoCarro = await procesarImagen(fotoCarroFile);
         const urlDocumentoIne = await procesarImagen(documentoFile);
 
-        // Guardamos todo directo en Firestore (incluyendo los textos de las imágenes)
         await setDoc(doc(db, "usuarios", user.uid), {
             correo: user.email,
             nombre: nombre,
@@ -259,8 +266,8 @@ async function verificarCodigoSms() {
             colorAuto: color,
             anioAuto: anioCarro,
             placas: placas,
-            fotoCarroUrl: urlFotoCarro, // Se guarda el texto convertido
-            ineUrl: urlDocumentoIne,    // Se guarda el texto convertido
+            fotoCarroUrl: urlFotoCarro,
+            ineUrl: urlDocumentoIne,
             estado: "pendiente"
         });
 
@@ -280,8 +287,6 @@ async function verificarCodigoSms() {
         mostrarMensaje("mensajeRegistro", "Error al guardar los datos: " + error.code);
     }
 }
-
-
 
 // --- FUNCIONES DE INTERFAZ ---
 function abrirRegistro() {
@@ -368,13 +373,16 @@ function mostrarMensaje(id, texto, tipo="error") {
 
 onAuthStateChanged(auth, async (user) => {
     if (user && user.emailVerified && user.phoneNumber && !isSignInWithEmailLink(auth, window.location.href)) {
-        
-        // 🔥 Revisamos Firestore antes de mandarlo al Home
         const docRef = doc(db, "usuarios", user.uid);
         const docSnap = await getDoc(docRef);
         
-        if(docSnap.exists() && docSnap.data().estado === "aprobado") {
-            window.location.href = "Home.html";
+        if(docSnap.exists()) {
+            const estado = docSnap.data().estado;
+            if(estado === "aprobado") {
+                window.location.href = "Home.html";
+            } else {
+                signOut(auth);
+            }
         } else {
             signOut(auth);
         }
