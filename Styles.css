@@ -2824,11 +2824,13 @@ font-size:1.7vw ;
 /* --- ESTILOS EXACTOS PARA EL PERFIL EN CELULAR --- */
 
 .modal-perfil-full {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: #111214; /* Fondo negro por si acaso */
-    display: none; /* Cambia a flex con JS */
+    position: fixed; top: 0; left: 0; 
+    width: 100vw; /* 100% del ancho del celular */
+    height: 100vh; /* 100% del alto del celular */
+    background: #111214; 
+    display: none; /* Cambia a block con JS */
     z-index: 99999;
-    overflow-y: auto; /* IMPORTANTE: Permite deslizar hacia abajo en celular */
+    overflow-y: auto; /* Permite deslizar hacia abajo */
     padding: 0; margin: 0;
 }
 .modal-perfil-full.activo { display: block; }
@@ -2836,68 +2838,70 @@ font-size:1.7vw ;
 /* Tarjeta que ocupa TODA la pantalla */
 .card-perfil-celular {
     width: 100%; 
-    min-height: 100vh; /* Alto completo de la pantalla */
-    background: #232428; /* Color gris oscuro de tus capturas */
+    min-height: 100vh; 
+    background: #232428; 
     display: flex; flex-direction: column;
 }
 
 /* Botón flotante arriba a la izquierda */
 .btn-cerrar-flotante {
     position: absolute; top: 15px; left: 15px;
-    background: #111214; color: white; border: none;
-    width: 35px; height: 35px; border-radius: 5px;
-    font-size: 18px; cursor: pointer; z-index: 10;
+    background: rgba(0,0,0,0.5); color: white; border: none;
+    width: 45px; height: 45px; border-radius: 8px; /* Más grande */
+    font-size: 24px; cursor: pointer; z-index: 10;
 }
 
 /* El banner azul */
 .banner-azul-perfil {
-    width: 100%; height: 130px; /* Más grande */
-    background-color: #152191; /* Azul que faltaba */
+    width: 100%; 
+    height: 180px; /* Mucho más grande */
+    background-color: #152191; /* EL COLOR AZUL QUE PEDISTE */
     background-size: cover; background-position: center;
     position: relative;
 }
 
-/* LA FOTO: Aquí arreglamos que no tape el texto */
+/* LA FOTO: Arreglada para empujar el texto hacia abajo */
 .contenedor-avatar-perfil {
     width: 100%;
     display: flex; justify-content: center;
-    margin-top: -60px; /* Sube la foto a la mitad del banner */
+    margin-top: -75px; /* Sube la foto a la mitad del banner */
+    margin-bottom: 20px; /* IMPORTANTE: Esto empuja el texto para que no se encime */
     position: relative; z-index: 2;
 }
 .avatar-perfil-img {
-    width: 120px; height: 120px; /* Foto más grande */
+    width: 150px; height: 150px; /* Foto enorme */
     border-radius: 50%;
-    border: 5px solid #232428; /* Borde del color del fondo para "cortar" el banner */
+    border: 6px solid #232428; /* Borde para "cortar" el banner */
     background: #111; object-fit: cover;
 }
 
-/* Área de los datos (empieza justo debajo de la foto) */
+/* Área de los datos */
 .cuerpo-datos-perfil {
-    padding: 20px;
-    display: flex; flex-direction: column; gap: 20px;
+    padding: 0 20px 20px 20px;
+    display: flex; flex-direction: column; gap: 25px; /* Más separación */
 }
 
 /* Cajas grises donde van los datos */
 .bloque-datos-oscuro {
-    background: #1e1f22; border-radius: 12px; padding: 20px;
-    display: flex; flex-direction: column; gap: 12px;
+    background: #1e1f22; border-radius: 15px; padding: 25px;
+    display: flex; flex-direction: column; gap: 15px;
 }
 
-/* Letras grandes y acomodadas */
+/* Letras MUCHO MÁS grandes */
 .fila-dato {
     display: flex; justify-content: space-between; align-items: center;
-    font-size: 16px; /* Letras grandes */
+    font-size: 18px; /* Tamaño más grande para celular */
 }
-.fila-dato .etiqueta { color: #80848e; }
-.fila-dato .valor { color: #ffffff; text-align: right; font-weight: bold; }
+.fila-dato .etiqueta { color: #b5bac1; font-weight: normal; }
+.fila-dato .valor { color: #ffffff; text-align: right; font-weight: bold; font-size: 19px; }
 
 /* La INE */
 .bloque-licencia {
-    background: #1e1f22; border-radius: 12px; padding: 20px;
+    background: #1e1f22; border-radius: 15px; padding: 25px;
 }
-.titulo-licencia { margin: 0 0 15px 0; color: white; font-size: 16px; font-weight: bold; }
+.titulo-licencia { margin: 0 0 20px 0; color: white; font-size: 20px; font-weight: bold; text-align: center;}
 .caja-foto-licencia {
-    width: 100%; height: 250px; /* Grande como en tu foto */
+    width: 100%; height: 300px; /* Foto de INE mucho más grande */
     background: #111; border-radius: 10px; border: 2px dashed #555;
     display: flex; justify-content: center; align-items: center; overflow: hidden;
 }
@@ -2905,15 +2909,15 @@ font-size:1.7vw ;
 
 /* Botones idénticos a los tuyos (tipo pastilla) */
 .bloque-botones-perfil {
-    display: flex; flex-direction: column; gap: 10px; align-items: center;
-    padding-bottom: 40px; /* Para que puedas bajar hasta el fondo en el cel */
+    display: flex; flex-direction: column; gap: 15px; align-items: center;
+    padding-bottom: 50px; /* Espacio para bajar hasta el fondo */
 }
 .btn-blanco-perfil {
     background: #e3e5e8; color: #111; border: none;
-    padding: 12px; border-radius: 25px; /* Súper redondos */
-    font-weight: bold; font-size: 15px; cursor: pointer; width: 70%;
+    padding: 18px; border-radius: 30px; /* Redondos y más gruesos */
+    font-weight: bold; font-size: 18px; cursor: pointer; width: 85%; /* Más anchos */
 }
 .fila-botones-mitad {
-    display: flex; gap: 10px; width: 70%; justify-content: center;
+    display: flex; gap: 15px; width: 85%; justify-content: center;
 }
 .fila-botones-mitad button { width: 100%; }
