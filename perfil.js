@@ -11,13 +11,13 @@ import {
 import { getFirestore, doc, updateDoc, getDoc, deleteField } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDr2FUS2IBW90alkYnAUUXvMNy2RQPjx6E",
-  authDomain: "ptueba-1-78027.firebaseapp.com",
-  projectId: "ptueba-1-78027",
-  storageBucket: "ptueba-1-78027.firebasestorage.app",
-  messagingSenderId: "463811943830",
-  appId: "1:463811943830:web:f529bdf1eea53445b0d1b7",
-  measurementId: "G-W5TBQT1DLK"
+  apiKey: "AIzaSyB8LeQ1UNG6XqOpVWAMyde05JOvlWRENvU",
+  authDomain: "exsos-login.firebaseapp.com",
+  projectId: "exsos-login",
+  storageBucket: "exsos-login.firebasestorage.app",
+  messagingSenderId: "254157261321",
+  appId: "1:254157261321:web:449f88c3567303afa846d8",
+  measurementId: "G-35YQC4CCDH"
 };
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
