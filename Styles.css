@@ -3316,3 +3316,146 @@ font-size:1.7vw ;
     z-index: 100;
     cursor: pointer;
 }
+
+/* ========================================================= */
+/* REDISEÑO PREMIUM PARA BRIAN - NO SIMPLIFICA, SOLO ESTILIZA */
+/* ========================================================= */
+
+/* El fondo exterior que hace resaltar la tarjeta negra */
+.modal-perfil-full {
+    background: rgba(0, 0, 0, 0.9) !important; 
+    display: none;
+    align-items: center !important; 
+    justify-content: center !important;
+    padding: 20px !important;
+    backdrop-filter: blur(8px); /* Efecto de cristal esmerilado al fondo */
+}
+
+/* LA TARJETA NEGRA (El cuadro principal que pediste) */
+.card-perfil-celular {
+    width: 100% !important;
+    max-width: 440px !important;
+    background: #111214 !important; /* FONDO NEGRO PROFUNDO */
+    border-radius: 28px !important; /* Bordes muy redondos y modernos */
+    border: 1px solid #2b2d31 !important;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.8) !important;
+    overflow-y: auto !important; 
+    position: relative;
+    max-height: 92vh !important; /* Aprovecha casi toda la pantalla */
+    scrollbar-width: none; /* Oculta scroll en Firefox */
+}
+.card-perfil-celular::-webkit-scrollbar { display: none; } /* Oculta scroll en Chrome/Safari */
+
+/* EL BANNER (PROPORCIONAL) */
+.banner-azul-perfil {
+    height: 130px !important; 
+    background: linear-gradient(135deg, #152191 0%, #0c1661 100%) !important;
+    border-bottom: 4px solid #ead228 !important;
+}
+
+/* LA FOTO: Aquí es donde deja de ser una tachuela y sobrepasa con estilo */
+.contenedor-avatar-perfil {
+    margin-top: -60px !important; 
+    margin-bottom: 20px !important;
+    z-index: 100 !important;
+    display: flex;
+    justify-content: center;
+}
+
+#previewFoto {
+    width: 120px !important; /* Tamaño proporcional ideal */
+    height: 120px !important;
+    border: 6px solid #111214 !important; /* Borde del color de la tarjeta para integrarla */
+    border-radius: 50% !important;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.6) !important;
+    background: #2b2d31 !important;
+}
+
+/* CUERPO DE DATOS (MANTENIENDO TODA TU INFO) */
+.cuerpo-datos-perfil {
+    padding: 0 25px 40px 25px !important;
+    text-align: center;
+}
+
+/* Estilo para los textos principales */
+#previewNombre {
+    font-size: 26px !important;
+    font-weight: 800 !important;
+    color: #ffffff !important;
+    display: block;
+    margin-bottom: 4px !important;
+}
+
+#previewUser {
+    font-size: 15px !important;
+    color: #b5bac1 !important;
+    margin-bottom: 25px !important;
+    display: block;
+}
+
+/* TUS BLOQUES DE DATOS (Gris sobre Negro) */
+.bloque-datos-oscuro, .bloque-licencia {
+    background: #1e1f22 !important; 
+    border: 1px solid #2b2d31 !important;
+    border-radius: 18px !important;
+    padding: 20px !important;
+    margin-bottom: 20px !important;
+    text-align: left;
+}
+
+.fila-dato {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px !important;
+    font-size: 15px !important;
+    border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+    padding-bottom: 8px !important;
+}
+
+.etiqueta { color: #8e9297 !important; font-weight: bold; }
+.valor { color: #ffffff !important; }
+
+/* LA INE / LICENCIA */
+.titulo-licencia { 
+    font-size: 18px !important; 
+    margin-bottom: 15px !important; 
+    color: #fff !important;
+    text-align: center;
+}
+.caja-foto-licencia {
+    border-radius: 12px !important;
+    border: 2px dashed #4e5058 !important;
+    overflow: hidden;
+}
+
+/* BOTONES GIGANTES Y FÁCILES DE TOCAR */
+#btnSolicitarAuto, #btnActualizarCorreo, #btnActualizarTel, #btnCerrarSesion {
+    width: 100% !important;
+    padding: 18px !important;
+    border-radius: 14px !important;
+    font-weight: bold !important;
+    font-size: 16px !important;
+    border: none !important;
+    margin-bottom: 12px !important;
+    transition: 0.2s ease;
+}
+
+#btnSolicitarAuto { background: #5865f2 !important; color: white !important; }
+#btnActualizarCorreo, #btnActualizarTel { background: #4e5058 !important; color: white !important; }
+#btnCerrarSesion { background: #ed4245 !important; color: white !important; }
+
+/* BOTÓN CERRAR (Mantenemos tu ID pero con look minimalista) */
+#btnCerrarPerfil {
+    position: absolute !important;
+    top: 15px !important;
+    right: 15px !important;
+    background: rgba(0,0,0,0.5) !important;
+    color: #fff !important;
+    border: none !important;
+    width: 35px !important;
+    height: 35px !important;
+    border-radius: 50% !important;
+    font-size: 18px !important;
+    cursor: pointer;
+    z-index: 200;
+}
