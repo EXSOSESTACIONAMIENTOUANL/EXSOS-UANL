@@ -236,7 +236,9 @@ function cerrarPopup(){
 
 function revisarPartidosHoy(){
     const hoy = new Date();
-    const clave = (hoy.getMonth() + 1) + "-" + hoy.getDate();
+    const mes = hoy.getMonth() + 1;
+    const dia = hoy.getDate();
+    const clave = mes + "-" + dia;
     const contenedor = document.getElementById("hoy");
     const estadoVacio = document.getElementById("estadoVacioHoy");
 
@@ -244,10 +246,19 @@ function revisarPartidosHoy(){
 
     if(partidos[clave]){
         if(estadoVacio) estadoVacio.style.display = "none";
-        partidos[clave].forEach(p => {
+        partidos[clave].forEach(partido => {
             const aviso = document.createElement("div");
             aviso.classList.add("notificacion-card");
-            aviso.innerHTML = `<div class=\"noti-icono\">⚽</div><div class=\"noti-texto\"><b>Partido hoy</b><br>A las ${p.hora}</div>`;
+            
+            // 🔥 AQUÍ ESTÁ LA CORRECCIÓN 🔥
+            // Ahora usa "noti-titulo" y "noti-mensaje" exactamente igual que los anteriores
+            aviso.innerHTML = `
+            <div class="noti-icono">⚽</div>
+            <div class="noti-texto">
+                <div class="noti-titulo">Partido hoy</div>
+                <div class="noti-mensaje">A las ${partido.hora}</div>
+            </div>`;
+            
             contenedor.appendChild(aviso);
         });
     }
