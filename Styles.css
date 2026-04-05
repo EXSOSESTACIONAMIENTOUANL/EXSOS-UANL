@@ -3056,147 +3056,200 @@ font-size:1.7vw ;
 }
 
 
-
 /* ========================================================= */
-/* PERFIL FULL SCREEN PROFESIONAL - SCROLL TOTAL             */
+/* DISEÑO FULL SCREEN NATIVO - PROPORCIONAL Y SIMÉTRICO      */
 /* ========================================================= */
 
-/* 1. Fondo del modal: Ahora es total y permite scroll */
+/* 1. Modal a pantalla completa 100% sin bordes ni padding */
 .modal-perfil-full {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: #000000 !important; /* Fondo negro puro */
-    display: none;
+    position: fixed; 
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: #111214 !important; /* Color de fondo base */
+    display: none; 
     z-index: 99999;
-    overflow-y: auto; /* Permite bajar y subir con el dedo */
-    padding: 0;
-    margin: 0;
+    overflow-y: auto; /* Scroll nativo */
+    padding: 0 !important; 
+    margin: 0 !important; /* Cero márgenes para llenar la pantalla */
 }
 
-.modal-perfil-full.activo {
-    display: block; /* Cambiamos a block para que el scroll natural funcione */
-}
+.modal-perfil-full.activo { display: block !important; }
 
-/* 2. La Tarjeta: Ahora es el contenedor de TODA la pantalla */
+/* 2. Tarjeta principal ocupa todo el ancho y alto (Edge-to-edge) */
 .card-perfil-celular {
-    width: 100%;
+    width: 100% !important;
+    max-width: 100% !important; /* Llena toda la pantalla de lado a lado */
     min-height: 100vh;
-    background: #0b0b0b; /* Un gris casi negro para los bloques */
-    display: flex;
+    background: #111214 !important;
+    display: flex; 
     flex-direction: column;
-    padding-bottom: 50px; /* Espacio al final para que no pegue con el borde */
+    position: relative;
+    padding-bottom: 40px; /* Respiro al final del scroll */
 }
 
-/* 3. PORTADA (BANNER): Grande y visible al abrir */
+/* 3. PORTADA: Altura proporcional, no gigante */
 .banner-azul-perfil {
     width: 100%;
-    height: 250px; /* Mucho más alta para que luzca tu foto */
+    height: 160px !important; /* Tamaño perfecto para que no tape todo */
     background-color: #152191; 
-    background-size: cover;
+    background-size: cover; 
     background-position: center;
     background-repeat: no-repeat;
-    position: relative;
-    border-bottom: 5px solid #ead228; /* Línea de acento dorada */
+    position: relative; 
+    border-bottom: 4px solid #ead228 !important;
 }
 
-/* 4. LA FOTO DE PERFIL: Proporcional y al frente */
+/* 4. BOTONES SIMÉTRICOS (CERRAR Y EDITAR) */
+/* Misma altura, mismo tamaño, misma forma, lados opuestos */
+.btn-salir-perfil, 
+.btn-editar-banner {
+    position: absolute !important;
+    top: 20px !important;
+    width: 42px !important; /* Círculos idénticos */
+    height: 42px !important;
+    border-radius: 50% !important;
+    background: rgba(0,0,0,0.5) !important;
+    backdrop-filter: blur(5px);
+    color: white !important;
+    border: 2px solid rgba(255,255,255,0.3) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 20px !important;
+    cursor: pointer;
+    z-index: 100;
+    padding: 0 !important;
+}
+
+/* El botón salir (X) va clavado a la izquierda */
+.btn-salir-perfil {
+    left: 20px !important;
+}
+
+/* El botón editar (Lápiz) va clavado a la derecha */
+.btn-editar-banner {
+    right: 20px !important;
+    left: auto !important; 
+}
+
+/* 5. FOTO DE PERFIL: Proporcional y centrada */
 .contenedor-avatar-perfil {
     width: 100%;
-    display: flex;
+    display: flex; 
     justify-content: center;
-    margin-top: -80px; /* Sube la foto para que rompa la línea del banner */
-    margin-bottom: 20px;
-    position: relative;
+    margin-top: -55px !important; /* Sube exactamente la mitad de la foto */
+    margin-bottom: 10px !important;
+    position: relative; 
     z-index: 10;
 }
 
-#previewFoto {
-    width: 160px; /* Foto más grande */
-    height: 160px;
-    border-radius: 50%;
-    border: 6px solid #0b0b0b; /* Borde del color del fondo */
-    object-fit: cover;
-    background: #2b2d31;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+.avatar-perfil-img {
+    width: 110px !important; /* Tamaño proporcional para que no se vea grosero */
+    height: 110px !important;
+    border-radius: 50% !important;
+    border: 5px solid #111214 !important; /* Mismo color del fondo para que "corte" la portada */
+    background: #2b2d31 !important;
+    object-fit: cover !important;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5) !important;
 }
 
-/* 5. DATOS Y TEXTOS: Letras grandes y legibles */
+/* 6. CUERPO DE DATOS */
 .cuerpo-datos-perfil {
-    padding: 0 25px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+    padding: 0 20px !important;
+    display: flex; 
+    flex-direction: column; 
+    gap: 15px !important; /* Separación limpia entre bloques */
 }
 
-.bloque-datos-oscuro, .bloque-licencia {
-    background: #161719; /* Bloques minimalistas */
-    border-radius: 20px;
-    padding: 25px;
-    border: 1px solid #252629;
+#previewNombre {
+    font-size: 24px !important;
+    color: white !important;
+    text-align: center;
+    margin: 5px 0 !important;
+}
+
+#previewUser {
+    font-size: 15px !important;
+    color: #b5bac1 !important;
+    text-align: center;
+    margin: 0 0 15px 0 !important;
+    display: block;
+}
+
+/* BLOQUES GRISES DE INFORMACIÓN */
+.bloque-datos-oscuro, 
+.bloque-licencia {
+    background: #1e1f22 !important; 
+    border-radius: 16px !important; 
+    padding: 20px !important;
+    border: 1px solid #2b2d31 !important;
 }
 
 .fila-dato {
-    display: flex;
-    justify-content: space-between;
+    display: flex; 
+    justify-content: space-between; 
     align-items: center;
-    margin-bottom: 15px;
-    font-size: 20px; /* Letras grandes como pediste */
+    font-size: 16px !important; /* Letra clara pero no exagerada */
+    margin-bottom: 12px !important;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    padding-bottom: 8px;
+}
+.fila-dato:last-child {
+    margin-bottom: 0 !important;
+    border-bottom: none;
+    padding-bottom: 0;
 }
 
-.fila-dato .etiqueta {
-    color: #8e9297;
-    font-weight: 500;
+.fila-dato .etiqueta { color: #8e9297 !important; font-weight: normal; }
+.fila-dato .valor { color: #ffffff !important; font-weight: bold; }
+
+/* CAJA DE LA INE */
+.titulo-licencia { 
+    margin: 0 0 15px 0 !important; 
+    color: white !important; 
+    font-size: 18px !important; 
+    text-align: center;
+}
+.caja-foto-licencia {
+    width: 100%; 
+    height: 200px !important; /* Proporcional */
+    background: #111 !important; 
+    border-radius: 12px !important; 
+    border: 2px dashed #5865f2 !important;
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    overflow: hidden;
 }
 
-.fila-dato .valor {
-    color: #ffffff;
-    font-weight: bold;
-    text-align: right;
-}
-
-/* 6. BOTONES: Gigantes para el pulgar */
+/* 7. BOTONES INFERIORES */
 .bloque-botones-perfil {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin-top: 20px;
+    display: flex; 
+    flex-direction: column; 
+    gap: 12px !important; 
+    align-items: center;
+    width: 100%;
 }
 
 .btn-blanco-perfil {
-    width: 100%;
-    padding: 22px; /* Botones muy grandes */
-    border-radius: 15px;
-    font-size: 20px;
-    font-weight: 800;
-    text-transform: uppercase;
-    border: none;
-    cursor: pointer;
-    transition: 0.2s;
+    width: 100% !important;
+    padding: 16px !important; 
+    border-radius: 12px !important;
+    font-weight: bold !important; 
+    font-size: 16px !important; 
+    cursor: pointer; 
+    border: none !important;
 }
 
-/* Colores minimalistas */
-#btnSolicitarAuto { background: #5865f2; color: white; }
-#btnActualizarCorreo, #btnActualizarTel { background: #313338; color: white; }
-#btnCerrarSesion { background: #ed4245; color: white; margin-top: 10px; }
-
-/* 7. BOTÓN CERRAR: Flotante y minimalista arriba a la derecha */
-.btn-cerrar-flotante {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background: rgba(0,0,0,0.5);
-    color: white;
-    border: none;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    font-size: 25px;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
+/* Botones en la misma fila */
+.fila-botones-mitad {
+    display: flex; 
+    gap: 12px !important; 
+    width: 100% !important; 
+    justify-content: space-between;
 }
+.fila-botones-mitad button { flex: 1; }
+
+#btnSolicitarAuto { background: #5865f2 !important; color: white !important; }
+#btnActualizarCorreo, #btnActualizarTel { background: #3a3c41 !important; color: white !important; }
+#btnCerrarSesion { background: transparent !important; color: #ed4245 !important; border: 1px solid #ed4245 !important; }
