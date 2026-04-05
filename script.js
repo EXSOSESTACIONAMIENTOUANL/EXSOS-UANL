@@ -14,13 +14,13 @@ function cerrarMenu(){
 
 function toggleNotificaciones(){
     const panel = document.getElementById("panelNotificaciones");
-    panel.classList.toggle("activo");
+    if(panel) panel.classList.toggle("activo");
 }
 
 document.addEventListener("click", function(e){
     const panel = document.getElementById("panelNotificaciones");
     const container = document.querySelector(".notificaciones-container");
-    if(container && !container.contains(e.target)){
+    if(panel && container && !container.contains(e.target)){
         panel.classList.remove("activo");
     }
 });
@@ -28,8 +28,8 @@ document.addEventListener("click", function(e){
 function toggleSeccion(id){
     const contenido = document.getElementById(id);
     const flecha = document.getElementById("flecha-" + id);
-    contenido.classList.toggle("activo");
-    flecha.classList.toggle("rotar");
+    if(contenido) contenido.classList.toggle("activo");
+    if(flecha) flecha.classList.toggle("rotar");
 }
 
 /* ======================================================== */
@@ -45,41 +45,50 @@ function abrirAyuda(){
     const chatContenedor = document.querySelector(".chat-contenedor");
     const chat = document.getElementById("chatArea");
 
+    if(!overlay) return;
+
     overlay.classList.add("activo");
-    titulo.innerHTML = ""; texto.innerHTML = ""; chat.innerHTML = "";
-    chatContenedor.classList.remove("activo");
+    if(titulo) titulo.innerHTML = ""; 
+    if(texto) texto.innerHTML = ""; 
+    if(chat) chat.innerHTML = "";
+    if(chatContenedor) chatContenedor.classList.remove("activo");
 
-    imagenCentral.classList.remove("monito-desaparece");
-    mensajeAyuda.classList.remove("monito-desaparece");
+    if(imagenCentral) imagenCentral.classList.remove("monito-desaparece");
+    if(mensajeAyuda) mensajeAyuda.classList.remove("monito-desaparece");
 
-    escribirTexto("¡Hola!", titulo, 50, () => {
-        escribirTexto("Soy tu asistente virtual EXSOS", texto, 30, () => {
-            setTimeout(()=>{
-                imagenCentral.classList.add("monito-desaparece");
-                mensajeAyuda.classList.add("monito-desaparece");
+    if(titulo && texto) {
+        escribirTexto("¡Hola!", titulo, 50, () => {
+            escribirTexto("Soy tu asistente virtual EXSOS", texto, 30, () => {
                 setTimeout(()=>{
-                    imagenCentral.style.display="none";
-                    mensajeAyuda.style.display="none";
-                    chatContenedor.classList.add("activo");
-                    chat.innerHTML += `
-                    <div class="mensaje bot">
-                        <img src="https://i.postimg.cc/WpxqwBv1/Feliz.png" class="avatar">
-                        <div class="burbuja">¿En qué puedo ayudarte?</div>
-                    </div>`;
-                    chat.scrollTop = chat.scrollHeight;
-                },500);
-            },1500);
+                    if(imagenCentral) imagenCentral.classList.add("monito-desaparece");
+                    if(mensajeAyuda) mensajeAyuda.classList.add("monito-desaparece");
+                    setTimeout(()=>{
+                        if(imagenCentral) imagenCentral.style.display="none";
+                        if(mensajeAyuda) mensajeAyuda.style.display="none";
+                        if(chatContenedor) chatContenedor.classList.add("activo");
+                        if(chat) {
+                            chat.innerHTML += `
+                            <div class="mensaje bot">
+                                <img src="https://i.postimg.cc/WpxqwBv1/Feliz.png" class="avatar">
+                                <div class="burbuja">¿En qué puedo ayudarte?</div>
+                            </div>`;
+                            chat.scrollTop = chat.scrollHeight;
+                        }
+                    },500);
+                },1500);
+            });
         });
-    });
+    }
 }
 
 function cerrarAyuda(){
     const overlay = document.getElementById("overlayAyuda");
-    overlay.classList.remove("activo");
+    if(overlay) overlay.classList.remove("activo");
 }
 
 function escribirTexto(textoCompleto, elemento, velocidad, callback){
     let i = 0;
+    if(!elemento) return;
     elemento.innerHTML = "";
     const intervalo = setInterval(()=>{
         elemento.innerHTML += textoCompleto.charAt(i);
@@ -94,6 +103,8 @@ function escribirTexto(textoCompleto, elemento, velocidad, callback){
 function enviarMensaje(){
     const input = document.getElementById("inputUsuario");
     const chat = document.getElementById("chatArea");
+    if(!input || !chat) return;
+
     const textoUsuario = input.value.trim();
     if(textoUsuario === "") return;
 
@@ -122,7 +133,6 @@ function enviarMensaje(){
     },1000);
 }
 
-// Aquí permanecen tus funciones de obtenerAvatarUsuario, obtenerAvatarBot y generarRespuesta tal cual las tienes...
 function generarRespuesta(texto){
     texto = texto.toLowerCase();
     if(texto.includes("verde")) return "El color verde indica que el lugar está disponible.";
@@ -142,23 +152,27 @@ function obtenerAvatarUsuario(t){ return "https://i.postimg.cc/3NzGy63L/Dina.png
 let partidos = {};
 
 async function cargarPartidos(){
-    const respuesta = await fetch("partidos.csv");
-    const texto = await respuesta.text();
-    const lineas = texto.split("\n");
-    lineas.shift();
+    try {
+        const respuesta = await fetch("partidos.csv");
+        const texto = await respuesta.text();
+        const lineas = texto.split("\n");
+        lineas.shift();
 
-    lineas.forEach(linea => {
-        const datos = linea.split(",");
-        if(datos.length < 5) return;
-        const clave = datos[0] + "-" + datos[1]; // Mes-Dia
-        if(!partidos[clave]) partidos[clave] = [];
-        partidos[clave].push({ rival:datos[3], local:datos[2], hora:datos[4], logoLocal:datos[5], logoRival:datos[6] });
-    });
+        lineas.forEach(linea => {
+            const datos = linea.split(",");
+            if(datos.length < 5) return;
+            const clave = datos[0] + "-" + datos[1]; // Mes-Dia
+            if(!partidos[clave]) partidos[clave] = [];
+            partidos[clave].push({ rival:datos[3], local:datos[2], hora:datos[4], logoLocal:datos[5], logoRival:datos[6] });
+        });
 
-    marcarPartidos();
-    activarClicks();
-    revisarPartidosHoy();
-    revisarPartidosAnteriores();
+        marcarPartidos();
+        activarClicks();
+        revisarPartidosHoy();
+        revisarPartidosAnteriores();
+    } catch(e) {
+        console.log("No se pudo cargar el archivo partidos.csv");
+    }
 }
 
 function marcarPartidos(){
@@ -186,6 +200,7 @@ function activarClicks(){
 
 function mostrarPopup(listaPartidos){
     const popup = document.getElementById("popup");
+    if(!popup) return;
     popup.style.display="flex";
     let contenido = "";
     
@@ -210,17 +225,25 @@ function mostrarPopup(listaPartidos){
         </div>`;
     });
     
-    document.getElementById("popup-rival").innerHTML = contenido;
+    const popupRival = document.getElementById("popup-rival");
+    if(popupRival) popupRival.innerHTML = contenido;
 }
 
-function cerrarPopup(){ document.getElementById("popup").style.display="none"; }
+function cerrarPopup(){ 
+    const popup = document.getElementById("popup");
+    if(popup) popup.style.display="none"; 
+}
 
 function revisarPartidosHoy(){
     const hoy = new Date();
     const clave = (hoy.getMonth() + 1) + "-" + hoy.getDate();
     const contenedor = document.getElementById("hoy");
+    const estadoVacio = document.getElementById("estadoVacioHoy");
+
+    if(!contenedor) return;
+
     if(partidos[clave]){
-        document.getElementById("estadoVacioHoy").style.display = "none";
+        if(estadoVacio) estadoVacio.style.display = "none";
         partidos[clave].forEach(p => {
             const aviso = document.createElement("div");
             aviso.classList.add("notificacion-card");
@@ -236,15 +259,15 @@ function revisarPartidosAnteriores(){
     // Normalizamos la fecha de hoy a la medianoche para evitar problemas con las horas
     hoy.setHours(0, 0, 0, 0); 
     
-    // Calculamos la fecha límite (hace 14 días)
+    // Calculamos la fecha límite (hace 14 días / 2 semanas)
     const fechaLimite = new Date(hoy.getTime() - (7 * 24 * 60 * 60 * 1000)); 
 
     const contenedor = document.getElementById("anteriores");
+    if(!contenedor) return;
+    
     let hayEventos = false;
 
     // Limpiamos el contenedor antes de agregar (útil si la función se llama varias veces)
-    // Asumiendo que el HTML original tiene el estado vacío, lo preservamos o lo recreamos si es necesario, 
-    // pero lo más seguro es solo limpiar las tarjetas de notificación:
     const tarjetasViejas = contenedor.querySelectorAll(".notificacion-card");
     tarjetasViejas.forEach(tarjeta => tarjeta.remove());
 
@@ -280,6 +303,7 @@ function revisarPartidosAnteriores(){
 function corregirInicioMeses(){
     document.querySelectorAll(".mes").forEach((mesDiv, index) => {
         const diasContainer = mesDiv.querySelector(".dias");
+        if(!diasContainer) return;
         diasContainer.querySelectorAll(".vacio").forEach(e => e.remove());
         const primerDia = new Date(2026, index, 1).getDay();
         let offset = primerDia - 1;
@@ -293,7 +317,14 @@ function corregirInicioMeses(){
 }
 
 function actualizarNumeroCampana(){
-    const total = document.querySelectorAll(".notificacion-card").length;
+    // Sumar las notificaciones de hoy y las anteriores
+    const hoyCards = document.querySelectorAll("#hoy .notificacion-card");
+    const anterioresCards = document.querySelectorAll("#anteriores .notificacion-card");
+    
+    let total = 0;
+    if(hoyCards) total += hoyCards.length;
+    if(anterioresCards) total += anterioresCards.length;
+    
     const badge = document.getElementById("badgeNoti");
     if(badge){
         badge.textContent = total;
