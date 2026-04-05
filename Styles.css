@@ -1,5 +1,8 @@
 body{
     margin: 0;
+    width: 100%;
+    min-height: 100vh;
+    overflow-y: auto;
 }
 /* ========================================= */
 /* ESTILOS DE LA ALERTA (TOAST)              */
@@ -267,10 +270,10 @@ body{
 
 /*          Campanita             */
 
-.notificaciones-container{
+.notificaciones-container {
     position: relative;
-    height: 10vw;
-    width: 15vw;
+    width: 50px;
+    height: 50px;
 }
 
 .campana-wrapper{
@@ -281,30 +284,29 @@ body{
 }
 
 .bell{
-    width: 12vw;
+       width: 100%;
 }
 
 
 .badge{
-position:absolute;
-top:0.6vw;
-right:0.5vw;
+    position:absolute;
+    top:-5px;
+    right:-5px;
 
-background:red;
-color:white;
+    background:red;
+    color:white;
 
-font-size:3vw;
+    font-size:12px;
 
-min-width:4vw;
-height:4vw;
-padding:0 0.8vw;
+    min-width:20px;
+    height:20px;
 
-border-radius:90px;
-border:0.7vw solid #152191;
+    border-radius:50%;
+    border:2px solid #152191;
 
-display:flex;
-align-items:center;
-justify-content:center;
+    display:flex;
+    align-items:center;
+    justify-content:center;
 }
 
 .bell.nueva{
@@ -318,20 +320,20 @@ animation:campana 0.6s;
 }
 
 .panel-notificaciones{
-
     position: absolute;
     top: 60px;
-    right: 0;
-    width: 600px;
+    right: 10px;
+
+    width: 90vw;
+    max-width: 400px;
+
     background: white;
-    color: black;
-    border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    border-radius: 15px;
+
     padding: 15px;
-    display: none;
-    opacity: 0;
-    transform: translateY(-10px);
-    transition: 0.3s ease;
+
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+
     z-index: 3000;
 }
 
@@ -1524,6 +1526,15 @@ margin-bottom:6%;
 /* ================= MODAL FONDO ================= */
 
 /* ================= MODAL DISCORD ================= */
+body{
+    margin: 0;
+    width: 100%;
+    min-height: 100vh;
+    overflow-y: auto;
+}
+body {
+    overflow-y: auto;
+}
 .modal-perfil-full{
     font-family:'Gill Sans','Gill Sans MT',Calibri,'Trebuchet MS',sans-serif;
     position:fixed;
@@ -1737,15 +1748,6 @@ input:-webkit-autofill:active{
     transition: 0.25s;
 }
 
-
-@media (max-width: 900px){
-
-    .card-perfil{
-        flex-direction:column;
-        padding:20px;
-         width:clamp(320px, 90vw, 500px); /* 🔥 se adapta */
-        gap:25px;
-    }
 
     .perfil-form{
         max-width:100%;
@@ -3187,16 +3189,4 @@ font-size:1.7vw ;
     cursor: pointer;
 }
 
-html {
-    font-size: clamp(14px, 1.5vw, 18px);
-}
-
-body {
-    width: 100%;
-    min-height: 100vh;
-}
-
-main, .contenido, .pantalla {
-    width: 100%;
-    min-height: 100vh;
-}
++
