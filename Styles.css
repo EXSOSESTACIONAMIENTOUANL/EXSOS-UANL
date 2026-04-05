@@ -251,7 +251,7 @@ body{
 
 
 
-/*          Encabezado              */
+/* Encabezado              */
 .imagen-exsos{
     background: #152191;
     text-align:center;
@@ -265,7 +265,7 @@ body{
 
 }
 
-/*          Campanita             */
+/* Campanita             */
 
 .notificaciones-container{
     position: relative;
@@ -470,7 +470,7 @@ text-align: justify;
 }
 
 
-/*          Menu despegable              */
+/* Menu despegable              */
 
 .header{
     background: #152191;
@@ -605,7 +605,7 @@ body.menu-abierto {
 
 
 
-/*         Fin Encabezado              */
+/* Fin Encabezado              */
 
 
 /* ---------- DISPONIBILIDAD ---------- */
@@ -767,7 +767,7 @@ bottom:2.4%;
 }
 
 
-/*         Seccion de ayuda              */
+/* Seccion de ayuda              */
 
 .seccion-ayuda{
     width: 90%;
@@ -1397,7 +1397,7 @@ font-size: clamp(450%,2.5vw,35px);
 margin-top:20px;
 }
 
-/*          Pie de pagina              */
+/* Pie de pagina              */
 
 html, body{
     height:100%;
@@ -1445,7 +1445,7 @@ margin-bottom:6%;
 
 
 
-/*  extras  */
+/* extras  */
 
 .perfil-menu {
     position: relative;
@@ -1492,6 +1492,7 @@ margin-bottom:6%;
 
 #correoUsuario {
     font-size: 1.5vw;
+    word-break: break-all; /* <-- ESTA LÍNEA ARREGLA QUE EL CORREO LARGO SE BAJE BIEN */
 }
 
 
@@ -1567,7 +1568,7 @@ margin-bottom:6%;
 
     box-sizing:border-box;
 
-
+    
 }
 
 /* Animación suave */
@@ -1738,45 +1739,15 @@ input:-webkit-autofill:active{
 }
 
 
-@media (max-width: 900px){
-
-    .card-perfil{
-        flex-direction:column;
-        padding:20px;
-         width:clamp(320px, 90vw, 500px); /* 🔥 se adapta */
-        gap:25px;
-    }
-
-    .perfil-form{
-        max-width:100%;
-    }
-
-    .perfil-preview{
-        width:100%;
-    }
-
-    .preview-card{
-        transform:none;
-    }
-}
 
 
-@media (max-width: 480px){
 
-    .perfil-header{
-        flex-direction:column;
-        gap:10px;
-        align-items:center;
-    }
 
-    .perfil-header span{
-        font-size:14px;
-    }
 
-    .perfil-campo input{
-        font-size:16px; /* evita zoom iPhone */
-    }
-}
+
+
+
+
 
 .modal-perfil-full{
     overflow-y:auto;
@@ -1925,7 +1896,7 @@ input:-webkit-autofill:active{
 .guardar-btn:hover{
     color:white;
     transform:scale(1.2);
-    transition: 0.25s; 
+    transition: 0.25s;  
 }
 
 .guardar-btn:active{
@@ -2342,7 +2313,7 @@ input:-webkit-autofill:active{
     background:#4c4f55;
     transition-duration: 0.2s;
     transform: scale(1.1);
-
+    
 }
 
 .editor-footer .aplicar{
@@ -2466,7 +2437,7 @@ input:-webkit-autofill:active{
 
 
 
-/*  ---------------- Cerrar sesion  ----------------- */
+/* ---------------- Cerrar sesion  ----------------- */
 
 .btn-cerrar-sesion{
     font-family:'Gill Sans','Gill Sans MT',Calibri,'Trebuchet MS',sans-serif;
@@ -2593,7 +2564,7 @@ font-size:1.6rem ;
 
 
 
-/*    cerrar sesion modal           */
+/* cerrar sesion modal            */
 
 .personaje-box {
     text-align: center;
@@ -2819,356 +2790,141 @@ font-size:1.7vw ;
     }
 }
 
-
-
-/* --- ESTILOS EXACTOS PARA EL PERFIL EN CELULAR --- */
-
-.modal-perfil-full {
-    position: fixed; top: 0; left: 0; 
-    width: 100vw; /* 100% del ancho del celular */
-    height: 100vh; /* 100% del alto del celular */
-    background: #111214; 
-    display: none; /* Cambia a block con JS */
-    z-index: 99999;
-    overflow-y: auto; /* Permite deslizar hacia abajo */
-    padding: 0; margin: 0;
-}
-.modal-perfil-full.activo { display: block; }
-
-/* Tarjeta que ocupa TODA la pantalla */
-.card-perfil-celular {
-    width: 100%; 
-    min-height: 100vh; 
-    background: #232428; 
-    display: flex; flex-direction: column;
-}
-
-/* Botón flotante arriba a la izquierda */
-.btn-cerrar-flotante {
-    position: absolute; top: 15px; left: 15px;
-    background: rgba(0,0,0,0.5); color: white; border: none;
-    width: 45px; height: 45px; border-radius: 8px; /* Más grande */
-    font-size: 24px; cursor: pointer; z-index: 10;
-}
-
-/* El banner azul */
-.banner-azul-perfil {
-    width: 100%; 
-    height: 180px; /* Mucho más grande */
-    background-color: #152191; /* EL COLOR AZUL QUE PEDISTE */
-    background-size: cover; background-position: center;
-    position: relative;
-}
-
-/* LA FOTO: Arreglada para empujar el texto hacia abajo */
-.contenedor-avatar-perfil {
-    width: 100%;
-    display: flex; justify-content: center;
-    margin-top: -75px; /* Sube la foto a la mitad del banner */
-    margin-bottom: 20px; /* IMPORTANTE: Esto empuja el texto para que no se encime */
-    position: relative; z-index: 2;
-}
-.avatar-perfil-img {
-    width: 150px; height: 150px; /* Foto enorme */
-    border-radius: 50%;
-    border: 6px solid #232428; /* Borde para "cortar" el banner */
-    background: #111; object-fit: cover;
-}
-
-/* Área de los datos */
-.cuerpo-datos-perfil {
-    padding: 0 20px 20px 20px;
-    display: flex; flex-direction: column; gap: 25px; /* Más separación */
-}
-
-/* Cajas grises donde van los datos */
-.bloque-datos-oscuro {
-    background: #1e1f22; border-radius: 15px; padding: 25px;
-    display: flex; flex-direction: column; gap: 15px;
-}
-
-/* Letras MUCHO MÁS grandes */
-.fila-dato {
-    display: flex; justify-content: space-between; align-items: center;
-    font-size: 18px; /* Tamaño más grande para celular */
-}
-.fila-dato .etiqueta { color: #b5bac1; font-weight: normal; }
-.fila-dato .valor { color: #ffffff; text-align: right; font-weight: bold; font-size: 19px; }
-
-/* La INE */
-.bloque-licencia {
-    background: #1e1f22; border-radius: 15px; padding: 25px;
-}
-.titulo-licencia { margin: 0 0 20px 0; color: white; font-size: 20px; font-weight: bold; text-align: center;}
-.caja-foto-licencia {
-    width: 100%; height: 300px; /* Foto de INE mucho más grande */
-    background: #111; border-radius: 10px; border: 2px dashed #555;
-    display: flex; justify-content: center; align-items: center; overflow: hidden;
-}
-.caja-foto-licencia img { max-width: 100%; max-height: 100%; object-fit: contain; }
-
-/* Botones idénticos a los tuyos (tipo pastilla) */
-.bloque-botones-perfil {
-    display: flex; flex-direction: column; gap: 15px; align-items: center;
-    padding-bottom: 50px; /* Espacio para bajar hasta el fondo */
-}
-.btn-blanco-perfil {
-    background: #e3e5e8; color: #111; border: none;
-    padding: 18px; border-radius: 30px; /* Redondos y más gruesos */
-    font-weight: bold; font-size: 18px; cursor: pointer; width: 85%; /* Más anchos */
-}
-.fila-botones-mitad {
-    display: flex; gap: 15px; width: 85%; justify-content: center;
-}
-.fila-botones-mitad button { width: 100%; }
-
 /* ========================================================= */
-/* CORRECCIONES EXACTAS DEL PERFIL (FOTO, TEXTOS Y BOTONES)  */
+/* DISEÑO DE PERFIL MÓVIL DEFINITIVO                         */
 /* ========================================================= */
+@media (max-width: 900px) {
+    .modal-perfil-full {
+        position: fixed !important;
+        top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        background: #111214 !important; 
+        display: none;
+        z-index: 999999 !important;
+        padding: 0 !important; margin: 0 !important;
+        overflow-y: auto !important; 
+        align-items: flex-start !important; 
+    }
+    .modal-perfil-full.activo { display: block !important; }
 
-/* 1. TRAER LA FOTO HACIA ADELANTE Y HACERLA MÁS GRANDE */
-.perfil-foto-container {
-    position: relative !important;
-    z-index: 9999 !important; /* Esto obliga a la foto a estar al frente del banner */
-    display: flex !important;
-    justify-content: center !important;
-    margin-top: -60px !important; /* Ajusta qué tanto sube al banner azul */
-    margin-bottom: 15px !important;
-}
+    .card-perfil {
+        width: 100% !important; max-width: 100vw !important;
+        min-height: 100vh !important;
+        display: block !important; 
+        margin: 0 !important;
+        padding: 0 0 100px 0 !important; 
+        background: transparent !important;
+        box-sizing: border-box !important;
+    }
 
-#previewFoto {
-    width: 130px !important; /* Foto más grande */
-    height: 130px !important;
-    border-radius: 50% !important;
-    border: 5px solid #1e1f22 !important; /* Borde oscuro para separarla del fondo */
-    object-fit: cover !important;
-    position: relative !important;
-    z-index: 10000 !important; /* DOBLE SEGURIDAD para que quede al frente */
-    background: #2b2d31 !important;
-}
+    .perfil-preview { display: none !important; }
 
-/* 2. HACER LAS LETRAS DE LOS DATOS MÁS GRANDES Y VISIBLES */
-#previewNombre {
-    font-size: 26px !important; /* Nombre bien visible */
-    margin-top: 10px !important;
-}
+    .perfil-form {
+        width: 100% !important; max-width: 100% !important;
+        padding: 0 20px !important;
+        box-sizing: border-box !important;
+    }
 
-#previewUser, 
-#previewMatricula {
-    font-size: 18px !important;
-}
+    .btn-salir {
+        position: fixed !important;
+        top: 20px !important; right: 20px !important;
+        width: 45px !important; height: 45px !important;
+        background: rgba(43, 45, 49, 0.8) !important;
+        border-radius: 50% !important;
+        z-index: 1000000 !important;
+        display: flex !important; justify-content: center !important; align-items: center !important;
+        color: transparent !important; 
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    .btn-salir::after {
+        content: "✕" !important;
+        color: white !important;
+        font-size: 24px !important;
+        font-weight: bold !important;
+        font-family: Arial, sans-serif !important;
+    }
 
-.preview-detalles-auto p, 
-.preview-detalles-auto span, 
-.preview-detalles-auto strong {
-    font-size: 18px !important; /* Letras del vehículo y datos personales más grandes */
-    line-height: 1.8 !important; /* Más espacio entre renglones para que no se vea amontonado */
-}
+    .perfil-foto-container {
+        width: 100% !important;
+        display: flex !important; flex-direction: column !important;
+        align-items: center !important; justify-content: center !important;
+        margin-top: 60px !important; margin-bottom: 20px !important;
+    }
+    
+    #previewFoto {
+        width: 150px !important; height: 150px !important;
+        border: 5px solid #2b2d31 !important;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.5) !important;
+        border-radius: 50% !important;
+        object-fit: cover !important;
+        margin: 0 auto !important;
+    }
 
-/* ========================================================= */
-/* FIX 1: HACER QUE LOS MENÚS DE FOTO Y BANNER SE VEAN (Z-INDEX) */
-/* ========================================================= */
-.panel-avatares, 
-#panelBanners, 
-.editor-banner {
-    z-index: 999999 !important; /* Obliga a los menús a abrirse POR ENCIMA del perfil */
-}
+    .perfil-header {
+        text-align: center !important;
+        display: flex !important; flex-direction: column !important;
+        align-items: center !important;
+        border-bottom: none !important;
+        margin-bottom: 25px !important;
+        padding: 0 !important;
+    }
+    
+    .perfil-header h2 {
+        font-size: 26px !important; color: white !important;
+        margin: 0 0 10px 0 !important; text-align: center !important;
+        width: 100% !important;
+    }
+    
+    .perfil-header span {
+        font-size: 16px !important; color: #b5bac1 !important;
+        text-align: center !important; word-break: break-all !important;
+        display: block !important; width: 100% !important;
+    }
 
-/* ========================================================= */
-/* FIX 2: MEJORA ESTÉTICA PREMIUM (TIPO DISCORD/GAMER)       */
-/* ========================================================= */
+    .perfil-campo {
+        background: #1e1f22 !important;
+        padding: 15px 20px !important;
+        border-radius: 12px !important;
+        margin-bottom: 12px !important;
+        border: 1px solid #2b2d31 !important;
+        display: flex !important; flex-direction: row !important;
+        justify-content: space-between !important; align-items: center !important;
+    }
+    
+    .perfil-campo label {
+        font-size: 16px !important; color: #b5bac1 !important; margin: 0 !important; white-space: nowrap !important;
+    }
+    
+    .perfil-campo input {
+        width: auto !important; flex: 1 !important;
+        background: transparent !important; border: none !important;
+        text-align: right !important; color: white !important;
+        font-size: 16px !important; font-weight: bold !important;
+        padding: 0 !important; margin-left: 15px !important;
+    }
 
-/* Avatar: Que no se pierda con el azul */
-#previewFoto {
-    border: 6px solid #2b2d31 !important; /* Borde oscuro y elegante */
-    background: #ffffff !important; /* Fondo blanco por si la foto es transparente */
-    box-shadow: 0 8px 20px rgba(0,0,0,0.5) !important; /* Sombrita para dar profundidad */
-}
+    .licencia-card {
+        background: #1e1f22 !important; border-radius: 16px !important;
+        padding: 20px !important; margin: 25px 0 !important;
+        border: 1px solid #2b2d31 !important; width: auto !important; box-sizing: border-box !important;
+    }
+    
+    .licencia-card h3 { font-size: 18px !important; text-align: center !important; margin: 0 0 15px 0 !important; color: white !important;}
+    
+    .licencia-preview-container {
+        height: 220px !important; border: 2px dashed #5865f2 !important; border-radius: 12px !important;
+        background: #111 !important; display: flex !important; align-items: center !important; justify-content: center !important;
+    }
 
-/* Cajas de información más elegantes */
-.bloque-datos-oscuro, 
-.bloque-licencia {
-    background: #2b2d31 !important; /* Gris más claro, menos agresivo que el negro */
-    border: 1px solid #3a3c41 !important; /* Contorno ligero para dar textura */
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2) !important;
-}
+    #btnSolicitarAuto, #btnActualizarCorreo, #btnActualizarTel, .btn-cerrar-sesion {
+        width: 100% !important; padding: 15px !important; font-size: 18px !important;
+        border-radius: 12px !important; margin-bottom: 10px !important; box-sizing: border-box !important;
+    }
+    
+    .btn-cerrar-sesion { margin-top: 15px !important; }
 
-/* Caja de la INE más moderna */
-.caja-foto-licencia {
-    border: 2px dashed #5865f2 !important; /* Borde punteado azul */
-    background: #1e1f22 !important;
-    border-radius: 16px !important;
-}
-
-/* BOTONES PRINCIPALES: Adiós pastillas blancas feas */
-.btn-blanco-perfil {
-    background: #5865f2 !important; /* Azul vibrante (Blurple) */
-    color: #ffffff !important; /* Letra blanca */
-    border-radius: 12px !important; /* Cuadrados pero con puntas redondas */
-    padding: 16px !important;
-    font-size: 17px !important;
-    font-weight: bold !important;
-    border: none !important;
-    box-shadow: 0 6px 15px rgba(88, 101, 242, 0.3) !important; /* Sombra azul brillante */
-    transition: 0.2s ease !important;
-}
-
-/* Efecto al presionar cualquier botón */
-.btn-blanco-perfil:active {
-    transform: scale(0.96) !important;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2) !important;
-}
-
-/* Botones secundarios (Correo y Teléfono) - Color Gris Oscuro */
-#btnActualizarCorreo, 
-#btnActualizarTel {
-    background: #4e5058 !important;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2) !important;
-}
-
-/* Botón de Cerrar Sesión - Color Rojo */
-#btnCerrarSesion {
-    background: #ed4245 !important;
-    box-shadow: 0 6px 15px rgba(237, 66, 69, 0.3) !important;
-    margin-top: 10px !important; /* Separarlo un poco del resto */
-}
-/* ========================================================= */
-/* FIX PARA QUE EL SELECTOR DE COLOR FUNCIONE EN CELULARES   */
-/* ========================================================= */
-
-.banner-color-picker {
-    position: relative !important;
-}
-
-.banner-color-picker input[type="color"] {
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    opacity: 0 !important; /* Lo hace invisible pero sigue ahí */
-    cursor: pointer !important;
-    pointer-events: auto !important; /* IMPORTANTE: Permite que el dedo lo toque */
-    padding: 0 !important;
-    margin: 0 !important;
-    border: none !important;
-    z-index: 10 !important; /* Lo pone por encima del cuadro azul */
-}
-/* ========================================================= */
-/* DISEÑO TIPO TARJETA FLOTANTE (MINIMALISTA Y OSCURO)       */
-/* ========================================================= */
-
-/* 1. Fondo oscuro exterior para separar la tarjeta de la pantalla */
-.modal-perfil-full {
-    padding: 20px !important; /* Da un respiro a los lados del celular */
-    box-sizing: border-box !important;
-    background: rgba(0, 0, 0, 0.85) !important; /* Fondo oscurecido para resaltar la tarjeta */
-    display: none; 
-    align-items: center !important; /* Centra la tarjeta verticalmente */
-}
-.modal-perfil-full.activo { display: flex !important; }
-
-/* 2. El Cuadro/Contorno negro principal (La Tarjeta) */
-.card-perfil-celular {
-    width: 100% !important;
-    max-width: 450px !important;
-    min-height: auto !important; /* Ya no forzamos que toque el fondo de la pantalla */
-    max-height: 90vh !important; /* Altura máxima para no salir de la pantalla */
-    margin: auto !important;
-    border-radius: 20px !important; /* Bordes muy redondos */
-    background: #111214 !important; /* EL CUADRO NEGRO DE FONDO QUE PEDISTE */
-    overflow-y: auto !important; /* Scroll solo dentro de la tarjeta */
-    box-shadow: 0 15px 40px rgba(0,0,0,0.8) !important; /* Sombra profunda */
-    border: 1px solid #2b2d31 !important; /* Contorno sutil */
-    position: relative;
-}
-
-/* 3. Reducir la Portada (Banner) */
-.banner-azul-perfil {
-    height: 110px !important; /* Portada más delgada y estética */
-    flex-shrink: 0;
-}
-
-/* 4. Reducir y centrar la Foto de Perfil */
-.contenedor-avatar-perfil {
-    margin-top: -50px !important; /* Sube la foto exactamente a la mitad de la línea */
-    margin-bottom: 10px !important;
-    z-index: 10000 !important;
-}
-
-#previewFoto {
-    width: 100px !important; /* Foto reducida y elegante */
-    height: 100px !important;
-    border: 5px solid #111214 !important; /* El borde es del mismo color que la tarjeta negra */
-    background: #2b2d31 !important;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.4) !important;
-}
-
-/* 5. Cajas de Datos (Gris oscuro sobre el fondo negro) */
-.cuerpo-datos-perfil {
-    padding: 10px 20px 30px 20px !important;
-}
-
-.bloque-datos-oscuro, 
-.bloque-licencia {
-    background: #1e1f22 !important; /* Gris oscuro para contrastar con el fondo negro */
-    border-radius: 16px !important;
-    padding: 18px !important;
-    margin-bottom: 18px !important;
-    border: 1px solid #2b2d31 !important;
-}
-
-/* Letras de los datos bien alineadas y sin amontonarse */
-.fila-dato {
-    font-size: 16px !important; 
-    margin-bottom: 8px !important;
-}
-.fila-dato .etiqueta { color: #b5bac1 !important; }
-.fila-dato .valor { font-size: 17px !important; color: #ffffff !important; }
-
-#previewNombre { font-size: 24px !important; margin-bottom: 5px !important; }
-#previewUser { font-size: 16px !important; color: #b5bac1 !important; }
-
-/* 6. Botones de Actualización (Grandes pero estéticos) */
-#btnSolicitarAuto, 
-#btnActualizarCorreo, 
-#btnActualizarTel, 
-#btnCerrarSesion {
-    font-size: 17px !important; 
-    padding: 16px !important; /* Tamaño perfecto para el dedo */
-    border-radius: 14px !important; 
-    width: 100% !important;
-    border: none !important;
-    font-weight: bold !important;
-    margin-bottom: 10px !important;
-    transition: transform 0.2s ease !important;
-}
-
-#btnSolicitarAuto { background: #5865f2 !important; color: white !important; }
-#btnActualizarCorreo, #btnActualizarTel { background: #4e5058 !important; color: white !important; }
-#btnCerrarSesion { background: #ed4245 !important; color: white !important; margin-top: 5px !important; }
-
-/* Ocultar barra de scroll para que se vea más limpio en Android/iOS */
-.card-perfil-celular::-webkit-scrollbar { display: none; }
-
-/* ========================================================= */
-/* SEPARAR BOTÓN DE CERRAR Y BOTÓN DE EDITAR BANNER          */
-/* ========================================================= */
-
-/* 1. Botón de Cerrar (Mover a la esquina Derecha) */
-.btn-cerrar-flotante {
-    position: absolute !important;
-    top: 15px !important;
-    right: 15px !important; /* Lo clava en la derecha */
-    left: auto !important; /* Anula que se vaya a la izquierda */
-    z-index: 100000 !important;
-}
-
-/* 2. Botón de Editar Banner - Lápiz (Fijo a la Izquierda) */
-.btn-editar-banner {
-    position: absolute !important;
-    top: 15px !important;
-    left: 15px !important; /* Lo clava en la izquierda */
-    right: auto !important;
-    z-index: 99999 !important;
+    .modal-perfil-full::-webkit-scrollbar { display: none !important; }
 }
