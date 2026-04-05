@@ -959,3 +959,20 @@ body{ display:flex; flex-direction:column; }
 .editor-banner {
     z-index: 1000000 !important; /* Un número gigante para que nada lo tape */
 }
+/* ========================================================= */
+/* ARREGLO DEL SCROLL EN LA PANTALLA DE PERFIL               */
+/* ========================================================= */
+
+#modalPerfil {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important; /* Activa el scroll suave en celulares */
+}
+
+#modalPerfil.activo {
+    align-items: flex-start !important; /* Obliga a la tarjeta a empezar desde arriba */
+}
+
+#modalPerfil .card-perfil-celular {
+    margin: 20px auto !important; /* Centra solo a los lados, liberando arriba y abajo */
+    margin-bottom: 60px !important; /* Agrega un espacio extra hasta abajo para que no choque */
+}
