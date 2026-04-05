@@ -960,22 +960,46 @@ body{ display:flex; flex-direction:column; }
     z-index: 1000000 !important; /* Un número gigante para que nada lo tape */
 }
 /* ========================================================= */
-/* ARREGLO DEFINITIVO DEL SCROLL PARA CHROME Y CELULARES     */
+/* SOLUCIÓN DEFINITIVA PARA IPHONE / IOS (CHROME & SAFARI)   */
 /* ========================================================= */
 
 .modal-confirmarp {
-    overflow-y: auto !important; /* Fuerza la barra de scroll a aparecer */
-    -webkit-overflow-scrolling: touch !important; /* Scroll suave en móviles */
-    align-items: flex-start !important; /* EVITA QUE CHROME CORTE LA PANTALLA */
-    padding: 30px 0 !important; /* Da un respiro arriba para que no pegue al techo */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: fixed !important;
+    inset: 0 !important; /* Cubre toda la pantalla */
+    width: 100vw !important;
+    height: 100dvh !important; /* Usa el alto dinámico de iOS */
+    padding: 20px !important;
+    z-index: 1000000 !important;
+    background: rgba(0,0,0,0.8) !important;
+    overflow: hidden !important;
 }
 
 .modal-boxp {
-    margin: auto !important; /* Centra horizontalmente */
-    margin-bottom: 80px !important; /* ESPACIO VITAL ABAJO para alcanzar los botones */
-    height: auto !important;
-    max-height: none !important; /* Evita que se limite la altura */
-    overflow: visible !important; 
+    position: relative !important;
+    margin: auto !important;
+    width: 95% !important;
+    max-width: 500px !important;
+    /* Ajustamos el alto para que el iPhone no corte los botones */
+    max-height: 80svh !important; 
+    overflow-y: auto !important; /* El scroll sucede dentro de la cajita */
+    background: #2b2d31 !important;
+    border-radius: 20px !important;
+    padding: 30px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    
+    /* Evita el rebote elástico molesto de iOS */
+    -webkit-overflow-scrolling: touch !important; 
+}
+
+/* Ajuste extra para los botones de abajo en el modal de Auto */
+.modal-boxp .accionesp, 
+.modal-boxp div[style*="margin-top: 25px"] {
+    margin-top: 20px !important;
+    padding-bottom: 10px !important;
 }
 
 
@@ -1038,4 +1062,22 @@ body{ display:flex; flex-direction:column; }
     font-size: 22px !important; 
     padding: 22px !important; 
     border-radius: 12px !important;
+}
+/* ========================================================= */
+/* MENÚS PERFECTAMENTE CENTRADOS EN MEDIO DE LA PANTALLA     */
+/* ========================================================= */
+
+.modal-confirmarp {
+    display: flex !important;
+    align-items: center !important;     /* Centra exactamente en medio (arriba/abajo) */
+    justify-content: center !important; /* Centra exactamente en medio (izq/der) */
+    padding: 20px !important;           /* Espacio de seguridad en los bordes */
+    overflow: hidden !important;        /* Ocultamos el scroll de fondo */
+}
+
+.modal-boxp {
+    margin: auto !important; 
+    max-height: 85vh !important; /* Máximo 85% del alto de la pantalla para que no se amontone */
+    overflow-y: auto !important; /* Si el menú es muy largo, el scroll se hace AQUÍ ADENTRO */
+    margin-bottom: auto !important; /* Quitamos el espacio extra de abajo para que quede justo en medio */
 }
