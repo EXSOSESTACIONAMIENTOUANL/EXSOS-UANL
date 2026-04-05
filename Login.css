@@ -687,3 +687,22 @@ input[type="file"]::file-selector-button:hover {
     gap: 10px !important; /* Espacio perfecto entre el cuadro y la palabra */
     width: 100% !important;
 }
+/* ========================================================= */
+/* FIX: PERMITIR DESLIZAR (SCROLL) EN EL MENÚ DE REGISTRO    */
+/* ========================================================= */
+
+.modalre {
+    padding: 15px !important; /* Da un poco de espacio a los lados */
+    box-sizing: border-box !important;
+}
+
+.registro-card {
+    max-height: 90vh !important; /* Obliga a la tarjeta a no salirse de la pantalla */
+    overflow-y: auto !important; /* 🔥 ESTO ACTIVA EL SCROLL HACIA ABAJO 🔥 */
+    margin: auto !important; /* Mantiene la tarjeta centrada */
+}
+
+/* Ocultar la barrita gris del scroll para que se vea limpio como app nativa */
+.registro-card::-webkit-scrollbar {
+    display: none !important;
+}
