@@ -181,49 +181,81 @@ Asistente virtual Exsos
     <!-- MODAL PERFIL FULL SCREEN -->
 
 <div id="modalPerfil" class="modal-perfil-full">
-    <div class="card-perfil-unica">
-        <button id="btnCerrarPerfil" class="btn-salir-perfil">⨉</button>
-        
-        <div class="preview-banner" id="previewBanner">
-            <button class="btn-editar-banner" id="btnEditarBanner">🖉</button>
+    <div class="card-perfil-celular">
+        <button id="btnCerrarPerfil" class="btn-cerrar-flotante">☰</button>
+
+        <div class="banner-azul-perfil" id="previewBanner">
+            <button class="btn-editar-banner" id="btnEditarBanner" title="Cambiar Banner">🖉</button>
         </div>
 
-        <div class="preview-body">
-            <div class="perfil-main-info">
-                <img id="previewFoto" src="perfil/user.png" class="preview-avatar">
-<div style="margin-top: 20px; background: #1e1f22; border: 1px solid #3a3c41; padding: 15px; border-radius: 12px; text-align: left; font-size: 15px; color: #ddd; width: 100%; box-sizing: border-box;">
-    <p style="margin: 6px 0; display: flex; justify-content: space-between;"><span>👤 Nombre:</span> <strong id="previewNombre">Sin registrar</strong></p>
-    <p style="margin: 6px 0; display: flex; justify-content: space-between;"><span>✉️ Correo:</span> <strong id="previewUser">Sin registrar</strong></p>
-    <p style="margin: 6px 0; display: flex; justify-content: space-between;"><span>🎓 Matrícula:</span> <strong id="previewMatricula">Sin registrar</strong></p>
-    <p style="margin: 6px 0; display: flex; justify-content: space-between;"><span>📱 Teléfono:</span> <strong id="previewTelefono">Sin registrar</strong></p>
-    <p style="margin: 6px 0; display: flex; justify-content: space-between;"><span>🎂 Nacimiento:</span> <strong id="previewNacimiento">Sin registrar</strong></p>
-</div>
+        <div class="contenedor-avatar-perfil">
+            <img id="previewFoto" src="perfil/user.png" class="avatar-perfil-img" title="Cambiar Foto">
+            <input type="file" id="inputFoto" accept="image/*" style="display: none;">
+        </div>
 
-<div style="margin-top: 15px; background: #1e1f22; border: 1px solid #3a3c41; padding: 15px; border-radius: 12px; text-align: left; font-size: 15px; color: #ddd; width: 100%; box-sizing: border-box;">
-    <p style="margin: 6px 0; display: flex; justify-content: space-between;"><span>🚗 Auto:</span> <strong id="previewModelo">Sin registrar</strong></p>
-    <p style="margin: 6px 0; display: flex; justify-content: space-between;"><span>📅 Año:</span> <strong id="previewAnio">Sin registrar</strong></p>
-    <p style="margin: 6px 0; display: flex; justify-content: space-between;"><span>🏷️ Placas:</span> <strong id="previewPlacas">Sin registrar</strong></p>
-</div>
-
-<div class="licencia-card" style="margin-top: 15px; width: 100%; box-sizing: border-box; background: #1e1f22; border: 1px solid #3a3c41; padding: 15px; border-radius: 12px;">
-    <h3 style="font-size: 16px; margin: 0 0 10px 0; color: white; text-align: left;">Licencia de manejo </h3>
-    <div class="licencia-preview-container" style="width: 100%; min-height: 200px; background: #111214; border-radius: 8px; display: flex; justify-content: center; align-items: center; overflow: hidden;">
-        <img id="previewLicencia" src="perfil/licencia-default.png" style="max-width: 100%; max-height: 100%; object-fit: contain;">
-    </div>
-</div>
-
-            <div class="perfil-actions">
-                <button id="btnSolicitarAuto" class="btn-primary-yellow">Actualizar Vehículo</button>
-                <div class="btn-group">
-                    <button id="btnActualizarCorreo" class="btn-dark">✉️ Correo</button>
-                    <button id="btnActualizarTel" class="btn-dark">📱 Teléfono</button>
+        <div class="cuerpo-datos-perfil">
+            
+            <div class="bloque-datos-oscuro">
+                <div class="fila-dato">
+                    <span class="etiqueta">👤 Nombre:</span>
+                    <strong id="previewNombre" class="valor">Brian</strong>
                 </div>
-                <button id="btnCerrarSesion" class="btn-danger">Cerrar Sesión</button>
+                <div class="fila-dato">
+                    <span class="etiqueta">✉️ Correo:</span>
+                    <strong id="previewUser" class="valor">correo@gmail.com</strong>
+                </div>
+                <div class="fila-dato">
+                    <span class="etiqueta">🎓 Matrícula:</span>
+                    <strong id="previewMatricula" class="valor">Sin registrar</strong>
+                </div>
+                <div class="fila-dato">
+                    <span class="etiqueta">📱 Teléfono:</span>
+                    <strong id="previewTelefono" class="valor">Sin registrar</strong>
+                </div>
+                <div class="fila-dato">
+                    <span class="etiqueta">🎂 Nacimiento:</span>
+                    <strong id="previewNacimiento" class="valor">Sin registrar</strong>
+                </div>
             </div>
+
+            <div class="bloque-datos-oscuro">
+                <div class="fila-dato">
+                    <span class="etiqueta">🚗 Auto:</span>
+                    <strong id="previewModelo" class="valor">Versa</strong>
+                </div>
+                <div class="fila-dato">
+                    <span class="etiqueta">🎨 Color:</span>
+                    <strong id="previewColor" class="valor">Rojo</strong>
+                </div>
+                <div class="fila-dato">
+                    <span class="etiqueta">📅 Año:</span>
+                    <strong id="previewAnio" class="valor">2020</strong>
+                </div>
+                <div class="fila-dato">
+                    <span class="etiqueta">🏷️ Placas:</span>
+                    <strong id="previewPlacas" class="valor">AAA-000-A</strong>
+                </div>
+            </div>
+
+            <div class="bloque-licencia">
+                <h3 class="titulo-licencia">Licencia de manejo / INE</h3>
+                <div class="caja-foto-licencia">
+                    <img id="previewLicencia" src="perfil/licencia-default.png">
+                </div>
+            </div>
+
+            <div class="bloque-botones-perfil">
+                <button id="btnSolicitarAuto" class="btn-blanco-perfil">Actualizar Vehículo</button>
+                <div class="fila-botones-mitad">
+                    <button id="btnActualizarCorreo" class="btn-blanco-perfil">✉️ Correo</button>
+                    <button id="btnActualizarTel" class="btn-blanco-perfil">📱 Teléfono</button>
+                </div>
+                <button id="btnCerrarSesion" class="btn-blanco-perfil">Cerrar Sesión</button>
+            </div>
+
         </div>
     </div>
 </div>
-
         
     <div id="modalCambioAuto" class="modal-confirmarp" style="z-index: 100000;">
         <div class="modal-boxp" style="height: auto; padding: 25px; background: #2b2d31; color: white; border-radius: 15px; width: 90%; max-width: 400px; margin: auto; transform: translateY(0);">
