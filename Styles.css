@@ -3032,3 +3032,42 @@ font-size:1.7vw ;
     box-shadow: 0 6px 15px rgba(237, 66, 69, 0.3) !important;
     margin-top: 10px !important; /* Separarlo un poco del resto */
 }
+/* ========================================================= */
+/* BOTÓN DE CERRAR PERFIL MINIMALISTA Y ELEGANTE             */
+/* ========================================================= */
+
+.btn-cerrar-flotante {
+    position: absolute !important;
+    top: 20px !important;
+    right: 20px !important; /* Lo movemos a la derecha, es más estético */
+    left: auto !important; /* Anulamos la posición izquierda vieja */
+    width: 38px !important; 
+    height: 38px !important;
+    border-radius: 50% !important; /* Círculo perfecto */
+    background: rgba(0, 0, 0, 0.25) !important; /* Transparente muy suave */
+    backdrop-filter: blur(5px) !important; /* Efecto de cristal borroso */
+    border: none !important;
+    color: transparent !important; /* Escondemos las rayitas (☰) originales */
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    z-index: 100000 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}
+
+/* Dibujamos una 'X' delgada y moderna en su lugar */
+.btn-cerrar-flotante::before {
+    content: "✕" !important; 
+    color: #ffffff !important;
+    font-size: 20px !important;
+    font-weight: 300 !important; /* Letra delgada y fina */
+    font-family: sans-serif !important;
+    position: absolute !important;
+}
+
+/* Efecto al pasar el dedo o mouse */
+.btn-cerrar-flotante:hover {
+    background: rgba(0, 0, 0, 0.6) !important;
+    transform: scale(1.1) !important;
+}
