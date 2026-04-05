@@ -960,31 +960,44 @@ body{ display:flex; flex-direction:column; }
     z-index: 1000000 !important; /* Un número gigante para que nada lo tape */
 }
 /* ========================================================= */
-/* AJUSTE FINAL: SCROLL CHROME IPHONE Y LETRAS MASIVAS       */
+/* ARREGLO DEFINITIVO DE SCROLL (PARA LLEGAR AL BOTÓN)       */
 /* ========================================================= */
 
 .modal-confirmarp {
     display: flex !important;
-    align-items: flex-start !important; /* Cambiamos a inicio para permitir scroll largo */
+    align-items: center !important;   /* Centra la tarjeta verticalmente */
     justify-content: center !important;
     position: fixed !important;
     inset: 0 !important;
-    height: 100dvh !important;
     width: 100vw !important;
-    overflow-y: auto !important; /* El scroll ahora es en toda la pantalla negra */
-    padding: 40px 10px 100px 10px !important; /* ¡ESTO ES CLAVE! 100px abajo para que Chrome no tape nada */
-    -webkit-overflow-scrolling: touch !important;
+    height: 100dvh !important;       /* dynamic viewport height para iPhone */
+    background: rgba(0, 0, 0, 0.8) !important;
     z-index: 1000000 !important;
+    padding: 10px !important;        /* Margen de seguridad para que no pegue a los bordes */
+    overflow: hidden !important;      /* Bloqueamos el scroll de la pantalla de fondo */
 }
 
 .modal-boxp {
-    position: relative !important;
+    display: flex !important;
+    flex-direction: column !important;
     width: 95% !important;
     max-width: 550px !important;
     background: #2b2d31 !important;
     border-radius: 20px !important;
-    padding: 40px !important;
-    margin-bottom: 50px !important; /* Espacio extra al final de la tarjeta */
+    padding: 30px !important;
+    
+    /* ESTO ES LO QUE ARREGLA EL BOTÓN DE CIERRE: */
+    max-height: 90dvh !important;    /* La tarjeta nunca será más alta que el 90% de la pantalla */
+    overflow-y: auto !important;     /* Si el contenido es largo, el scroll se activa AQUÍ ADENTRO */
+    
+    /* Mejora el scroll en iPhone */
+    -webkit-overflow-scrolling: touch !important; 
+}
+
+/* Espacio extra al final del contenido para que el último botón respire */
+.modal-boxp > div:last-child {
+    padding-bottom: 20px !important;
+    margin-bottom: 10px !important;
 }
 
 /* Hacer que el botón de "Seleccionar archivo" sea gigante */
