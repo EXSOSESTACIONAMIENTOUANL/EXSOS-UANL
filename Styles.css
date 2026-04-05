@@ -960,39 +960,51 @@ body{ display:flex; flex-direction:column; }
     z-index: 1000000 !important; /* Un número gigante para que nada lo tape */
 }
 /* ========================================================= */
-/* SOLUCIÓN DEFINITIVA PARA IPHONE / IOS (CHROME & SAFARI)   */
+/* AJUSTE FINAL: SCROLL CHROME IPHONE Y LETRAS MASIVAS       */
 /* ========================================================= */
 
 .modal-confirmarp {
     display: flex !important;
-    align-items: center !important;
+    align-items: flex-start !important; /* Cambiamos a inicio para permitir scroll largo */
     justify-content: center !important;
     position: fixed !important;
-    inset: 0 !important; /* Cubre toda la pantalla */
+    inset: 0 !important;
+    height: 100dvh !important;
     width: 100vw !important;
-    height: 100dvh !important; /* Usa el alto dinámico de iOS */
-    padding: 20px !important;
+    overflow-y: auto !important; /* El scroll ahora es en toda la pantalla negra */
+    padding: 40px 10px 100px 10px !important; /* ¡ESTO ES CLAVE! 100px abajo para que Chrome no tape nada */
+    -webkit-overflow-scrolling: touch !important;
     z-index: 1000000 !important;
-    background: rgba(0,0,0,0.8) !important;
-    overflow: hidden !important;
 }
 
 .modal-boxp {
     position: relative !important;
-    margin: auto !important;
     width: 95% !important;
-    max-width: 500px !important;
-    /* Ajustamos el alto para que el iPhone no corte los botones */
-    max-height: 80svh !important; 
-    overflow-y: auto !important; /* El scroll sucede dentro de la cajita */
+    max-width: 550px !important;
     background: #2b2d31 !important;
     border-radius: 20px !important;
-    padding: 30px !important;
-    display: flex !important;
-    flex-direction: column !important;
-    
-    /* Evita el rebote elástico molesto de iOS */
-    -webkit-overflow-scrolling: touch !important; 
+    padding: 40px !important;
+    margin-bottom: 50px !important; /* Espacio extra al final de la tarjeta */
+}
+
+/* Hacer que el botón de "Seleccionar archivo" sea gigante */
+#nuevaFotoAuto {
+    font-size: 22px !important; /* Letra mucho más grande */
+    padding: 20px 0 !important;
+    color: #5865f2 !important; /* Color llamativo para que se note */
+    font-weight: bold !important;
+    cursor: pointer !important;
+}
+
+/* Estilo para los textos dentro del input de archivo en algunos navegadores */
+#nuevaFotoAuto::file-selector-button {
+    padding: 15px 25px !important;
+    font-size: 18px !important;
+    border-radius: 10px !important;
+    border: none !important;
+    background: #4e5058 !important;
+    color: white !important;
+    margin-right: 15px !important;
 }
 
 /* Ajuste extra para los botones de abajo en el modal de Auto */
@@ -1080,4 +1092,38 @@ body{ display:flex; flex-direction:column; }
     max-height: 85vh !important; /* Máximo 85% del alto de la pantalla para que no se amontone */
     overflow-y: auto !important; /* Si el menú es muy largo, el scroll se hace AQUÍ ADENTRO */
     margin-bottom: auto !important; /* Quitamos el espacio extra de abajo para que quede justo en medio */
+}
+/* ========================================================= */
+/* BOTÓN DE SELECCIÓN DE ARCHIVOS EXTRA GRANDE               */
+/* ========================================================= */
+
+/* 1. El contenedor general (donde sale el texto "Ningún archivo...") */
+#nuevaFotoAuto {
+    font-size: 22px !important; /* Tamaño del texto de la derecha */
+    color: #ffffff !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
+    padding: 15px 0 !important;
+    width: 100% !important;
+}
+
+/* 2. El botón cuadrado que dice "Seleccionar archivo" */
+#nuevaFotoAuto::file-selector-button {
+    font-size: 20px !important;    /* Texto del botón interno */
+    font-weight: bold !important;
+    padding: 15px 25px !important; /* Más gordo para que sea fácil picarle */
+    border-radius: 10px !important;
+    border: none !important;
+    background: #5865f2 !important; /* Color llamativo (puedes cambiarlo a plata si gustas) */
+    color: white !important;
+    margin-right: 20px !important;
+    cursor: pointer !important;
+    transition: background 0.3s ease !important;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3) !important;
+}
+
+/* Efecto al pasar el mouse por el botón */
+#nuevaFotoAuto::file-selector-button:hover {
+    background: #4752c4 !important;
+    transform: scale(1.02) !important;
 }
