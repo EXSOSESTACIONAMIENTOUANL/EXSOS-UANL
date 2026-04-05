@@ -906,27 +906,33 @@ body{ display:flex; flex-direction:column; }
 @media (max-width: 768px){ .globo-dialogo{ top: 22%; left: 68%; width: 45vw; height: 12vh; transform: translate(-50%, -50%) rotate(-8deg); } }
 
 
+
+
+
+
+
+
 /* ========================================================= */
 /* TACHA CIRCULAR PLATEADA (Modal de Perfil)                 */
 /* ========================================================= */
 
 .btn-salir-perfil {
     position: absolute !important;
-    top: -15px !important;   /* Flota un poco por encima de la tarjeta */
-    right: -15px !important; /* Flota un poco hacia la derecha */
-    width: 45px !important;
-    height: 45px !important;
-    border-radius: 50% !important; /* Círculo perfecto */
-    background: linear-gradient(135deg, #f5f5f5 0%, #c0c0c0 50%, #9e9e9e 100%) !important; /* Plata */
-    color: #111214 !important; /* Tacha oscura */
-    font-size: 26px !important;
+    top: 15px !important;   /* Positivo: lo empuja hacia ADENTRO desde arriba */
+    left: 15px !important;  /* Positivo: lo empuja hacia ADENTRO desde la izquierda */
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50% !important; 
+    background: linear-gradient(135deg, #f5f5f5 0%, #c0c0c0 50%, #9e9e9e 100%) !important; 
+    color: #111214 !important; 
+    font-size: 24px !important;
     font-weight: bold !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     cursor: pointer !important;
-    border: 3px solid white !important; /* Borde blanco */
-    box-shadow: 0 5px 15px rgba(0,0,0,0.5) !important;
+    border: 2px solid white !important; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5) !important;
     z-index: 100000 !important;
     padding: 0 !important;
     line-height: 1 !important;
@@ -937,13 +943,10 @@ body{ display:flex; flex-direction:column; }
     transform: scale(1.15) !important;
     filter: brightness(1.1) !important;
     color: black !important;
-    #modalPerfil .card-perfil-celular {
-    position: relative !important; /* <--- Agrega esto si no lo tiene */
-    /* ... aquí sigue todo el código que ya le habías puesto ... */
-}
 }
 
+/* IMPORTANTE: Asegurarnos de que la tarjeta principal sea relativa 
+   para que atrape al botón y no lo deje salir volando */
 #modalPerfil .card-perfil-celular {
-    position: relative !important; /* <--- Agrega esto si no lo tiene */
-    /* ... aquí sigue todo el código que ya le habías puesto ... */
+    position: relative !important; 
 }
