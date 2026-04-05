@@ -379,34 +379,40 @@ body{ display:flex; flex-direction:column; }
 
 
 /* ========================================================= */
-/* 🔥 SOLUCIÓN DEFINITIVA DE PERFIL MÓVIL Y MODALES 🔥       */
+/* 🔥 SOLUCIÓN FINAL: PERFIL (PC RESTAURADA / MÓVIL AISLADO) */
 /* ========================================================= */
 
+/* CONTENEDOR RAÍZ */
 .modal-perfil-full {
     position: fixed;
     top: 0; left: 0; width: 100vw; height: 100vh;
-    background: rgba(0,0,0,0.8);
-    z-index: 9999;
+    background: rgba(0,0,0,0.85); /* Fondo semitransparente oscuro en PC */
+    z-index: 99999;
     display: none; 
-    justify-content: center; 
-    align-items: center; /* Centrado en computadora */
+    padding: 20px; 
+    box-sizing: border-box;
     overflow-y: auto;
 }
-.modal-perfil-full.activo { display: flex; }
+.modal-perfil-full.activo { 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; /* En PC la tarjeta se centra */
+}
 
-/* Tarjeta en Computadora (Card flotante) */
+/* TARJETA DE PERFIL (VISTA PC RESTAURADA) */
 .card-perfil-celular {
     width: 100%;
-    max-width: 480px; 
-    background: #1e1f22; 
+    max-width: 500px; /* Ancho máximo para la computadora */
+    background: #111214; 
     border-radius: 20px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.8);
     display: flex; flex-direction: column;
-    position: relative;
+    position: relative; /* CRUCIAL para que los botones no se salgan */
     margin: auto; 
     overflow: hidden;
 }
 
+/* BANNER */
 .banner-azul-perfil {
     width: 100%; height: 160px; 
     background-color: #152191; 
@@ -417,26 +423,27 @@ body{ display:flex; flex-direction:column; }
 
 /* 🔥 FIX 1: LA TACHA Y LÁPIZ (BOTONES SIMÉTRICOS PERFECTOS) */
 .btn-cerrar-flotante {
-    position: absolute !important; top: 15px !important; right: 15px !important; left: auto !important;
-    width: 40px !important; height: 40px !important; border-radius: 50% !important;
-    background: rgba(0,0,0,0.6) !important; border: 2px solid rgba(255,255,255,0.3) !important;
-    color: transparent !important; font-size: 0 !important; /* Oculta la línea vieja ☰ */
-    display: flex !important; justify-content: center !important; align-items: center !important;
-    cursor: pointer !important; z-index: 100 !important;
+    position: absolute; top: 15px; right: 15px; /* Tacha a la derecha */
+    width: 40px; height: 40px; border-radius: 50%;
+    background: rgba(0,0,0,0.6); border: 2px solid rgba(255,255,255,0.3);
+    color: transparent; font-size: 0; /* Magia: Oculta la línea vieja ☰ */
+    display: flex; justify-content: center; align-items: center;
+    cursor: pointer; z-index: 100;
 }
 .btn-cerrar-flotante::after {
-    content: "✕" !important; color: white !important; font-size: 20px !important; font-weight: bold !important; /* Muestra la Tacha perfecta */
+    content: "✕"; color: white; font-size: 20px; font-weight: bold; line-height: 1; /* Muestra la Tacha limpia */
 }
 
 .btn-editar-banner {
-    position: absolute !important; top: 15px !important; left: 15px !important; right: auto !important;
-    width: 40px !important; height: 40px !important; border-radius: 50% !important;
-    background: rgba(0,0,0,0.6) !important; border: 2px solid rgba(255,255,255,0.3) !important;
-    color: white !important; font-size: 20px !important; 
-    display: flex !important; justify-content: center !important; align-items: center !important;
-    cursor: pointer !important; z-index: 100 !important;
+    position: absolute; top: 15px; left: 15px; /* Lápiz a la izquierda */
+    width: 40px; height: 40px; border-radius: 50%;
+    background: rgba(0,0,0,0.6); border: 2px solid rgba(255,255,255,0.3);
+    color: white; font-size: 20px; 
+    display: flex; justify-content: center; align-items: center;
+    cursor: pointer; z-index: 100;
 }
 
+/* AVATAR */
 .contenedor-avatar-perfil {
     display: flex; justify-content: center; 
     margin-top: -60px; margin-bottom: 10px; 
@@ -444,40 +451,43 @@ body{ display:flex; flex-direction:column; }
 }
 .avatar-perfil-img {
     width: 120px; height: 120px; border-radius: 50%;
-    border: 6px solid #1e1f22; background: #2b2d31;
+    border: 6px solid #111214; background: #2b2d31; /* Borde del mismo color de la tarjeta */
     object-fit: cover; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
 }
 
+/* TEXTOS Y DATOS */
 .cuerpo-datos-perfil { padding: 0 25px 30px 25px; display: flex; flex-direction: column; gap: 15px; }
 
-#previewNombre { font-size: 24px; color: white; text-align: center; margin: 0; font-weight: bold; display: block;}
+#previewNombre { font-size: 26px; color: white; text-align: center; margin: 0; font-weight: bold; display: block;}
 #previewUser { font-size: 16px; color: #b5bac1; text-align: center; margin-bottom: 10px; display: block;}
 
-.bloque-datos-oscuro, .bloque-licencia { background: #2b2d31; border-radius: 12px; padding: 20px; }
+.bloque-datos-oscuro, .bloque-licencia { background: #1e1f22; border-radius: 16px; padding: 20px; }
 .fila-dato { display: flex; justify-content: space-between; font-size: 16px; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;}
 .fila-dato:last-child { margin-bottom: 0; border-bottom: none; padding-bottom: 0; }
 .fila-dato .etiqueta { color: #8e9297; }
 .fila-dato .valor { color: white; font-weight: bold; text-align: right; }
 
+/* INE */
 .titulo-licencia { color: white; font-size: 18px; text-align: center; margin-top: 0; margin-bottom: 15px; }
-.caja-foto-licencia { width: 100%; height: 200px; background: #111; border-radius: 10px; border: 2px dashed #5865f2; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+.caja-foto-licencia { width: 100%; height: 200px; background: #111; border-radius: 12px; border: 2px dashed #5865f2; display: flex; justify-content: center; align-items: center; overflow: hidden; }
 .caja-foto-licencia img { max-width: 100%; max-height: 100%; object-fit: contain; }
 
+/* BOTONES INFERIORES */
 .bloque-botones-perfil { display: flex; flex-direction: column; gap: 12px; margin-top: 10px;}
-.btn-blanco-perfil { padding: 15px; border-radius: 10px; font-weight: bold; font-size: 16px; border: none; cursor: pointer; width: 100%; }
+.btn-blanco-perfil { padding: 15px; border-radius: 12px; font-weight: bold; font-size: 16px; border: none; cursor: pointer; width: 100%; }
 .fila-botones-mitad { display: flex; gap: 12px; }
 .fila-botones-mitad button { flex: 1; }
 
 #btnSolicitarAuto { background: #5865f2; color: white; }
 #btnActualizarCorreo, #btnActualizarTel { background: #4e5058; color: white; }
-#btnCerrarSesion { background: #ed4245; color: white; }
+#btnCerrarSesion { background: transparent; color: #ed4245; border: 2px solid #ed4245; }
 
-/* 🔥 FIX 2: FOTOS Y EDITOR ENFRENTE DE TODO */
+/* 🔥 FIX 2: PANELES AL FRENTE SIEMPRE */
 .panel-avatares, .editor-banner, .modal-editor {
-    z-index: 9999999 !important; /* Prioridad máxima */
+    z-index: 100005 !important; 
 }
 
-/* Modales originales (Avatares y Editor) */
+/* Modales Originales */
 .panel-avatares { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:none; justify-content:center; align-items:center; }
 .panel-avatares.activo { display:flex; }
 .contenedor-avatares, .contenedor-banner { position:relative; width: 70%; max-width: 600px; background:#1e1f22; padding:25px; border-radius:12px; text-align:center; color:white; }
@@ -507,33 +517,60 @@ body{ display:flex; flex-direction:column; }
 .cerrar-seccionbanner { font-size:30px; color:#b5bac1; cursor:pointer; }
 .editor-area { display: flex; justify-content: center; align-items: center; margin-top: 20px; }
 .imagen-container { position: relative; width: 100%; height: 250px; overflow: hidden; background: #111; border-radius: 10px; }
-#imagenBannerMovible { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: contain; background-repeat: no-repeat; background-position: center; cursor: grab; }
+#imagenBannerMovible { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: contain; background-repeat: no-repeat; background-position: center; cursor: grab; transition: transform 0.1s; }
 .marco-recorte { position: absolute; height: 160px; top: 50%; left: 10%; right: 10%; transform: translateY(-50%); border-radius: 6px; border: 2px solid white; pointer-events: none; z-index: 3; box-shadow: 0 0 0 2000px rgba(0,0,0,0.65); }
-.sombra { display: none; } /* Reemplazado por box-shadow inteligente */
+.sombra { display: none; } 
 .zoom-container { display: flex; align-items: center; gap: 10px; width: 100%; max-width: 400px; margin: 15px auto 0 auto; }
 .zoom-container input { width: 100%; cursor: pointer; }
 .editor-footer { margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px; }
 .editor-footer button { padding: 8px 14px; border: none; border-radius: 6px; background: #3a3c41; color: white; cursor: pointer; font-size: 16px;}
 .editor-footer .aplicar { background: #5865f2; }
 
-/* MODALES DE CONFIRMACIÓN (CERRAR SESION / CAMBIOS) */
-.modal-confirmarp, .modal-confirmar { 
-    position: fixed; bottom: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); 
-    display: flex; justify-content: center; align-items: flex-end; 
-    visibility: hidden; opacity: 0; pointer-events: none; transition: 0.3s; z-index: 1000000; 
-}
-.modal-confirmarp.activo, .modal-confirmar.activo { visibility: visible; opacity: 1; pointer-events: all; }
 
-.modal-boxp { width: 100%; max-width: 500px; background: #2b2d31; color: white; border-radius: 20px 20px 0 0; padding: 30px; transform: translateY(100%); transition: 0.3s; margin: 0 auto; box-sizing: border-box; }
+/* 🔥 MODALES DE ACTUALIZAR Y CERRAR SESIÓN (CON FIX DE "SALIR SIN GUARDAR") */
+
+/* El Modal original de "Salir sin Guardar" arreglado */
+.modal-confirmar { 
+    position: fixed; bottom: 0; left: 0; width: 100%; height: 100%; 
+    background: rgba(0,0,0,0.5); 
+    display: flex; justify-content: center; align-items: flex-end; 
+    opacity: 0; pointer-events: none; visibility: hidden; /* Esto arregla el bug de la leyenda al fondo */
+    transition: opacity 0.3s; z-index: 100010; 
+}
+.modal-confirmar.activo { opacity: 1; pointer-events: all; visibility: visible; }
+.modal-box { background: #2b2d31; color: white; width: 60%; border-radius: 20px 20px 0 0; padding: 20px; transform: translateY(100%); transition: transform 0.3s ease; }
+.modal-box h2{ font-size:2.4rem ; margin-top:0; }
+.modal-box p{ font-size:1.6rem ; }
+.modal-confirmar.activo .modal-box { transform: translateY(0); }
+.acciones { display: flex; justify-content: flex-end; gap: 15px; margin-top: 20px; }
+.acciones button { font-weight: bold; font-family:'Gill Sans', sans-serif; padding: 8px 16px; font-size: 1.5rem; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s ease; }
+.acciones button:hover { transform: scale(1.1); background: #484a4e; color: white; }
+.acciones .rojo { background: #ed4245; color: white; }
+.acciones .rojo:hover { background: #802527; }
+
+/* Modales de Actualización y Personaje (Correos, Tel, Autos) */
+.modal-confirmarp { 
+    font-family:'Gill Sans', sans-serif; position: fixed; bottom: 0; left: 0; width: 100%; height: 100%; 
+    display: flex; justify-content: center; align-items: flex-end; background: rgba(0,0,0,0.7); 
+    opacity: 0; pointer-events: none; visibility: hidden; transition: opacity 0.3s; z-index: 100010 !important; 
+}
+.modal-confirmarp.activo { opacity: 1; pointer-events: all; visibility: visible; }
+
+.modal-boxp { 
+    width: 100%; max-width: 500px; background: #2b2d31; color: white; border-radius: 20px 20px 0 0; 
+    padding: 30px; transform: translateY(100%); transition: 0.3s; margin: 0 auto; box-sizing: border-box; 
+}
 .modal-confirmarp.activo .modal-boxp { transform: translateY(0); }
 
 .modal-boxp h2 { font-size: 24px; margin-top: 0; text-align: center; }
 .modal-boxp p { font-size: 16px; color: #b5bac1; text-align: center; margin-bottom: 20px; }
-
 .modal-boxp input { width: 100%; padding: 15px; border-radius: 10px; border: none; background: #111214; color: white; font-size: 16px; box-sizing: border-box; margin-bottom: 10px; }
 
 .accionesp { display: flex; gap: 15px; margin-top: 20px; }
 .accionesp button { flex: 1; padding: 15px; font-size: 16px; border-radius: 10px; font-weight: bold; border: none; cursor: pointer; }
+.accionesp button:hover { transform: scale(1.05); background: #484a4e; color: white; }
+.accionesp .rojo { background: #ed4245; color: white; }
+.accionesp .rojo:hover { background: #802527; }
 
 /* PERSONAJE CERRAR SESIÓN */
 .personaje-box { text-align: center; background: transparent; padding: 0; }
@@ -543,40 +580,34 @@ body{ display:flex; flex-direction:column; }
 .img-burbuja { position: absolute; width: 100%; height: 100%; object-fit: contain; }
 .texto-burbuja { position: relative; font-size: 18px; font-weight: bold; color: black; z-index: 4; }
 
-/* 🔥 FIX 3: ADAPTACIÓN EXCLUSIVA PARA CELULAR (Para Perfil y Menús de Actualizar) */
+/* 🔥 FIX 3: REGLAS EXCLUSIVAS PARA CELULAR 🔥 */
 @media (max-width: 768px) {
-    .modal-perfil-full { align-items: flex-start; padding: 0; } /* Permite deslizar en cel y quita márgenes */
-    .card-perfil-celular { border-radius: 0; min-height: 100vh; padding-bottom: 50px; width: 100%; max-width: 100%; }
-    .banner-azul-perfil { height: 200px; }
-    .contenedor-avatar-perfil { margin-top: -70px; }
-    .avatar-perfil-img { width: 140px; height: 140px; }
+    /* Perfil 100% Pantalla en el Teléfono */
+    .modal-perfil-full { 
+        padding: 0; 
+    }
+    .modal-perfil-full.activo {
+        align-items: flex-start; /* Deja que el perfil fluya desde arriba hacia abajo */
+    }
+    .card-perfil-celular { 
+        max-width: 100%; 
+        border-radius: 0; 
+        min-height: 100vh; 
+        padding-bottom: 40px; 
+    }
     
-    /* Ampliar los menús de Actualizar y Cerrar Sesión en Celular */
+    /* Menús de Actualizar Más Grandes y Fáciles de Tocar */
     .modal-boxp {
-        width: 95% !important;
-        max-width: none !important;
-        padding: 30px !important;
-        border-radius: 20px 20px 0 0 !important;
-        height: auto !important;
-        min-height: 50vh !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 30px 20px !important;
+        border-radius: 25px 25px 0 0 !important;
     }
+    .modal-boxp h2 { font-size: 26px !important; margin-bottom: 15px !important; }
+    .modal-boxp p { font-size: 16px !important; margin-bottom: 25px !important; }
+    .modal-boxp input { font-size: 18px !important; padding: 18px !important; border-radius: 12px !important; }
     
-    .modal-boxp input {
-        font-size: 16px !important; 
-        padding: 15px !important;
-    }
-    
-    /* Apila los botones de Cancelar / Enviar en celular para que sean más grandes */
-    #modalCambioAuto > div > div:last-child,
-    #modalCambioCorreo > div > div:last-child,
-    #modalCambioTel > div > div:last-child {
-        flex-direction: column !important;
-        gap: 15px !important;
-    }
-    
-    .accionesp button {
-        width: 100% !important; 
-        padding: 18px !important;
-        font-size: 18px !important;
-    }
+    /* Apila los botones (Cancelar/Enviar) para que sean botones anchos */
+    .accionesp { flex-direction: column; gap: 15px !important; }
+    .accionesp button { width: 100% !important; font-size: 18px !important; padding: 18px !important; border-radius: 12px !important; }
 }
