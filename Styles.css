@@ -904,3 +904,231 @@ body{ display:flex; flex-direction:column; }
 .img-burbuja{ position: absolute; width: 160%; height: 160%; object-fit: contain; }
 .texto-burbuja{ position: absolute; top: 42%; left: 54%; transform: translate(-50%, -50%); font-size: clamp(2rem, 2vw, 1.8rem); font-weight: bold; color: black; z-index: 4; white-space: nowrap; }
 @media (max-width: 768px){ .globo-dialogo{ top: 22%; left: 68%; width: 45vw; height: 12vh; transform: translate(-50%, -50%) rotate(-8deg); } }
+
+/* ========================================================= */
+/* AISLADO: REDISEÑO DEL PERFIL AISLADO PARA CELULAR          */
+/* ========================================================= */
+
+/* 1. Modal a pantalla completa, fondo negro y con scroll */
+#modalPerfil.modal-perfil-full {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: #111214 !important;
+    z-index: 99999 !important;
+    overflow-y: auto !important; /* Habilita el scroll */
+    padding: 0 !important;
+    margin: 0 !important;
+    display: none;
+}
+
+#modalPerfil.modal-perfil-full.activo {
+    display: block !important;
+}
+
+/* 2. Tarjeta interna que ocupa toda la pantalla */
+#modalPerfil .card-perfil-celular {
+    width: 100% !important;
+    min-height: 100vh !important;
+    background: #111214 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    padding-bottom: 50px !important; /* Espacio extra al final */
+}
+
+/* 3. Portada: Altura proporcional al ancho del celular */
+#modalPerfil .banner-azul-perfil {
+    width: 100% !important;
+    height: 30vw !important; /* 🔥 Proporcional y más alto */
+    background-color: #152191 !important; /* Azul nativo */
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    position: relative !important;
+    border-bottom: 0.8vw solid #ead228 !important; /* Borde amarillo proporcional */
+}
+
+/* 4. BOTONES SIMÉTRICOS Y GRANDES (✕ y 🖉) AISLADOS AL PERFIL */
+#modalPerfil .btn-cerrar-flotante,
+#modalPerfil .btn-editar-banner {
+    position: absolute !important;
+    top: 3vw !important; /* Separación proporcional */
+    width: 9vw !important; /* Botones grandes proporcionales */
+    height: 9vw !important;
+    border-radius: 50% !important;
+    background: rgba(0,0,0,0.6) !important;
+    backdrop-filter: blur(5px) !important;
+    color: white !important;
+    border: 0.3vw solid rgba(255,255,255,0.3) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    z-index: 100 !important;
+    padding: 0 !important;
+}
+
+/* Ubicación simétrica estricta */
+#modalPerfil .btn-cerrar-flotante {
+    left: 3vw !important;
+    right: auto !important;
+    color: transparent !important; /* Esconde el ☰ viejo */
+}
+#modalPerfil .btn-cerrar-flotante::after {
+    content: "✕" !important; /* Fuerza la tacha perfecta */
+    position: absolute;
+    color: white !important;
+    font-size: 5vw !important;
+    font-weight: bold;
+}
+
+#modalPerfil .btn-editar-banner {
+    right: 3vw !important;
+    left: auto !important;
+    font-size: 5vw !important;
+}
+
+/* 5. Foto de Perfil: Muy grande y bien centrada */
+#modalPerfil .contenedor-avatar-perfil {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+    margin-top: -12vw !important; /* Sube proporcionalmente al banner */
+    margin-bottom: 2vw !important;
+    position: relative !important;
+    z-index: 10 !important;
+    padding: 0 !important;
+}
+
+#modalPerfil .avatar-perfil-img {
+    width: 25vw !important; /* Foto enorme proporcional */
+    height: 25vw !important;
+    border-radius: 50% !important;
+    border: 1.2vw solid #111214 !important; /* Borde grueso para separarla */
+    background: #2b2d31 !important;
+    object-fit: cover !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6) !important;
+}
+
+/* Ocultar input file si anda suelto */
+#modalPerfil #inputFoto {
+    display: none !important;
+}
+
+/* 6. Contenedor de Textos y Datos Proporcional */
+#modalPerfil .cuerpo-datos-perfil {
+    padding: 0 5vw !important; /* Margen proporcional */
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4vw !important;
+    margin: 0 !important;
+}
+
+/* Títulos y Textos Principales */
+#modalPerfil #previewNombre {
+    font-size: 6vw !important; /* Nombre muy grande y legible */
+    color: white !important;
+    text-align: center !important;
+    margin: 1vw 0 !important;
+    display: block !important;
+    font-weight: bold !important;
+}
+
+#modalPerfil #previewUser {
+    font-size: 3vw !important;
+    color: #b5bac1 !important;
+    text-align: center !important;
+    margin: 0 0 3vw 0 !important;
+    display: block !important;
+}
+
+/* Bloques de Datos Grises Proporcionales */
+#modalPerfil .bloque-datos-oscuro,
+#modalPerfil .bloque-licencia {
+    background: #1e1f22 !important;
+    border-radius: 3vw !important;
+    padding: 5vw !important;
+    border: 0.2vw solid #2b2d31 !important;
+}
+
+#modalPerfil .fila-dato {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    font-size: 3.5vw !important; /* Tamaño cómodo para leer */
+    margin-bottom: 3vw !important;
+    border-bottom: 0.1vw solid rgba(255,255,255,0.05) !important;
+    padding-bottom: 2vw !important;
+}
+#modalPerfil .fila-dato:last-child {
+    margin-bottom: 0 !important;
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+}
+
+#modalPerfil .fila-dato .etiqueta { color: #8e9297 !important; font-weight: normal !important; }
+#modalPerfil .fila-dato .valor { color: #ffffff !important; font-weight: bold !important; text-align: right !important; }
+
+/* Caja de INE Proporcional */
+#modalPerfil .titulo-licencia {
+    margin: 0 0 3vw 0 !important;
+    color: white !important;
+    font-size: 4vw !important;
+    text-align: center !important;
+    font-weight: bold !important;
+}
+#modalPerfil .caja-foto-licencia {
+    width: 100% !important;
+    height: 45vw !important; /* Altura proporcional */
+    background: #111 !important;
+    border-radius: 2vw !important;
+    border: 0.4vw dashed #5865f2 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    overflow: hidden !important;
+}
+#modalPerfil #previewLicencia {
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain !important;
+}
+
+/* 7. BOTONES INFERIORES: GIGANTES Y TIPO PASTILLA */
+#modalPerfil .bloque-botones-perfil {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 3vw !important;
+    width: 100% !important;
+    margin: 0 !important;
+}
+
+#modalPerfil .btn-blanco-perfil {
+    width: 100% !important;
+    padding: 4vw !important; /* Mucho aire para el dedo */
+    border-radius: 100px !important; /* 🔥 Estilo pastilla perfecto */
+    font-weight: bold !important;
+    font-size: 4vw !important; /* Texto muy grande */
+    cursor: pointer !important;
+    border: none !important;
+    text-align: center !important;
+}
+
+#modalPerfil .fila-botones-mitad {
+    display: flex !important;
+    gap: 3vw !important;
+    width: 100% !important;
+}
+#modalPerfil .fila-botones-mitad button { flex: 1 !important; }
+
+#modalPerfil #btnSolicitarAuto { background: #5865f2 !important; color: white !important; }
+#modalPerfil #btnActualizarCorreo,
+#modalPerfil #btnActualizarTel { background: #3a3c41 !important; color: white !important; }
+#modalPerfil #btnCerrarSesion { background: transparent !important; color: #ed4245 !important; border: 0.3vw solid #ed4245 !important; }
+
+/* 🔥 FIX DE Z-INDEX: Asegura que el editor de fotos esté por encima de TODO */
+#cropContainerAyuda {
+    z-index: 100000 !important; /* Un nivel más que el modal de perfil */
+}
