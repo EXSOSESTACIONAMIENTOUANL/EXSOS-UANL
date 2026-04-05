@@ -3054,148 +3054,174 @@ font-size:1.7vw ;
     border: none !important;
     z-index: 10 !important; /* Lo pone por encima del cuadro azul */
 }
+
+
+
 /* ========================================================= */
-/* DISEÑO A PANTALLA COMPLETA Y SCROLL NATIVO                */
+/* --- ESTILOS EXACTOS PARA EL PERFIL EN CELULAR (PANTALLA COMPLETA) --- */
 /* ========================================================= */
 
-/* 1. Fondo exterior (ahora sin padding para que toque los bordes) */
+/* 1. Fondo exterior: Fuerza a cubrir las 4 esquinas de la pantalla */
 .modal-perfil-full {
-    padding: 0 !important; /* Quitamos el espacio a los lados */
-    box-sizing: border-box !important;
+    position: fixed !important; 
+    top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
+    width: 100vw !important; 
+    height: 100vh !important; 
     background: #111214 !important; /* Fondo negro sólido */
     display: none; 
-    align-items: flex-start !important; /* Para que empiece desde arriba */
+    z-index: 99999 !important;
+    margin: 0 !important; 
+    padding: 0 !important;
+    overflow-y: auto !important; /* ACTIVA EL SCROLL AQUÍ */
 }
-.modal-perfil-full.activo { display: flex !important; }
+.modal-perfil-full.activo { display: block !important; }
 
-/* 2. La Tarjeta (Ahora ocupa el 100% de la pantalla) */
+/* 2. La Tarjeta: Deja de ser tarjeta y se vuelve el cuerpo de la página */
 .card-perfil-celular {
-    width: 100% !important;
-    max-width: 100% !important; /* Quitamos el límite de ancho */
-    height: 100vh !important; /* Ocupa el 100% del alto de la pantalla */
-    max-height: 100vh !important; 
-    margin: 0 !important;
-    border-radius: 0 !important; /* Sin bordes redondos para que se vea a pantalla completa */
+    width: 100% !important; 
+    max-width: 100% !important;
+    min-height: 100vh !important; /* Mínimo el tamaño de la pantalla, crece si hay scroll */
+    margin: 0 !important; 
+    padding: 0 !important;
+    border-radius: 0 !important; /* Cero bordes redondeados */
     background: #111214 !important; 
-    overflow-y: auto !important; /* ESTO PERMITE SCROLLEAR HACIA ABAJO */
-    box-shadow: none !important; /* Quitamos la sombra porque ya no flota */
-    border: none !important; /* Sin contorno */
-    position: relative;
-    padding-bottom: 40px !important; /* Espacio extra al final para scrollear cómodo */
+    box-shadow: none !important; 
+    border: none !important; 
+    padding-bottom: 80px !important; /* Mucho espacio abajo para scrollear cómodo */
+    overflow: hidden !important;
 }
 
-/* 3. Ajuste de la Portada (Banner) */
+/* 3. TAMAÑOS MÁS GRANDES: Banner y Foto */
 .banner-azul-perfil {
-    height: 160px !important; /* Un poco más alto para que luzca en pantalla completa */
-    flex-shrink: 0;
+    width: 100% !important; 
+    height: 220px !important; /* Banner mucho más alto y proporcional */
+    background-color: #152191 !important; 
+    background-size: cover; 
+    background-position: center;
 }
 
-/* 4. Centrar la Foto de Perfil */
 .contenedor-avatar-perfil {
-    margin-top: -65px !important; /* Sube la foto exactamente a la mitad */
-    margin-bottom: 15px !important;
-    z-index: 10000 !important;
+    width: 100%;
+    display: flex; justify-content: center;
+    margin-top: -80px !important; /* Lo sube al centro de la línea del banner */
+    margin-bottom: 30px !important; /* Empuja el texto hacia abajo */
+    position: relative; z-index: 2;
 }
 
 #previewFoto {
-    width: 120px !important; /* Foto un poco más grande proporcional a la pantalla */
-    height: 120px !important;
-    border: 6px solid #111214 !important; 
-    background: #2b2d31 !important;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.4) !important;
+    width: 160px !important; /* Foto MUCHO más grande */
+    height: 160px !important;
+    border-radius: 50% !important;
+    border: 8px solid #111214 !important; /* Borde grueso del color del fondo */
+    background: #2b2d31 !important; 
+    object-fit: cover !important;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5) !important;
 }
 
-/* 5. Cajas de Datos (Gris oscuro sobre el fondo negro) */
+/* 4. TAMAÑOS MÁS GRANDES: Textos e Información */
 .cuerpo-datos-perfil {
-    padding: 10px 20px 30px 20px !important;
+    padding: 0 20px 30px 20px !important;
+    display: flex; flex-direction: column; gap: 20px;
+}
+
+#previewNombre { 
+    font-size: 30px !important; /* Nombre gigante */
+    margin-bottom: 5px !important; 
+    text-align: center; 
+    color: white !important;
+}
+#previewUser { 
+    font-size: 18px !important; 
+    color: #b5bac1 !important; 
+    text-align: center; 
+    display: block; 
+    margin-bottom: 20px !important; 
 }
 
 .bloque-datos-oscuro, 
 .bloque-licencia {
     background: #1e1f22 !important; 
-    border-radius: 16px !important;
-    padding: 18px !important;
-    margin-bottom: 18px !important;
+    border-radius: 16px !important; 
+    padding: 22px !important; /* Más colchón adentro de las cajas */
     border: 1px solid #2b2d31 !important;
 }
 
-/* Letras de los datos */
 .fila-dato {
-    font-size: 16px !important; 
-    margin-bottom: 8px !important;
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 12px !important;
 }
-.fila-dato .etiqueta { color: #b5bac1 !important; }
-.fila-dato .valor { font-size: 17px !important; color: #ffffff !important; }
+.fila-dato .etiqueta { font-size: 18px !important; color: #b5bac1 !important; }
+.fila-dato .valor { font-size: 20px !important; color: #ffffff !important; font-weight: bold; }
 
-#previewNombre { font-size: 26px !important; margin-bottom: 5px !important; text-align: center; }
-#previewUser { font-size: 16px !important; color: #b5bac1 !important; text-align: center; display: block; margin-bottom: 15px; }
+/* Licencia */
+.titulo-licencia { font-size: 22px !important; margin-bottom: 20px !important; text-align: center; color: white; }
+.caja-foto-licencia {
+    width: 100%; height: 280px !important; 
+    background: #111; border-radius: 10px; border: 2px dashed #5865f2 !important;
+    display: flex; justify-content: center; align-items: center; overflow: hidden;
+}
+.caja-foto-licencia img { max-width: 100%; max-height: 100%; object-fit: contain; }
 
-/* 6. Botones de Actualización */
-#btnSolicitarAuto, 
-#btnActualizarCorreo, 
-#btnActualizarTel, 
-#btnCerrarSesion {
-    font-size: 17px !important; 
-    padding: 16px !important; 
+/* 5. TAMAÑOS MÁS GRANDES: Botones */
+#btnSolicitarAuto, #btnActualizarCorreo, #btnActualizarTel, #btnCerrarSesion {
+    font-size: 18px !important; 
+    padding: 18px !important; 
     border-radius: 14px !important; 
     width: 100% !important;
-    border: none !important;
     font-weight: bold !important;
-    margin-bottom: 10px !important;
-    transition: transform 0.2s ease !important;
+    margin-bottom: 15px !important;
+    border: none !important;
     cursor: pointer;
 }
-
 #btnSolicitarAuto { background: #5865f2 !important; color: white !important; }
 #btnActualizarCorreo, #btnActualizarTel { background: #4e5058 !important; color: white !important; }
-#btnCerrarSesion { background: #ed4245 !important; color: white !important; margin-top: 5px !important; }
-
-/* Ocultar barra de scroll estéticamente */
-.card-perfil-celular::-webkit-scrollbar { display: none; }
+#btnCerrarSesion { background: #ed4245 !important; color: white !important; margin-top: 10px !important; }
 
 /* ========================================================= */
-/* BOTONES SUPERIORES (CERRAR EN FORMA DE X)                 */
+/* INYECCIÓN DE LA TACHA (X) Y BOTONES FLOTANTES             */
 /* ========================================================= */
 
+/* Generamos la Tacha con CSS para que aplaste cualquier ícono viejo en el HTML */
 .btn-cerrar-flotante {
-    position: absolute !important;
-    top: 15px !important;
-    right: 15px !important; 
-    left: auto !important; 
+    position: fixed !important; /* Fixed para que se quede arriba aunque hagas scroll */
+    top: 20px !important; 
+    right: 20px !important; /* Pegado a la derecha */
+    left: auto !important;
+    width: 45px !important; 
+    height: 45px !important; 
+    background: rgba(0,0,0,0.6) !important; 
+    border: none !important;
+    border-radius: 50% !important; /* Círculo perfecto */
     z-index: 100000 !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    font-family: Arial, sans-serif !important; /* Fuente limpia para que la X se vea bien */
+    cursor: pointer;
+    font-size: 0 !important; /* Oculta texto o íconos viejos */
+}
+
+/* Dibuja la X */
+.btn-cerrar-flotante::after {
+    content: "✕" !important;
+    font-size: 24px !important;
+    color: white !important;
+    font-family: Arial, sans-serif !important;
     font-weight: bold !important;
 }
 
+.btn-cerrar-flotante:hover { background: rgba(0,0,0,0.9) !important; transform: scale(1.1); }
+
+/* Lápiz editar banner */
 .btn-editar-banner {
     position: absolute !important;
-    top: 15px !important;
-    left: 15px !important; 
+    top: 20px !important;
+    left: 20px !important; /* Pegado a la izquierda */
     right: auto !important;
     z-index: 99999 !important;
-} }
-
-/* ========================================================= */
-/* SEPARAR BOTÓN DE CERRAR Y BOTÓN DE EDITAR BANNER          */
-/* ========================================================= */
-
-/* 1. Botón de Cerrar (Mover a la esquina Derecha) */
-.btn-cerrar-flotante {
-    position: absolute !important;
-    top: 15px !important;
-    right: 15px !important; /* Lo clava en la derecha */
-    left: auto !important; /* Anula que se vaya a la izquierda */
-    z-index: 100000 !important;
+    width: 45px !important;
+    height: 45px !important;
+    border-radius: 50% !important;
 }
 
-/* 2. Botón de Editar Banner - Lápiz (Fijo a la Izquierda) */
-.btn-editar-banner {
-    position: absolute !important;
-    top: 15px !important;
-    left: 15px !important; /* Lo clava en la izquierda */
-    right: auto !important;
-    z-index: 99999 !important;
-}
+/* Ocultar barra de scroll para que se vea como app nativa */
+.modal-perfil-full::-webkit-scrollbar { display: none; }
