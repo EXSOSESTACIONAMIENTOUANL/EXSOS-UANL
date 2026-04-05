@@ -2965,21 +2965,70 @@ font-size:1.7vw ;
     line-height: 1.8 !important; /* Más espacio entre renglones para que no se vea amontonado */
 }
 
-/* 3. BOTONES DE ACTUALIZACIÓN GIGANTES PARA CELULAR */
-#btnSolicitarAuto, 
-#btnActualizarCorreo, 
-#btnActualizarTel, 
-#btnCerrarSesion {
-    font-size: 18px !important; /* Letras del botón mucho más grandes */
-    padding: 20px !important; /* Botón más "gordo" y fácil de picar */
-    border-radius: 12px !important; /* Bordes un poco más suaves */
-    font-weight: bold !important;
-    margin-bottom: 8px !important;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2) !important; /* Sombrita para que resalten */
+/* ========================================================= */
+/* FIX 1: HACER QUE LOS MENÚS DE FOTO Y BANNER SE VEAN (Z-INDEX) */
+/* ========================================================= */
+.panel-avatares, 
+#panelBanners, 
+.editor-banner {
+    z-index: 999999 !important; /* Obliga a los menús a abrirse POR ENCIMA del perfil */
 }
 
-/* Ajuste del contenedor de los botones Correo y Teléfono para que no se aplasten */
+/* ========================================================= */
+/* FIX 2: MEJORA ESTÉTICA PREMIUM (TIPO DISCORD/GAMER)       */
+/* ========================================================= */
+
+/* Avatar: Que no se pierda con el azul */
+#previewFoto {
+    border: 6px solid #2b2d31 !important; /* Borde oscuro y elegante */
+    background: #ffffff !important; /* Fondo blanco por si la foto es transparente */
+    box-shadow: 0 8px 20px rgba(0,0,0,0.5) !important; /* Sombrita para dar profundidad */
+}
+
+/* Cajas de información más elegantes */
+.bloque-datos-oscuro, 
+.bloque-licencia {
+    background: #2b2d31 !important; /* Gris más claro, menos agresivo que el negro */
+    border: 1px solid #3a3c41 !important; /* Contorno ligero para dar textura */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2) !important;
+}
+
+/* Caja de la INE más moderna */
+.caja-foto-licencia {
+    border: 2px dashed #5865f2 !important; /* Borde punteado azul */
+    background: #1e1f22 !important;
+    border-radius: 16px !important;
+}
+
+/* BOTONES PRINCIPALES: Adiós pastillas blancas feas */
+.btn-blanco-perfil {
+    background: #5865f2 !important; /* Azul vibrante (Blurple) */
+    color: #ffffff !important; /* Letra blanca */
+    border-radius: 12px !important; /* Cuadrados pero con puntas redondas */
+    padding: 16px !important;
+    font-size: 17px !important;
+    font-weight: bold !important;
+    border: none !important;
+    box-shadow: 0 6px 15px rgba(88, 101, 242, 0.3) !important; /* Sombra azul brillante */
+    transition: 0.2s ease !important;
+}
+
+/* Efecto al presionar cualquier botón */
+.btn-blanco-perfil:active {
+    transform: scale(0.96) !important;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2) !important;
+}
+
+/* Botones secundarios (Correo y Teléfono) - Color Gris Oscuro */
 #btnActualizarCorreo, 
 #btnActualizarTel {
-    padding: 18px 10px !important;
+    background: #4e5058 !important;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2) !important;
+}
+
+/* Botón de Cerrar Sesión - Color Rojo */
+#btnCerrarSesion {
+    background: #ed4245 !important;
+    box-shadow: 0 6px 15px rgba(237, 66, 69, 0.3) !important;
+    margin-top: 10px !important; /* Separarlo un poco del resto */
 }
