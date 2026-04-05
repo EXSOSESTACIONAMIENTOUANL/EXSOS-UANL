@@ -152,14 +152,7 @@ body{
 }
 
 
-@media (max-width: 500px){
 
-    .fondo{
-        align-items: flex-end;
-    }
-
-
-}
 
 /* MODAL */
 .modal{
