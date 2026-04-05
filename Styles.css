@@ -540,305 +540,526 @@ body{ display:flex; flex-direction:column; }
 .editar-banner { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.6); color: white; padding: 1.5% 2%; border-radius: 50%; font-size: 120%; cursor: pointer; transition: 0.2s; }
 .editar-banner:hover { background: rgba(0,0,0,0.9); transform: scale(1.1); }
 
+
 /* ========================================================= */
-/* ESTILOS AISLADOS EXCLUSIVOS PARA #modalPerfil EN CELULAR  */
+/* MODALES ORIGINALES DEL PERFIL                             */
+/* ========================================================= */
+.modal-perfil-full{
+    font-family:'Gill Sans','Gill Sans MT',Calibri,'Trebuchet MS',sans-serif;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:#1e1f22; 
+    opacity:0;
+    pointer-events:none;
+    z-index:9999;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    transition: opacity 0.1s ease;
+}
+
+.modal-perfil-full.activo{
+    opacity:1;
+    pointer-events:auto;
+    animation: fondoOscuroAnimado 8s ease infinite;
+}
+
+@keyframes fondoOscuroAnimado{
+    0%{ background:#0f0f10; }
+    50%{ background:#1e1f22; }
+    100%{ background:#0f0f10; }
+}
+
+.card-perfil{
+    display:flex;
+    width:100%;
+    height:100vh;
+    padding:40px;
+    gap:50px;
+    box-sizing:border-box;
+}
+
+@keyframes aparecer{
+    from{ transform: translateY(30px); opacity:0; }
+    to{ transform: translateY(0); opacity:1; }
+}
+
+.perfil-foto-container{
+    width:100%;
+    text-align:center;
+    display:flex;
+    justify-content:center; 
+    align-items:center;     
+    flex-direction:column;
+    margin-top:25px;
+}
+
+.perfil-form{
+    flex:1;
+    max-width:600px; 
+}
+
+.perfil-header{
+    color:white;
+    border-bottom:1px solid #2b2d31;
+}
+
+.perfil-header span{
+    color:#5865f2;
+    font-size:clamp(20px, 4vw, 18px);
+}
+
+.perfil-campo{
+    display:flex;
+    flex-direction:column; 
+    gap:6px;
+    padding:12px 0;
+    border-bottom:1px solid #2b2d31;
+}
+
+.perfil-campo label{
+    color:#b5bac1;
+    font-size:clamp(13px, 1.5vw, 16px);
+}
+
+.perfil-campo input{
+    width:100%;
+    padding:14px 16px;
+    border-radius:8px;
+    border:1px solid #2b2d31;
+    background:#111214;
+    color:#fff;
+    font-size:16px;
+    outline:none;
+    transition:0.2s ease;
+}
+
+.perfil-header h2{
+    font-size:clamp(18px, 2.5vw, 26px);
+}
+
+.perfil-campo input:focus{
+    border-color:#5865f2;
+    box-shadow:0 0 0 2px rgba(88, 101, 242, 0.3);
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active{
+    -webkit-box-shadow: 0 0 0 1000px #111214 inset !important;
+    -webkit-text-fill-color: #fff !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+.perfil-preview{
+    width:360px;
+    flex:1; 
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    padding-top:60px
+}
+
+.preview-card{
+    width:100%;
+    max-width:360px;
+    transform:scale(1.05);
+    background:#2b2d31;
+    border-radius:18px;
+    overflow:hidden;
+}
+
+.preview-body{
+    padding:15px;
+    position:relative;
+}
+
+.preview-avatar{
+    width:70px;
+    height:70px;
+    border-radius:50%;
+    border:4px solid #2b2d31;
+    background: #2b2d31;
+    object-fit:cover;
+    position:absolute;
+    top:-35px;
+}
+
+.preview-name{
+    font-size:18px;
+    font-weight:bold;
+    color:white;
+    margin-top:40px;
+}
+
+.preview-username{
+    font-size:18px;
+    color:white;
+    margin-top:9px;
+}
+
+.btn-salir{
+    padding: 0;
+    background:none;
+    border:none;
+    color:#5865f2;
+    cursor:pointer;
+    font-size:clamp(18px, 5vw, 24px);
+}
+
+.btn-salir:hover{
+    color:white;
+    transform:scale(1.2);
+    transition: 0.25s;
+}
+
+@media (max-width: 900px){
+    .card-perfil{
+        flex-direction:column;
+        padding:20px;
+         width:clamp(320px, 90vw, 500px); 
+        gap:25px;
+    }
+    .perfil-form{ max-width:100%; }
+    .perfil-preview{ width:100%; }
+    .preview-card{ transform:none; }
+}
+
+@media (max-width: 480px){
+    .perfil-header{
+        flex-direction:column;
+        gap:10px;
+        align-items:center;
+    }
+    .perfil-header span{ font-size:14px; }
+    .perfil-campo input{ font-size:16px; }
+}
+
+.modal-perfil-full{ overflow-y:auto; }
+
+#previewFoto{
+    width:14.2vw;
+    height: 14.2vw;
+    border-radius:100%;
+    object-fit:cover;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+#previewFoto:hover{ filter:brightness(0.5); }
+#inputFoto{ display: none !important; }
+
+.panel-avatares{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.6);
+    display:none;
+    justify-content:center;
+    align-items:center;
+    z-index:10000;
+}
+
+.panel-avatares.activo{ display:flex; }
+
+.contenedor-avatares{
+    position:relative; 
+    width: 70%;
+    background:#1e1f22;
+    padding:25px;
+    border-radius:12px;
+    text-align:center;
+    color:white;
+}
+
+.contenedor-avatares h3{
+    font-family:'Gill Sans','Gill Sans MT',Calibri,'Trebuchet MS',sans-serif;
+    font-size: 30px;
+    margin-bottom: 6%;
+}
+
+.grid-avatares{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:15px;
+    margin:20px 0;
+    justify-items: center;   
+    align-items: center;
+}
+
+.avatar-opcion{
+    width:130px;
+    height:130px;
+    border-radius:50%;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+.avatar-opcion:hover{
+    transform:scale(1.1);
+    border:2px solid #5865f2;
+}
+
+.avatar-upload{
+    width:130px;
+    height:130px;
+    border-radius:50%;
+    transition:0.2s;
+    background:#2b2d31;
+    color:#b5bac1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:28px;
+    cursor:pointer;
+    position:relative;
+    overflow:hidden;
+}
+
+.avatar-upload:hover{
+    background:#3a3c41;
+    transform:scale(1.1);
+    border:2px solid #5865f2;
+}
+
+.avatar-upload input{ position:absolute; width:100%; height:100%; opacity:0; cursor:pointer; }
+.cerrar-panel{ position:absolute; top:10px; right:15px; font-size:40px; color:#b5bac1; cursor:pointer; transition:0.2s; }
+.cerrar-panel:hover{ color:white; transform:scale(1.2); }
+
+.guardar-btn{ cursor:pointer; transition: transform 0.15s ease, background 0.2s; }
+.guardar-btn:hover{ color:white; transform:scale(1.2); transition: 0.25s;  }
+.guardar-btn:active{ transform: scale(0.9); }
+
+#mensajePerfil{
+    opacity:0; transform: translateY(-5px); transition: all 0.3s ease;
+    margin-bottom:10px; padding:8px; text-align:center; font-size:14px; border-radius:8px;
+}
+#mensajePerfil.activo{ opacity:1; transform: translateY(0); }
+
+.licencia-card{
+    margin-top: 20px; background: #1e1f22; border-radius: 18px; padding: 18px; color: white; width: 100%; box-sizing: border-box;
+}
+.licencia-card h3{ margin: 0 0 15px 0; font-size: clamp(16px, 1.2vw, 22px); }
+.licencia-preview-container{
+    width: 100%; min-height: 180px; border: 2px dashed rgba(255,255,255,0.2); border-radius: 14px; display: flex; justify-content: center; align-items: center; overflow: hidden; margin-bottom: 15px;
+}
+.preview-licencia{ max-width: 100%; max-height: 180px; object-fit: contain; border-radius: 10px; }
+.btn-subir-licencia{ display: inline-block; background: #5865f2; padding: 10px 18px; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 600; }
+.btn-subir-licencia input{ display: none; }
+
+.banner-opcion-img{
+    width: 100%; height: 130px; border-radius: 14px; object-fit: cover; cursor: pointer; border: 3px solid transparent; transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.banner-opcion-img:hover{ transform:scale(1.1); border:2px solid #5865f2; }
+
+.preview-banner{
+    height:160px; width: 100%; position: relative; background-color: #152191; background-size: cover; background-position: center; background-repeat: no-repeat; border-radius: 12px 12px 0 0;
+}
+
+.btn-editar-banner{
+    position: absolute; top: 10px; left: 10px; width: 34px; height: 34px; border: none; border-radius: 50%; background: rgba(0,0,0,0.45); color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; transition: 0.25s ease; z-index: 5;
+}
+.btn-editar-banner:hover{ transform: scale(1.08); background: rgba(0,0,0,0.65); }
+
+.banner-color-picker{
+    width: 100%; height: 130px; border-radius: 14px; background: #5865f2; display: flex; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; position: relative; overflow: hidden; border: 3px solid transparent; transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.banner-color-picker input{ position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.banner-opcion:hover{ transform:scale(1.1); border:2px solid #ffffff; }
+.banner-opcion.activo{ border-color: #ffffff; box-shadow: 0 0 22px rgba(88,101,242,0.75); transform: scale(1.02); }
+
+.banner-upload{
+    width: 100%; height: 130px; border-radius: 14px; background: #1e1f22; border: 2px dashed #555; display: flex; align-items: center; justify-content: center; font-size: 30px; color: #aaa; cursor: pointer; position: relative; transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.banner-upload:hover{ background: #2b2d31; border-color: #5865f2; transform: scale(1.1); }
+.banner-upload input{ position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.banner-upload.activo{ border-color: #ffffff; box-shadow: 0 0 22px rgba(88,101,242,0.75); }
+.banner-opcion-img, .banner-upload{ object-fit: cover; }
+
+.contenedor-banner{
+    position:relative;  width: 80%; background:#1e1f22; padding:25px; border-radius:12px; text-align:center; color:white;
+}
+.contenedor-banner h3{ font-family:'Gill Sans','Gill Sans MT',Calibri,'Trebuchet MS',sans-serif; font-size: 30px; margin-bottom: 6%; }
+.grid-banners{ display:grid; grid-template-columns:repeat(4, 1fr); gap:25px; margin:20px 0; }
+
+.modal-editor{
+    position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 99999;
+}
+.modal-editor.activo{ display: flex; }
+
+.editor-banner{
+    font-family:'Gill Sans','Gill Sans MT',Calibri,'Trebuchet MS',sans-serif; position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 100000;
+}
+.editor-banner.activo{ display: flex; }
+
+.editor-card{
+    width: 600px; background: #2b2d31; border-radius: 12px; padding: 20px; color: white; box-shadow: 0 0 40px rgba(0,0,0,0.5);
+}
+.editor-header{ margin-left: 8.5%; display: flex; justify-content: space-between; align-items: center; }
+.editor-area{ display: flex; justify-content: center; align-items: center; margin-top: 20px; }
+.imagen-container{
+    position: relative; width: 500px; height: 250px; overflow: hidden; background: #111; border-radius: 10px;
+}
+
+#imagenBannerMovible{
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: contain; background-repeat: no-repeat; background-position: center; cursor: grab; transition: transform 0.1s;
+}
+#imagenBannerMovible:active{ cursor: grabbing; }
+
+.marco-recorte{
+    position: absolute; height: 160px; top: 50%; left: 45px; right: 58px; transform: translateY(-50%); border-radius: 6px; border: 2px solid white; pointer-events: none; z-index: 3;
+}
+
+.sombra{ position: absolute; background: rgba(0,0,0,0.6); pointer-events: none; z-index: 2; }
+.sombra.arriba{ top: 0; left: 0; width: 100%; height: calc(50% - 80px); }
+.sombra.abajo{ bottom: 0; left: 0; width: 100%; height: calc(50% - 80px); }
+.sombra.izquierda{ top: calc(50% - 80px); left: 0; width: 45px; height: 160px; }
+.sombra.derecha{ top: calc(50% - 80px); right: 0; width: 58px; height: 160px; }
+
+.editor-footer{ font-family:'Gill Sans','Gill Sans MT',Calibri,'Trebuchet MS',sans-serif; margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px; }
+.editor-footer button{ padding: 8px 14px; border: none; border-radius: 6px; background: #3a3c41; color: white; cursor: pointer; }
+.editor-footer button:hover{ background:#4c4f55; transition-duration: 0.2s; transform: scale(1.1); }
+.editor-footer .aplicar{ background: #5865f2; }
+
+.zoom-container{ display: flex; align-items: center; gap: 10px; width: 400px; margin: 0 auto; margin-top: 10px;  }
+.zoom-container input{ width: 100%; cursor: pointer; }
+#zoomSlider{ width: 80%; height: 6px; border-radius: 5px; background: #42217b; outline: none; }
+#zoomSlider::-webkit-slider-thumb{ -webkit-appearance: none; appearance: none; width: 14px; height: 14px; border-radius: 50%; background: #5865f2; cursor: pointer; }
+#zoomSlider::-webkit-slider-thumb:hover{ transform: scale(1.2); }
+
+.cerrar-seccionbanner{ font-size:30px; color:#b5bac1; cursor:pointer; transition:0.2s; }
+.cerrar-seccionbanner:hover{ color:white; transform:scale(1.2); }
+
+.banner-color-picker{ position:relative; display:flex; justify-content:center; align-items:center; }
+.banner-color-picker input{ position:absolute; opacity:0; pointer-events:none; }
+
+.marco-avatar {
+    position: absolute; width: 200px; height: 200px; border: 3px solid white; border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;
+}
+#imagenAvatarMovible { width: 100%; height: 100%; background-position: center; background-repeat: no-repeat; cursor: grab; }
+.cerrar-seccionavatar{ font-size:30px; color:#b5bac1; cursor:pointer; transition:0.2s; }
+.cerrar-seccionavatar:hover{ color:white; transform:scale(1.2); }
+
+/* ---------------- Cerrar sesion  ----------------- */
+.btn-cerrar-sesion{ font-family:'Gill Sans','Gill Sans MT',Calibri,'Trebuchet MS',sans-serif; width: 30%; padding: 12px; margin-top: 5%; margin-bottom: 5%; background: #ed4245; border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; transition: 0.2s; }
+.btn-cerrar-sesion:hover{ background: #841e1f; }
+
+.modal-confirmar { font-family:'Gill Sans','Gill Sans MT',Calibri,'Trebuchet MS',sans-serif; position: fixed; bottom: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: flex-end; background: rgba(0,0,0,0.5); opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 999999; }
+.modal-confirmar.activo { opacity: 1; pointer-events: all; }
+.modal-box { background: #2b2d31; color: white; width: 60%; border-radius: 20px 20px 0 0; /* 🔥 estilo Discord */ padding: 20px; transform: translateY(100%); transition: transform 0.3s ease; }
+.modal-box h2{ font-size:2.4rem ; }
+.modal-box p{ font-size:1.6rem ; }
+.modal-confirmar.activo .modal-box { transform: translateY(0); }
+.acciones { display: flex; justify-content: flex-end; gap: 15px; margin-top: 20px; }
+.acciones button { font-weight: bold; font-family:'Gill Sans','Gill Sans MT',Calibri,'Trebuchet MS',sans-serif; padding: 8px 16px; font-size: 1.5rem; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s ease; /* 🔥 animación suave */ }
+.acciones button:hover { transform: scale(1.1); background: #484a4e; color: white; }
+.acciones .rojo { background: #ed4245; color: white; }
+.acciones .rojo:hover { transform: scale(1.1); background: #802527; /* 🔥 rojo más oscuro */ }
+.modal-box{ transform: scale(0.9); opacity: 0; transition: 0.2s; }
+.modal-confirmar.activo .modal-box{ transform: scale(1); opacity: 1; }
+
+.personaje-box { text-align: center; }
+.personaje-container { flex: 1; position: relative; display: flex; justify-content: center; align-items: flex-end; /* 🔥 lo manda abajo */ }
+.personaje-img { height: 40vh; width: auto; position: absolute; bottom: 0; /* 🔥 pegado abajo */ left: 50%; transform: translateX(-50%); }
+.globo-dialogo{ position: absolute; bottom: 30vh; right: -1vh; transform: translate(-50%, -50%) rotate(-10deg); width: 32vw;   /* 🔥 responsive */ max-width: 600px; min-width: 220px; height: 18vh; max-height: 190px; min-height: 90px; display: flex; justify-content: center; align-items: center; z-index: 3; }
+.img-burbuja{ position: absolute; width: 160%; height: 160%; object-fit: contain; }
+.texto-burbuja{ position: absolute; top: 42%; left: 54%; transform: translate(-50%, -50%); font-size: clamp(2rem, 2vw, 1.8rem); font-weight: bold; color: black; z-index: 4; white-space: nowrap; }
+@media (max-width: 768px){ .globo-dialogo{ top: 22%; left: 68%; width: 45vw; height: 12vh; transform: translate(-50%, -50%) rotate(-8deg); } }
+
+.modal-confirmarp { font-family:'Gill Sans','Gill Sans MT',Calibri,'Trebuchet MS',sans-serif; position: fixed; bottom: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: flex-end; background: rgba(0,0,0,0.7); opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 999999; }
+.modal-confirmarp.activo { opacity: 1; pointer-events: all; }
+.modal-boxp { width: 100%; height: 80vh; display: flex; flex-direction: column; justify-content: flex-end; /* 🔥 botones abajo */ }
+.modal-boxp h2{ font-size:2.5vw ; }
+.modal-boxp p{ font-size:1.7vw ; }
+.modal-confirmarp.activo .modal-boxp { transform: translateY(0); }
+.accionesp { position: relative; z-index: 2; /* 🔥 encima del personaje */ display: flex; justify-content: center; gap: 20px; margin-top: 20px; margin-bottom: 20px; }
+.accionesp button { width: 8rem; /* 🔥 tamaño fijo elegante */ padding: 10px; font-size: 1.5rem; border-radius: 10px; font-weight: bold; }
+.accionesp button:hover { transition: 0.25s; transform: scale(1.1); background: #484a4e; color: white; }
+.accionesp .rojo { width: 7rem; background: #bd3638; color: white; }
+.accionesp .rojo:hover { transform: scale(1.1); background: #802527; }
+.modal-boxp{ transform: scale(0.9); opacity: 0; transition: 0.2s; overflow: hidden; }
+.modal-confirmarp.activo .modal-boxp{ transform: scale(1); opacity: 1; }
+.modal-confirmarp.activo .personaje-img { animation: subirPersonaje 0.5s ease forwards; }
+@keyframes subirPersonaje { 0% { transform: translateX(-50%) translateY(100%); opacity: 0; } 60% { transform: translateX(-50%) translateY(-10px); opacity: 1; } 100% { transform: translateX(-50%) translateY(0); } }
+
+/* ========================================================= */
+/* 🔥 SOLUCIÓN FINAL: LOS 3 PARCHES PARA TU CÓDIGO CELULAR   */
 /* ========================================================= */
 
-#modalPerfil {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    background: #000000 !important;
-    z-index: 99999 !important;
-    overflow-y: auto !important; 
-    padding: 0 !important;
-    margin: 0 !important;
-    display: none;
-}
-
-#modalPerfil.activo {
-    display: block !important;
-}
-
-#modalPerfil .card-perfil-celular {
-    width: 100% !important;
-    min-height: 100vh !important;
-    background: #000000 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    padding-bottom: 100px !important; /* 🔥 MÁS ESPACIO PARA SCROLLEAR HASTA ABAJO */
-    margin: 0 !important;
-    border-radius: 0 !important;
-}
-
-#modalPerfil #previewBanner {
-    width: 100% !important;
-    height: 180px !important; 
-    background-color: #152191 !important;
-    background-size: cover !important;
-    background-position: center !important;
-    background-repeat: no-repeat !important;
-    position: relative !important;
-    border-bottom: 4px solid #ead228 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-}
-
-/* 🔥 LA TACHA: CÍRCULO PERFECTO, SIN BORDES FEOS Y TEXTO REEMPLAZADO */
-#modalPerfil .btn-cerrar-flotante, 
-#modalPerfil .btn-editar-banner {
-    position: absolute !important;
-    top: 20px !important;
-    width: 40px !important; /* Círculo perfecto y más estético */
-    height: 40px !important;
-    border-radius: 50% !important;
-    background: rgba(0,0,0,0.6) !important;
-    border: none !important; /* ❌ Adiós a los bordes feos */
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    cursor: pointer !important;
-    z-index: 100 !important;
-    padding: 0 !important;
-    margin: 0 !important;
-}
-
-#modalPerfil .btn-cerrar-flotante { 
-    left: 20px !important; 
-    right: auto !important; 
-    color: transparent !important; /* Oculta el ☰ */
-}
-
-#modalPerfil .btn-cerrar-flotante::after {
-    content: "✕" !important; /* Agrega la ✕ bonita */
+/* PARCHE 1: CORREGIR LA TACHA */
+.btn-salir-perfil, .btn-cerrar-flotante {
     position: absolute;
-    color: white !important;
-    font-size: 20px !important;
-    font-weight: bold;
+    top: 15px;
+    right: 15px; /* Siempre a la derecha */
+    width: 45px !important;
+    height: 45px !important;
+    border-radius: 50% !important; /* Círculo perfecto */
+    background: rgba(0,0,0,0.6);
+    color: white;
+    border: 2px solid rgba(255,255,255,0.3);
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100000;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1; 
+}
+.card-perfil-celular {
+    position: relative; /* Asegura que la tacha no se salga de la tarjeta */
 }
 
-#modalPerfil .btn-editar-banner { 
-    right: 20px !important; 
-    left: auto !important; 
-    color: white !important;
-    font-size: 18px !important;
+/* PARCHE 2: FORZAR Z-INDEX PARA QUE LAS FOTOS SALGAN ADELANTE */
+.panel-avatares, 
+.editor-banner, 
+.modal-editor {
+    z-index: 999999 !important; /* El nivel más alto de todo tu proyecto */
 }
 
-#modalPerfil .contenedor-avatar-perfil {
-    width: 100% !important;
-    display: flex !important;
-    justify-content: center !important;
-    margin-top: -65px !important; 
-    margin-bottom: 15px !important;
-    position: relative !important;
-    z-index: 10 !important;
-    padding: 0 !important;
-}
-
-#modalPerfil #previewFoto {
-    width: 130px !important;
-    height: 130px !important;
-    border-radius: 50% !important;
-    border: 5px solid #000000 !important; 
-    background: #2b2d31 !important;
-    object-fit: cover !important;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.5) !important;
-    margin: 0 !important;
-    padding: 0 !important;
-}
-
-#modalPerfil #inputFoto {
-    display: none !important;
-}
-
-#modalPerfil .cuerpo-datos-perfil {
-    padding: 0 20px !important;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 20px !important;
-    margin: 0 !important;
-}
-
-#modalPerfil #previewNombre {
-    font-size: 26px !important;
-    color: white !important;
-    text-align: center !important;
-    margin: 5px 0 !important;
-    display: block !important;
-    font-weight: bold !important;
-}
-
-#modalPerfil #previewUser {
-    font-size: 16px !important;
-    color: #b5bac1 !important;
-    text-align: center !important;
-    margin: 0 0 20px 0 !important;
-    display: block !important;
-}
-
-#modalPerfil .bloque-datos-oscuro, 
-#modalPerfil .bloque-licencia {
-    background: #1e1f22 !important;
-    border-radius: 16px !important;
-    padding: 20px !important;
-    border: 1px solid #2b2d31 !important;
-    margin: 0 !important;
-}
-
-#modalPerfil .fila-dato {
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    font-size: 17px !important;
-    margin-bottom: 15px !important;
-    border-bottom: 1px solid rgba(255,255,255,0.05) !important;
-    padding-bottom: 10px !important;
-}
-
-#modalPerfil .fila-dato:last-child {
-    margin-bottom: 0 !important;
-    border-bottom: none !important;
-    padding-bottom: 0 !important;
-}
-
-#modalPerfil .fila-dato .etiqueta { 
-    color: #8e9297 !important; 
-    font-weight: normal !important; 
-}
-#modalPerfil .fila-dato .valor { 
-    color: #ffffff !important; 
-    font-weight: bold !important; 
-    text-align: right !important; 
-}
-
-#modalPerfil .titulo-licencia {
-    margin: 0 0 15px 0 !important;
-    color: white !important;
-    font-size: 18px !important;
-    text-align: center !important;
-    font-weight: bold !important;
-}
-
-#modalPerfil .caja-foto-licencia {
-    width: 100% !important;
-    height: 220px !important;
-    background: #111 !important;
-    border-radius: 12px !important;
-    border: 2px dashed #5865f2 !important;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    overflow: hidden !important;
-    padding: 0 !important;
-    margin: 0 !important;
-}
-
-#modalPerfil #previewLicencia {
-    max-width: 100% !important;
-    max-height: 100% !important;
-    object-fit: contain !important;
-}
-
-#modalPerfil .bloque-botones-perfil {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 15px !important;
-    align-items: center !important;
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-}
-
-/* 🔥 BOTONES DE PERFIL: Estándar y no tan exagerados */
-#modalPerfil .btn-blanco-perfil {
-    width: 100% !important;
-    padding: 18px !important; 
-    border-radius: 14px !important;
-    font-weight: bold !important;
-    font-size: 18px !important;
-    cursor: pointer !important;
-    border: none !important;
-    text-align: center !important;
-    margin: 0 !important;
-}
-
-#modalPerfil .fila-botones-mitad {
-    display: flex !important;
-    gap: 15px !important;
-    width: 100% !important;
-    justify-content: space-between !important;
-    margin: 0 !important;
-    padding: 0 !important;
-}
-
-#modalPerfil .fila-botones-mitad button { 
-    flex: 1 !important; 
-}
-
-#modalPerfil #btnSolicitarAuto { background: #5865f2 !important; color: white !important; }
-#modalPerfil #btnActualizarCorreo, #modalPerfil #btnActualizarTel { background: #3a3c41 !important; color: white !important; }
-#modalPerfil #btnCerrarSesion { background: transparent !important; color: #ed4245 !important; border: 1.5px solid #ed4245 !important; }
-
-/* ========================================================= */
-/* 🔥 SOLUCIÓN Z-INDEX: Asegura que las ventanas de foto estén al frente */
-/* ========================================================= */
-.panel-avatares {
-    z-index: 100005 !important; 
-}
-.editor-banner {
-    z-index: 100010 !important; 
-}
-
-/* ========================================================= */
-/* 🔥 AISLADO: MODALES DE ACTUALIZAR DATOS (MÓVIL)           */
-/* ========================================================= */
-
-.modal-confirmarp { 
-    z-index: 100015 !important; /* Siempre arriba */
-}
-
-/* Expandimos los menús de actualizar sólo en móviles */
-@media (max-width: 600px) {
-    #modalCambioAuto .modal-boxp,
-    #modalCambioCorreo .modal-boxp,
-    #modalCambioTel .modal-boxp {
-        width: 95% !important;
-        max-width: 500px !important;
+/* PARCHE 3: MENÚS DE ACTUALIZAR MÁS GRANDES EN CELULAR */
+@media (max-width: 768px) {
+    .modal-boxp {
+        height: auto !important;
+        min-height: 60vh !important;
         padding: 30px !important;
-        border-radius: 24px !important;
-        margin: auto !important; /* Centrado bonito */
+        border-radius: 25px 25px 0 0 !important;
+        background: #2b2d31 !important; /* Tu color oscuro */
     }
-
-    #modalCambioAuto h2, 
-    #modalCambioCorreo h2, 
-    #modalCambioTel h2 {
-        font-size: 24px !important;
-        margin-bottom: 10px !important;
+    
+    .modal-boxp h2 {
+        font-size: 24px !important; /* Letras grandes en vez de vw */
+        margin-bottom: 15px !important;
     }
-
-    #modalCambioAuto p, 
-    #modalCambioCorreo p, 
-    #modalCambioTel p {
+    
+    .modal-boxp p {
         font-size: 16px !important;
         margin-bottom: 20px !important;
     }
-
-    #modalCambioAuto input, 
-    #modalCambioCorreo input, 
-    #modalCambioTel input {
+    
+    .modal-boxp input {
         font-size: 18px !important;
-        padding: 16px !important;
-        border-radius: 12px !important;
-        margin-bottom: 12px !important;
+        padding: 15px !important;
+        margin-bottom: 15px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
     }
-
-    #modalCambioAuto button, 
-    #modalCambioCorreo button, 
-    #modalCambioTel button {
+    
+    .accionesp {
+        flex-direction: column; /* Apila los botones de cancelar/enviar */
+        gap: 15px;
+        width: 100%;
+    }
+    
+    .accionesp button {
         font-size: 18px !important;
-        padding: 16px !important;
-        border-radius: 12px !important;
+        padding: 18px !important;
+        width: 100% !important;
     }
 }
