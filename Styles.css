@@ -541,7 +541,7 @@ body{ display:flex; flex-direction:column; }
 .editar-banner:hover { background: rgba(0,0,0,0.9); transform: scale(1.1); }
 
 /* ========================================================= */
-/* ESTILOS AISLADOS EXCLUSIVOS PARA #modalPerfil (PROPORCIONAL) */
+/* ESTILOS AISLADOS EXCLUSIVOS PARA #modalPerfil EN CELULAR  */
 /* ========================================================= */
 
 #modalPerfil {
@@ -550,585 +550,295 @@ body{ display:flex; flex-direction:column; }
     left: 0 !important;
     width: 100vw !important;
     height: 100vh !important;
-    background: rgba(0, 0, 0, 0.85) !important; /* Fondo transparente oscuro */
+    background: #000000 !important;
     z-index: 99999 !important;
     overflow-y: auto !important; 
-    padding: 5vw !important; /* Espacio hacia los bordes de la pantalla */
-    box-sizing: border-box !important;
+    padding: 0 !important;
+    margin: 0 !important;
     display: none;
 }
 
 #modalPerfil.activo {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: flex-start !important; /* Permite scroll si la tarjeta es larga */
+    display: block !important;
 }
 
-/* La Tarjeta Central (No toca los bordes) */
 #modalPerfil .card-perfil-celular {
     width: 100% !important;
-    max-width: 800px !important;
-    background: #111214 !important;
+    min-height: 100vh !important;
+    background: #000000 !important;
     display: flex !important;
     flex-direction: column !important;
-    border-radius: 3vw !important; 
-    overflow: hidden !important; 
-    box-shadow: 0 10px 40px rgba(0,0,0,0.8) !important;
-    margin: auto !important; 
-    padding-bottom: 5vw !important;
+    padding-bottom: 100px !important; /* 🔥 MÁS ESPACIO PARA SCROLLEAR HASTA ABAJO */
+    margin: 0 !important;
+    border-radius: 0 !important;
 }
 
-/* Portada (Banner Azul) */
 #modalPerfil #previewBanner {
     width: 100% !important;
-    height: 25vw !important; /* Proporcional a la pantalla */
+    height: 180px !important; 
     background-color: #152191 !important;
     background-size: cover !important;
     background-position: center !important;
     background-repeat: no-repeat !important;
     position: relative !important;
-    border-bottom: 0.8vw solid #ead228 !important;
+    border-bottom: 4px solid #ead228 !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
-/* BOTONES CERRAR Y EDITAR SIMÉTRICOS */
+/* 🔥 LA TACHA: CÍRCULO PERFECTO, SIN BORDES FEOS Y TEXTO REEMPLAZADO */
 #modalPerfil .btn-cerrar-flotante, 
 #modalPerfil .btn-editar-banner {
     position: absolute !important;
-    top: 3vw !important;
-    width: 8vw !important;
-    height: 8vw !important;
+    top: 20px !important;
+    width: 40px !important; /* Círculo perfecto y más estético */
+    height: 40px !important;
     border-radius: 50% !important;
     background: rgba(0,0,0,0.6) !important;
-    backdrop-filter: blur(5px) !important;
-    border: 0.3vw solid rgba(255,255,255,0.3) !important;
+    border: none !important; /* ❌ Adiós a los bordes feos */
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     cursor: pointer !important;
     z-index: 100 !important;
     padding: 0 !important;
+    margin: 0 !important;
 }
 
-/* LA TACHA PERFECTA: Oculta el ☰ y muestra la ✕ */
 #modalPerfil .btn-cerrar-flotante { 
-    left: 3vw !important; 
+    left: 20px !important; 
     right: auto !important; 
-    font-size: 0 !important; /* Magia: Desaparece el ☰ */
-    color: transparent !important;
+    color: transparent !important; /* Oculta el ☰ */
 }
+
 #modalPerfil .btn-cerrar-flotante::after {
-    content: "✕" !important; /* Magia: Aparece la tacha */
-    font-size: 4vw !important; 
+    content: "✕" !important; /* Agrega la ✕ bonita */
+    position: absolute;
     color: white !important;
+    font-size: 20px !important;
     font-weight: bold;
 }
 
 #modalPerfil .btn-editar-banner { 
-    right: 3vw !important; 
+    right: 20px !important; 
     left: auto !important; 
-    font-size: 4vw !important;
     color: white !important;
+    font-size: 18px !important;
 }
 
-/* Foto de Perfil (Avatar) */
 #modalPerfil .contenedor-avatar-perfil {
     width: 100% !important;
     display: flex !important;
     justify-content: center !important;
-    margin-top: -10vw !important; 
-    margin-bottom: 2vw !important;
+    margin-top: -65px !important; 
+    margin-bottom: 15px !important;
     position: relative !important;
     z-index: 10 !important;
+    padding: 0 !important;
 }
 
 #modalPerfil #previewFoto {
-    width: 20vw !important;
-    height: 20vw !important;
+    width: 130px !important;
+    height: 130px !important;
     border-radius: 50% !important;
-    border: 1vw solid #111214 !important; 
+    border: 5px solid #000000 !important; 
     background: #2b2d31 !important;
     object-fit: cover !important;
-}
-
-#modalPerfil #inputFoto { display: none !important; }
-
-/* Textos y Datos Principales */
-#modalPerfil .cuerpo-datos-perfil {
-    padding: 0 4vw !important;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 3vw !important;
-}
-
-#modalPerfil #previewNombre {
-    font-size: 4.5vw !important;
-    color: white !important;
-    text-align: center !important;
-    margin: 1vw 0 !important;
-    display: block !important;
-    font-weight: bold !important;
-}
-
-#modalPerfil #previewUser {
-    font-size: 2.5vw !important;
-    color: #b5bac1 !important;
-    text-align: center !important;
-    margin: 0 0 2vw 0 !important;
-    display: block !important;
-}
-
-/* Bloques de Datos Grises */
-#modalPerfil .bloque-datos-oscuro, 
-#modalPerfil .bloque-licencia {
-    background: #1e1f22 !important;
-    border-radius: 2vw !important;
-    padding: 3vw !important;
-    border: 0.2vw solid #2b2d31 !important;
-}
-
-#modalPerfil .fila-dato {
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    font-size: 3vw !important;
-    margin-bottom: 2vw !important;
-    border-bottom: 0.1vw solid rgba(255,255,255,0.05) !important;
-    padding-bottom: 1.5vw !important;
-}
-#modalPerfil .fila-dato:last-child {
-    margin-bottom: 0 !important;
-    border-bottom: none !important;
-    padding-bottom: 0 !important;
-}
-
-#modalPerfil .fila-dato .etiqueta { color: #8e9297 !important; font-weight: normal !important; }
-#modalPerfil .fila-dato .valor { color: #ffffff !important; font-weight: bold !important; text-align: right !important; }
-
-/* INE / Licencia */
-#modalPerfil .titulo-licencia {
-    margin: 0 0 2vw 0 !important;
-    color: white !important;
-    font-size: 3vw !important;
-    text-align: center !important;
-    font-weight: bold !important;
-}
-#modalPerfil .caja-foto-licencia {
-    width: 100% !important;
-    height: 35vw !important;
-    background: #111 !important;
-    border-radius: 1.5vw !important;
-    border: 0.3vw dashed #5865f2 !important;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    overflow: hidden !important;
-}
-#modalPerfil #previewLicencia {
-    max-width: 100% !important;
-    max-height: 100% !important;
-    object-fit: contain !important;
-}
-
-/* Botones de Acción */
-#modalPerfil .bloque-botones-perfil {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 2vw !important;
-    width: 100% !important;
-}
-
-#modalPerfil .btn-blanco-perfil {
-    width: 100% !important;
-    padding: 3vw !important;
-    border-radius: 1.5vw !important;
-    font-weight: bold !important;
-    font-size: 3vw !important;
-    cursor: pointer !important;
-    border: none !important;
-    text-align: center !important;
-}
-
-#modalPerfil .fila-botones-mitad {
-    display: flex !important;
-    gap: 2vw !important;
-    width: 100% !important;
-}
-#modalPerfil .fila-botones-mitad button { flex: 1 !important; }
-
-#modalPerfil #btnSolicitarAuto { background: #5865f2 !important; color: white !important; }
-#modalPerfil #btnActualizarCorreo, 
-#modalPerfil #btnActualizarTel { background: #3a3c41 !important; color: white !important; }
-#modalPerfil #btnCerrarSesion { background: transparent !important; color: #ed4245 !important; border: 0.2vw solid #ed4245 !important; }
-
-/* ========================================================= */
-/* PANELES DE AVATARES Y BANNERS                             */
-/* ========================================================= */
-.panel-avatares{
-    position:fixed; top:0; left:0; width:100%; height:100%;
-    background:rgba(0,0,0,0.6); display:none; justify-content:center; align-items:center; z-index:10000;
-}
-.panel-avatares.activo{ display:flex; }
-.contenedor-avatares, .contenedor-banner{
-    position:relative; width: 70%; background:#1e1f22; padding:25px; border-radius:12px; text-align:center; color:white;
-}
-.contenedor-avatares h3, .contenedor-banner h3{
-    font-family:'Gill Sans','Gill Sans MT',Calibri,'Trebuchet MS',sans-serif; font-size: 30px; margin-bottom: 6%;
-}
-.grid-avatares{ display:grid; grid-template-columns:repeat(4, 1fr); gap:15px; margin:20px 0; justify-items: center; align-items: center; }
-.avatar-opcion{ width:130px; height:130px; border-radius:50%; cursor:pointer; transition:0.2s; }
-.avatar-opcion:hover{ transform:scale(1.1); border:2px solid #5865f2; }
-.avatar-upload{ width:130px; height:130px; border-radius:50%; transition:0.2s; background:#2b2d31; color:#b5bac1; display:flex; align-items:center; justify-content:center; font-size:28px; cursor:pointer; position:relative; overflow:hidden; }
-.avatar-upload:hover{ background:#3a3c41; transform:scale(1.1); border:2px solid #5865f2; }
-.avatar-upload input{ position:absolute; width:100%; height:100%; opacity:0; cursor:pointer; }
-.cerrar-panel{ position:absolute; top:10px; right:15px; font-size:40px; color:#b5bac1; cursor:pointer; transition:0.2s; }
-.cerrar-panel:hover{ color:white; transform:scale(1.2); }
-
-.grid-banners{ display:grid; grid-template-columns:repeat(4, 1fr); gap:25px; margin:20px 0; }
-.banner-opcion-img, .banner-color-picker, .banner-upload{
-    width: 100%; height: 130px; border-radius: 14px; object-fit: cover; cursor: pointer; border: 3px solid transparent; transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
-}
-.banner-color-picker{ background: #5865f2; display: flex; align-items: center; justify-content: center; font-size: 28px; position: relative; overflow: hidden; }
-.banner-color-picker input{ position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-.banner-upload{ background: #1e1f22; border: 2px dashed #555; display: flex; align-items: center; justify-content: center; font-size: 30px; color: #aaa; position: relative; }
-.banner-upload input{ position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-.banner-opcion-img:hover, .banner-color-picker:hover, .banner-upload:hover{ transform:scale(1.1); border:2px solid #5865f2; }
-
-/* ========================================================= */
-/* EDITOR DE BANNER (RECORTAR IMAGEN) - PROPORCIONAL MÓVIL   */
-/* ========================================================= */
-.modal-editor{
-    position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 99999;
-}
-.modal-editor.activo{ display: flex; }
-.editor-banner{
-    font-family:'Gill Sans','Gill Sans MT',Calibri,'Trebuchet MS',sans-serif;
-    position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 100000;
-    padding: 5vw !important; /* Espacio para que no toque los bordes */
-    box-sizing: border-box;
-}
-.editor-banner.activo{ display: flex; }
-
-.editor-card{
-    width: 100% !important;
-    max-width: 800px !important;
-    background: #2b2d31;
-    border-radius: 2vw !important;
-    padding: 3vw !important;
-    color: white;
-    box-shadow: 0 0 40px rgba(0,0,0,0.5);
-    box-sizing: border-box;
-}
-.editor-header{ display: flex; justify-content: space-between; align-items: center; }
-.editor-header h3 { font-size: 4vw !important; margin: 0; }
-.cerrar-seccionbanner{ font-size: 5vw !important; color:#b5bac1; cursor:pointer; transition:0.2s; }
-.cerrar-seccionbanner:hover{ color:white; transform:scale(1.2); }
-
-.editor-area{ display: flex; justify-content: center; align-items: center; margin-top: 3vw; }
-.imagen-container{
-    position: relative;
-    width: 100% !important;
-    height: 35vw !important;
-    overflow: hidden;
-    background: #111;
-    border-radius: 1.5vw !important;
-}
-#imagenBannerMovible{
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background-size: contain; background-repeat: no-repeat; background-position: center;
-    cursor: grab; transition: transform 0.1s;
-}
-#imagenBannerMovible:active{ cursor: grabbing; }
-
-.marco-recorte{
-    position: absolute;
-    height: 20vw !important;
-    top: 50%;
-    left: 3vw !important;
-    right: 3vw !important;
-    transform: translateY(-50%);
-    border-radius: 1vw;
-    border: 0.3vw solid white !important;
-    pointer-events: none;
-    z-index: 3;
-    box-shadow: 0 0 0 2000px rgba(0,0,0,0.65); /* Sombra inteligente auto-adaptable */
-}
-.sombra { display: none !important; } /* Eliminamos las sombras viejas estorbosas */
-
-.zoom-container{
-    display: flex; align-items: center; gap: 2vw;
-    width: 100% !important; max-width: 60vw !important; margin: 3vw auto 0 auto; 
-}
-.zoom-container span { font-size: 3vw !important; }
-.zoom-container input{ width: 100%; cursor: pointer; }
-#zoomSlider{ width: 80%; height: 1vw; border-radius: 1vw; background: #42217b; outline: none; }
-#zoomSlider::-webkit-slider-thumb{ -webkit-appearance: none; appearance: none; width: 3vw; height: 3vw; border-radius: 50%; background: #5865f2; cursor: pointer; }
-
-.editor-footer{ font-family:'Gill Sans','Gill Sans MT',Calibri,'Trebuchet MS',sans-serif; margin-top: 3vw !important; display: flex; justify-content: flex-end; gap: 2vw !important; }
-.editor-footer button{ padding: 1.5vw 3vw !important; border: none; border-radius: 1vw !important; background: #3a3c41; color: white; cursor: pointer; font-size: 2.5vw !important; }
-.editor-footer button:hover{ background:#4c4f55; transform: scale(1.1); }
-.editor-footer .aplicar{ background: #5865f2; }
-
-/* ========================================================= */
-/* MENÚS DE ACTUALIZAR Y CERRAR SESIÓN                       */
-/* ========================================================= */
-.modal-confirmarp { font-family:'Gill Sans','Gill Sans MT',Calibri,'Trebuchet MS',sans-serif; position: fixed; bottom: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: flex-end; background: rgba(0,0,0,0.7); opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 999999; }
-.modal-confirmarp.activo { opacity: 1; pointer-events: all; }
-.modal-boxp { width: 100%; height: 80vh; display: flex; flex-direction: column; justify-content: flex-end; transform: scale(0.9); opacity: 0; transition: 0.2s; overflow: hidden; }
-.modal-confirmarp.activo .modal-boxp { transform: translateY(0) scale(1); opacity: 1; }
-.modal-boxp h2{ font-size:4vw ; }
-.modal-boxp p{ font-size:2.5vw ; }
-.accionesp { position: relative; z-index: 2; display: flex; justify-content: center; gap: 20px; margin-top: 20px; margin-bottom: 20px; }
-.accionesp button { width: 12rem; padding: 15px; font-size: 2rem; border-radius: 10px; font-weight: bold; }
-.accionesp button:hover { transition: 0.25s; transform: scale(1.1); background: #484a4e; color: white; }
-.accionesp .rojo { background: #bd3638; color: white; }
-.accionesp .rojo:hover { background: #802527; }
-
-.modal-confirmar { font-family:'Gill Sans','Gill Sans MT',Calibri,'Trebuchet MS',sans-serif; position: fixed; bottom: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: flex-end; background: rgba(0,0,0,0.5); opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 999999; }
-.modal-confirmar.activo { opacity: 1; pointer-events: all; }
-.modal-box { background: #2b2d31; color: white; width: 60%; border-radius: 20px 20px 0 0; padding: 20px; transform: translateY(100%); transition: transform 0.3s ease; opacity: 0; }
-.modal-confirmar.activo .modal-box { transform: translateY(0); opacity: 1; }
-.modal-box h2{ font-size:2.4rem ; }
-.modal-box p{ font-size:1.6rem ; }
-.acciones { display: flex; justify-content: flex-end; gap: 15px; margin-top: 20px; }
-.acciones button { font-weight: bold; font-family:'Gill Sans','Gill Sans MT',Calibri,'Trebuchet MS',sans-serif; padding: 8px 16px; font-size: 1.5rem; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s ease; }
-.acciones button:hover { transform: scale(1.1); background: #484a4e; color: white; }
-.acciones .rojo { background: #ed4245; color: white; }
-
-/* PERSONAJE CERRAR SESIÓN */
-.personaje-box { text-align: center; }
-.personaje-container { flex: 1; position: relative; display: flex; justify-content: center; align-items: flex-end; }
-.personaje-img { height: 40vh; width: auto; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); }
-.modal-confirmarp.activo .personaje-img { animation: subirPersonaje 0.5s ease forwards; }
-@keyframes subirPersonaje { 0% { transform: translateX(-50%) translateY(100%); opacity: 0; } 60% { transform: translateX(-50%) translateY(-10px); opacity: 1; } 100% { transform: translateX(-50%) translateY(0); } }
-.globo-dialogo{ position: absolute; bottom: 30vh; right: -1vh; transform: translate(-50%, -50%) rotate(-10deg); width: 32vw; max-width: 600px; min-width: 220px; height: 18vh; max-height: 190px; min-height: 90px; display: flex; justify-content: center; align-items: center; z-index: 3; }
-.img-burbuja{ position: absolute; width: 160%; height: 160%; object-fit: contain; }
-.texto-burbuja{ position: absolute; top: 42%; left: 54%; transform: translate(-50%, -50%); font-size: clamp(2rem, 2vw, 1.8rem); font-weight: bold; color: black; z-index: 4; white-space: nowrap; }
-@media (max-width: 768px){ .globo-dialogo{ top: 22%; left: 68%; width: 45vw; height: 12vh; transform: translate(-50%, -50%) rotate(-8deg); } }
-
-/* ========================================================= */
-/* AISLADO: REDISEÑO DEL PERFIL AISLADO PARA CELULAR          */
-/* ========================================================= */
-
-/* 1. Modal a pantalla completa, fondo negro y con scroll */
-#modalPerfil.modal-perfil-full {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    background: #111214 !important;
-    z-index: 99999 !important;
-    overflow-y: auto !important; /* Habilita el scroll */
-    padding: 0 !important;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5) !important;
     margin: 0 !important;
-    display: none;
-}
-
-#modalPerfil.modal-perfil-full.activo {
-    display: block !important;
-}
-
-/* 2. Tarjeta interna que ocupa toda la pantalla */
-#modalPerfil .card-perfil-celular {
-    width: 100% !important;
-    min-height: 100vh !important;
-    background: #111214 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    padding-bottom: 50px !important; /* Espacio extra al final */
-}
-
-/* 3. Portada: Altura proporcional al ancho del celular */
-#modalPerfil .banner-azul-perfil {
-    width: 100% !important;
-    height: 30vw !important; /* 🔥 Proporcional y más alto */
-    background-color: #152191 !important; /* Azul nativo */
-    background-size: cover !important;
-    background-position: center !important;
-    background-repeat: no-repeat !important;
-    position: relative !important;
-    border-bottom: 0.8vw solid #ead228 !important; /* Borde amarillo proporcional */
-}
-
-/* 4. BOTONES SIMÉTRICOS Y GRANDES (✕ y 🖉) AISLADOS AL PERFIL */
-#modalPerfil .btn-cerrar-flotante,
-#modalPerfil .btn-editar-banner {
-    position: absolute !important;
-    top: 3vw !important; /* Separación proporcional */
-    width: 9vw !important; /* Botones grandes proporcionales */
-    height: 9vw !important;
-    border-radius: 50% !important;
-    background: rgba(0,0,0,0.6) !important;
-    backdrop-filter: blur(5px) !important;
-    color: white !important;
-    border: 0.3vw solid rgba(255,255,255,0.3) !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    cursor: pointer !important;
-    z-index: 100 !important;
     padding: 0 !important;
 }
 
-/* Ubicación simétrica estricta */
-#modalPerfil .btn-cerrar-flotante {
-    left: 3vw !important;
-    right: auto !important;
-    color: transparent !important; /* Esconde el ☰ viejo */
-}
-#modalPerfil .btn-cerrar-flotante::after {
-    content: "✕" !important; /* Fuerza la tacha perfecta */
-    position: absolute;
-    color: white !important;
-    font-size: 5vw !important;
-    font-weight: bold;
-}
-
-#modalPerfil .btn-editar-banner {
-    right: 3vw !important;
-    left: auto !important;
-    font-size: 5vw !important;
-}
-
-/* 5. Foto de Perfil: Muy grande y bien centrada */
-#modalPerfil .contenedor-avatar-perfil {
-    width: 100% !important;
-    display: flex !important;
-    justify-content: center !important;
-    margin-top: -12vw !important; /* Sube proporcionalmente al banner */
-    margin-bottom: 2vw !important;
-    position: relative !important;
-    z-index: 10 !important;
-    padding: 0 !important;
-}
-
-#modalPerfil .avatar-perfil-img {
-    width: 25vw !important; /* Foto enorme proporcional */
-    height: 25vw !important;
-    border-radius: 50% !important;
-    border: 1.2vw solid #111214 !important; /* Borde grueso para separarla */
-    background: #2b2d31 !important;
-    object-fit: cover !important;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.6) !important;
-}
-
-/* Ocultar input file si anda suelto */
 #modalPerfil #inputFoto {
     display: none !important;
 }
 
-/* 6. Contenedor de Textos y Datos Proporcional */
 #modalPerfil .cuerpo-datos-perfil {
-    padding: 0 5vw !important; /* Margen proporcional */
+    padding: 0 20px !important;
     display: flex !important;
     flex-direction: column !important;
-    gap: 4vw !important;
+    gap: 20px !important;
     margin: 0 !important;
 }
 
-/* Títulos y Textos Principales */
 #modalPerfil #previewNombre {
-    font-size: 6vw !important; /* Nombre muy grande y legible */
+    font-size: 26px !important;
     color: white !important;
     text-align: center !important;
-    margin: 1vw 0 !important;
+    margin: 5px 0 !important;
     display: block !important;
     font-weight: bold !important;
 }
 
 #modalPerfil #previewUser {
-    font-size: 3vw !important;
+    font-size: 16px !important;
     color: #b5bac1 !important;
     text-align: center !important;
-    margin: 0 0 3vw 0 !important;
+    margin: 0 0 20px 0 !important;
     display: block !important;
 }
 
-/* Bloques de Datos Grises Proporcionales */
-#modalPerfil .bloque-datos-oscuro,
+#modalPerfil .bloque-datos-oscuro, 
 #modalPerfil .bloque-licencia {
     background: #1e1f22 !important;
-    border-radius: 3vw !important;
-    padding: 5vw !important;
-    border: 0.2vw solid #2b2d31 !important;
+    border-radius: 16px !important;
+    padding: 20px !important;
+    border: 1px solid #2b2d31 !important;
+    margin: 0 !important;
 }
 
 #modalPerfil .fila-dato {
     display: flex !important;
     justify-content: space-between !important;
     align-items: center !important;
-    font-size: 3.5vw !important; /* Tamaño cómodo para leer */
-    margin-bottom: 3vw !important;
-    border-bottom: 0.1vw solid rgba(255,255,255,0.05) !important;
-    padding-bottom: 2vw !important;
+    font-size: 17px !important;
+    margin-bottom: 15px !important;
+    border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+    padding-bottom: 10px !important;
 }
+
 #modalPerfil .fila-dato:last-child {
     margin-bottom: 0 !important;
     border-bottom: none !important;
     padding-bottom: 0 !important;
 }
 
-#modalPerfil .fila-dato .etiqueta { color: #8e9297 !important; font-weight: normal !important; }
-#modalPerfil .fila-dato .valor { color: #ffffff !important; font-weight: bold !important; text-align: right !important; }
+#modalPerfil .fila-dato .etiqueta { 
+    color: #8e9297 !important; 
+    font-weight: normal !important; 
+}
+#modalPerfil .fila-dato .valor { 
+    color: #ffffff !important; 
+    font-weight: bold !important; 
+    text-align: right !important; 
+}
 
-/* Caja de INE Proporcional */
 #modalPerfil .titulo-licencia {
-    margin: 0 0 3vw 0 !important;
+    margin: 0 0 15px 0 !important;
     color: white !important;
-    font-size: 4vw !important;
+    font-size: 18px !important;
     text-align: center !important;
     font-weight: bold !important;
 }
+
 #modalPerfil .caja-foto-licencia {
     width: 100% !important;
-    height: 45vw !important; /* Altura proporcional */
+    height: 220px !important;
     background: #111 !important;
-    border-radius: 2vw !important;
-    border: 0.4vw dashed #5865f2 !important;
+    border-radius: 12px !important;
+    border: 2px dashed #5865f2 !important;
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
     overflow: hidden !important;
+    padding: 0 !important;
+    margin: 0 !important;
 }
+
 #modalPerfil #previewLicencia {
     max-width: 100% !important;
     max-height: 100% !important;
     object-fit: contain !important;
 }
 
-/* 7. BOTONES INFERIORES: GIGANTES Y TIPO PASTILLA */
 #modalPerfil .bloque-botones-perfil {
     display: flex !important;
     flex-direction: column !important;
-    gap: 3vw !important;
+    gap: 15px !important;
+    align-items: center !important;
     width: 100% !important;
     margin: 0 !important;
+    padding: 0 !important;
 }
 
+/* 🔥 BOTONES DE PERFIL: Estándar y no tan exagerados */
 #modalPerfil .btn-blanco-perfil {
     width: 100% !important;
-    padding: 4vw !important; /* Mucho aire para el dedo */
-    border-radius: 100px !important; /* 🔥 Estilo pastilla perfecto */
+    padding: 18px !important; 
+    border-radius: 14px !important;
     font-weight: bold !important;
-    font-size: 4vw !important; /* Texto muy grande */
+    font-size: 18px !important;
     cursor: pointer !important;
     border: none !important;
     text-align: center !important;
+    margin: 0 !important;
 }
 
 #modalPerfil .fila-botones-mitad {
     display: flex !important;
-    gap: 3vw !important;
+    gap: 15px !important;
     width: 100% !important;
+    justify-content: space-between !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
-#modalPerfil .fila-botones-mitad button { flex: 1 !important; }
+
+#modalPerfil .fila-botones-mitad button { 
+    flex: 1 !important; 
+}
 
 #modalPerfil #btnSolicitarAuto { background: #5865f2 !important; color: white !important; }
-#modalPerfil #btnActualizarCorreo,
-#modalPerfil #btnActualizarTel { background: #3a3c41 !important; color: white !important; }
-#modalPerfil #btnCerrarSesion { background: transparent !important; color: #ed4245 !important; border: 0.3vw solid #ed4245 !important; }
+#modalPerfil #btnActualizarCorreo, #modalPerfil #btnActualizarTel { background: #3a3c41 !important; color: white !important; }
+#modalPerfil #btnCerrarSesion { background: transparent !important; color: #ed4245 !important; border: 1.5px solid #ed4245 !important; }
 
-/* 🔥 FIX DE Z-INDEX: Asegura que el editor de fotos esté por encima de TODO */
-#cropContainerAyuda {
-    z-index: 100000 !important; /* Un nivel más que el modal de perfil */
+/* ========================================================= */
+/* 🔥 SOLUCIÓN Z-INDEX: Asegura que las ventanas de foto estén al frente */
+/* ========================================================= */
+.panel-avatares {
+    z-index: 100005 !important; 
+}
+.editor-banner {
+    z-index: 100010 !important; 
+}
+
+/* ========================================================= */
+/* 🔥 AISLADO: MODALES DE ACTUALIZAR DATOS (MÓVIL)           */
+/* ========================================================= */
+
+.modal-confirmarp { 
+    z-index: 100015 !important; /* Siempre arriba */
+}
+
+/* Expandimos los menús de actualizar sólo en móviles */
+@media (max-width: 600px) {
+    #modalCambioAuto .modal-boxp,
+    #modalCambioCorreo .modal-boxp,
+    #modalCambioTel .modal-boxp {
+        width: 95% !important;
+        max-width: 500px !important;
+        padding: 30px !important;
+        border-radius: 24px !important;
+        margin: auto !important; /* Centrado bonito */
+    }
+
+    #modalCambioAuto h2, 
+    #modalCambioCorreo h2, 
+    #modalCambioTel h2 {
+        font-size: 24px !important;
+        margin-bottom: 10px !important;
+    }
+
+    #modalCambioAuto p, 
+    #modalCambioCorreo p, 
+    #modalCambioTel p {
+        font-size: 16px !important;
+        margin-bottom: 20px !important;
+    }
+
+    #modalCambioAuto input, 
+    #modalCambioCorreo input, 
+    #modalCambioTel input {
+        font-size: 18px !important;
+        padding: 16px !important;
+        border-radius: 12px !important;
+        margin-bottom: 12px !important;
+    }
+
+    #modalCambioAuto button, 
+    #modalCambioCorreo button, 
+    #modalCambioTel button {
+        font-size: 18px !important;
+        padding: 16px !important;
+        border-radius: 12px !important;
+    }
 }
