@@ -1182,24 +1182,22 @@ function revisarPartidosAnteriores(){
     // Normalizamos la fecha de hoy a la medianoche para evitar problemas con las horas
     hoy.setHours(0, 0, 0, 0); 
     
-    // Calculamos la fecha límite (hace 14 días)
-    const fechaLimite = new Date(hoy.getTime() - (7 * 24 * 60 * 60 * 1000)); 
+    // Calculamos la fecha límite (hace 14 días / 2 semanas)
+    const fechaLimite = new Date(hoy.getTime() - (14 * 24 * 60 * 60 * 1000)); 
 
     const contenedor = document.getElementById("anteriores");
+    if(!contenedor) return;
+    
     let hayEventos = false;
 
-    // Limpiamos el contenedor antes de agregar (útil si la función se llama varias veces)
-    // Asumiendo que el HTML original tiene el estado vacío, lo preservamos o lo recreamos si es necesario, 
-    // pero lo más seguro es solo limpiar las tarjetas de notificación:
+    // Limpiamos el contenedor antes de agregar
     const tarjetasViejas = contenedor.querySelectorAll(".notificacion-card");
     tarjetasViejas.forEach(tarjeta => tarjeta.remove());
-
 
     Object.keys(partidos).forEach(clave => {
         const [m, d] = clave.split("-").map(Number);
         
-        // Creamos un objeto Date para el partido (Asumiendo año 2026 según tu código)
-        // El mes en JavaScript empieza en 0, por eso le restamos 1 a 'm'
+        // Creamos un objeto Date para el partido
         const fechaPartido = new Date(2026, m - 1, d);
         fechaPartido.setHours(0,0,0,0);
 
@@ -1208,13 +1206,29 @@ function revisarPartidosAnteriores(){
             partidos[clave].forEach(p => {
                 const aviso = document.createElement("div");
                 aviso.classList.add("notificacion-card");
-                aviso.innerHTML = `<div class=\"noti-icono\">📅</div><div class=\"noti-texto\"><b>${p.local} vs ${p.rival}</b><br>${d}/${m}/26</div>`;
+                
+                // Estructura corregida para que el texto no se encime
+                aviso.innerHTML = `
+                <div class="noti-icono">📅</div>
+                <div class="noti-texto">
+                    <div class="noti-titulo">${p.local} vs ${p.rival}</div>
+                    <div class="noti-mensaje">${d}/${m}/26</div>
+                </div>`;
+                
                 contenedor.appendChild(aviso);
                 hayEventos = true;
             });
         }
     });
-}
+
+    // Validar si hay eventos para mostrar u ocultar la imagen del Dino triste
+    const estadoVacio = document.getElementById("estadoVacioAnteriores");
+    if(estadoVacio) {
+         estadoVacio.style.display = hayEventos ? "none" : "flex";
+    }
+   
+    actualizarNumeroCampana();
+} 
 
 function corregirInicioMeses(){
     const year = 2026;
