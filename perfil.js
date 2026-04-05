@@ -484,6 +484,8 @@ async function guardarPerfil() {
         bannerTempFinal = null;
     } catch (error) {
         console.error(error);
+        // 🔥 MAGIA 3: Esto te avisará si Firebase sigue enojado
+        alert("❌ Error de guardado: Verifica tu conexión o intenta con una imagen más pequeña."); 
     }
 }
 
@@ -501,21 +503,22 @@ document.querySelectorAll(".avatar-opcion").forEach(img => {
 
 const inputAvatar = document.getElementById("inputAvatarPanel");
 if(inputAvatar){
-    inputAvatar.addEventListener("change", (e)=>{
+    inputAvatar.addEventListener("change", async (e)=>{
         const archivo = e.target.files[0];
         if(archivo){
-            const reader = new FileReader();
-            reader.onload = function(e){
-                const imagen = e.target.result;
-                actualizarFoto(imagen);
+            try {
+                // 🔥 AQUÍ ESTÁ LA MAGIA: Comprimimos la foto antes de usarla
+                const imagenComprimida = await procesarImagenBase64(archivo);
+                actualizarFoto(imagenComprimida);
                 cerrarPanelAvatares();
-                guardarPerfil(); // AUTOGUARDADO
+                await guardarPerfil(); // AUTOGUARDADO
+            } catch (error) {
+                console.error("Error al procesar la foto:", error);
+                alert("Hubo un error al procesar tu foto.");
             }
-            reader.readAsDataURL(archivo);
         }
     });
 }
-
 function abrirPanelBanners(){ document.getElementById("panelBanners").classList.add("activo"); }
 function cerrarPanelBanners(){ document.getElementById("panelBanners").classList.remove("activo"); }
 
@@ -578,7 +581,10 @@ function aplicarBanner() {
             sx = 0; sy = (img.height - sHeight) / 2;
         }
         ctx.drawImage(img, sx, sy, sWidth, sHeight, 0, 0, canvas.width, canvas.height);
-        const resultado = canvas.toDataURL("image/png");
+        
+        // 🔥 MAGIA 2: Lo cambiamos a JPEG con calidad al 60% para que no pese nada
+        const resultado = canvas.toDataURL("image/jpeg", 0.6); 
+        
         actualizarBanner(resultado);
         cerrarEditorBanner();
         cerrarPanelBanners();
