@@ -3033,6 +3033,28 @@ font-size:1.7vw ;
     margin-top: 10px !important; /* Separarlo un poco del resto */
 }
 /* ========================================================= */
+/* FIX PARA QUE EL SELECTOR DE COLOR FUNCIONE EN CELULARES   */
+/* ========================================================= */
+
+.banner-color-picker {
+    position: relative !important;
+}
+
+.banner-color-picker input[type="color"] {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    opacity: 0 !important; /* Lo hace invisible pero sigue ahí */
+    cursor: pointer !important;
+    pointer-events: auto !important; /* IMPORTANTE: Permite que el dedo lo toque */
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    z-index: 10 !important; /* Lo pone por encima del cuadro azul */
+}
+/* ========================================================= */
 /* DISEÑO TIPO TARJETA FLOTANTE (MINIMALISTA Y OSCURO)       */
 /* ========================================================= */
 
@@ -3128,3 +3150,25 @@ font-size:1.7vw ;
 
 /* Ocultar barra de scroll para que se vea más limpio en Android/iOS */
 .card-perfil-celular::-webkit-scrollbar { display: none; }
+
+/* ========================================================= */
+/* SEPARAR BOTÓN DE CERRAR Y BOTÓN DE EDITAR BANNER          */
+/* ========================================================= */
+
+/* 1. Botón de Cerrar (Mover a la esquina Derecha) */
+.btn-cerrar-flotante {
+    position: absolute !important;
+    top: 15px !important;
+    right: 15px !important; /* Lo clava en la derecha */
+    left: auto !important; /* Anula que se vaya a la izquierda */
+    z-index: 100000 !important;
+}
+
+/* 2. Botón de Editar Banner - Lápiz (Fijo a la Izquierda) */
+.btn-editar-banner {
+    position: absolute !important;
+    top: 15px !important;
+    left: 15px !important; /* Lo clava en la izquierda */
+    right: auto !important;
+    z-index: 99999 !important;
+}
