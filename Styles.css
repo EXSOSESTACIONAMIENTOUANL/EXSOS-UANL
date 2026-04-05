@@ -3055,51 +3055,52 @@ font-size:1.7vw ;
     z-index: 10 !important; /* Lo pone por encima del cuadro azul */
 }
 /* ========================================================= */
-/* DISEÑO TIPO TARJETA FLOTANTE (MINIMALISTA Y OSCURO)       */
+/* DISEÑO A PANTALLA COMPLETA Y SCROLL NATIVO                */
 /* ========================================================= */
 
-/* 1. Fondo oscuro exterior para separar la tarjeta de la pantalla */
+/* 1. Fondo exterior (ahora sin padding para que toque los bordes) */
 .modal-perfil-full {
-    padding: 20px !important; /* Da un respiro a los lados del celular */
+    padding: 0 !important; /* Quitamos el espacio a los lados */
     box-sizing: border-box !important;
-    background: rgba(0, 0, 0, 0.85) !important; /* Fondo oscurecido para resaltar la tarjeta */
+    background: #111214 !important; /* Fondo negro sólido */
     display: none; 
-    align-items: center !important; /* Centra la tarjeta verticalmente */
+    align-items: flex-start !important; /* Para que empiece desde arriba */
 }
 .modal-perfil-full.activo { display: flex !important; }
 
-/* 2. El Cuadro/Contorno negro principal (La Tarjeta) */
+/* 2. La Tarjeta (Ahora ocupa el 100% de la pantalla) */
 .card-perfil-celular {
     width: 100% !important;
-    max-width: 450px !important;
-    min-height: auto !important; /* Ya no forzamos que toque el fondo de la pantalla */
-    max-height: 90vh !important; /* Altura máxima para no salir de la pantalla */
-    margin: auto !important;
-    border-radius: 20px !important; /* Bordes muy redondos */
-    background: #111214 !important; /* EL CUADRO NEGRO DE FONDO QUE PEDISTE */
-    overflow-y: auto !important; /* Scroll solo dentro de la tarjeta */
-    box-shadow: 0 15px 40px rgba(0,0,0,0.8) !important; /* Sombra profunda */
-    border: 1px solid #2b2d31 !important; /* Contorno sutil */
+    max-width: 100% !important; /* Quitamos el límite de ancho */
+    height: 100vh !important; /* Ocupa el 100% del alto de la pantalla */
+    max-height: 100vh !important; 
+    margin: 0 !important;
+    border-radius: 0 !important; /* Sin bordes redondos para que se vea a pantalla completa */
+    background: #111214 !important; 
+    overflow-y: auto !important; /* ESTO PERMITE SCROLLEAR HACIA ABAJO */
+    box-shadow: none !important; /* Quitamos la sombra porque ya no flota */
+    border: none !important; /* Sin contorno */
     position: relative;
+    padding-bottom: 40px !important; /* Espacio extra al final para scrollear cómodo */
 }
 
-/* 3. Reducir la Portada (Banner) */
+/* 3. Ajuste de la Portada (Banner) */
 .banner-azul-perfil {
-    height: 110px !important; /* Portada más delgada y estética */
+    height: 160px !important; /* Un poco más alto para que luzca en pantalla completa */
     flex-shrink: 0;
 }
 
-/* 4. Reducir y centrar la Foto de Perfil */
+/* 4. Centrar la Foto de Perfil */
 .contenedor-avatar-perfil {
-    margin-top: -50px !important; /* Sube la foto exactamente a la mitad de la línea */
-    margin-bottom: 10px !important;
+    margin-top: -65px !important; /* Sube la foto exactamente a la mitad */
+    margin-bottom: 15px !important;
     z-index: 10000 !important;
 }
 
 #previewFoto {
-    width: 100px !important; /* Foto reducida y elegante */
-    height: 100px !important;
-    border: 5px solid #111214 !important; /* El borde es del mismo color que la tarjeta negra */
+    width: 120px !important; /* Foto un poco más grande proporcional a la pantalla */
+    height: 120px !important;
+    border: 6px solid #111214 !important; 
     background: #2b2d31 !important;
     box-shadow: 0 5px 15px rgba(0,0,0,0.4) !important;
 }
@@ -3111,14 +3112,14 @@ font-size:1.7vw ;
 
 .bloque-datos-oscuro, 
 .bloque-licencia {
-    background: #1e1f22 !important; /* Gris oscuro para contrastar con el fondo negro */
+    background: #1e1f22 !important; 
     border-radius: 16px !important;
     padding: 18px !important;
     margin-bottom: 18px !important;
     border: 1px solid #2b2d31 !important;
 }
 
-/* Letras de los datos bien alineadas y sin amontonarse */
+/* Letras de los datos */
 .fila-dato {
     font-size: 16px !important; 
     margin-bottom: 8px !important;
@@ -3126,30 +3127,56 @@ font-size:1.7vw ;
 .fila-dato .etiqueta { color: #b5bac1 !important; }
 .fila-dato .valor { font-size: 17px !important; color: #ffffff !important; }
 
-#previewNombre { font-size: 24px !important; margin-bottom: 5px !important; }
-#previewUser { font-size: 16px !important; color: #b5bac1 !important; }
+#previewNombre { font-size: 26px !important; margin-bottom: 5px !important; text-align: center; }
+#previewUser { font-size: 16px !important; color: #b5bac1 !important; text-align: center; display: block; margin-bottom: 15px; }
 
-/* 6. Botones de Actualización (Grandes pero estéticos) */
+/* 6. Botones de Actualización */
 #btnSolicitarAuto, 
 #btnActualizarCorreo, 
 #btnActualizarTel, 
 #btnCerrarSesion {
     font-size: 17px !important; 
-    padding: 16px !important; /* Tamaño perfecto para el dedo */
+    padding: 16px !important; 
     border-radius: 14px !important; 
     width: 100% !important;
     border: none !important;
     font-weight: bold !important;
     margin-bottom: 10px !important;
     transition: transform 0.2s ease !important;
+    cursor: pointer;
 }
 
 #btnSolicitarAuto { background: #5865f2 !important; color: white !important; }
 #btnActualizarCorreo, #btnActualizarTel { background: #4e5058 !important; color: white !important; }
 #btnCerrarSesion { background: #ed4245 !important; color: white !important; margin-top: 5px !important; }
 
-/* Ocultar barra de scroll para que se vea más limpio en Android/iOS */
+/* Ocultar barra de scroll estéticamente */
 .card-perfil-celular::-webkit-scrollbar { display: none; }
+
+/* ========================================================= */
+/* BOTONES SUPERIORES (CERRAR EN FORMA DE X)                 */
+/* ========================================================= */
+
+.btn-cerrar-flotante {
+    position: absolute !important;
+    top: 15px !important;
+    right: 15px !important; 
+    left: auto !important; 
+    z-index: 100000 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-family: Arial, sans-serif !important; /* Fuente limpia para que la X se vea bien */
+    font-weight: bold !important;
+}
+
+.btn-editar-banner {
+    position: absolute !important;
+    top: 15px !important;
+    left: 15px !important; 
+    right: auto !important;
+    z-index: 99999 !important;
+} }
 
 /* ========================================================= */
 /* SEPARAR BOTÓN DE CERRAR Y BOTÓN DE EDITAR BANNER          */
