@@ -636,3 +636,33 @@ input[type="file"]::file-selector-button:hover {
     font-weight: bold !important;
     height: auto !important;
 }
+
+/* ========================================================= */
+/* ARREGLOS DEL LOGIN PARA CELULAR (Centrado y Textos)       */
+/* ========================================================= */
+
+/* 1. FUERZA EL CENTRADO EXACTO DE LA TARJETA EN LA PANTALLA */
+.fondo {
+    align-items: center !important; 
+    padding: 20px !important; /* Da un poco de aire a los lados */
+}
+
+/* 2. EVITA QUE LOS TEXTOS DE ABAJO CHOQUEN ENTRE SÍ */
+.opciones {
+    display: flex !important;
+    flex-direction: column !important; /* Apila los textos uno debajo del otro */
+    gap: 15px !important; /* Les da espacio de separación */
+    align-items: center !important; /* Los centra perfectamente */
+    justify-content: center !important;
+    margin-top: 20px !important;
+}
+
+/* Opcional: Hace que el cuadro del check y la letra se vean mejor alineados */
+.opciones label {
+    font-size: 15px !important;
+    cursor: pointer;
+}
+
+.opciones a {
+    font-size: 15px !important;
+}
