@@ -69,6 +69,7 @@ body{
     filter: brightness(0.9);
 }
 
+
 .alerta-acceso.visible {
     opacity: 1;
     visibility: visible;
@@ -196,62 +197,23 @@ body{
 }
 
 /* Encabezado              */
-.imagen-exsos{
-    background: #152191;
-    text-align:center;
-}
-.posicion-logo{
-    margin-top: 7%;
-    margin-bottom: 2%;
-    width: 70%;
-}
+.imagen-exsos{ background: #152191; text-align:center; }
+.posicion-logo{ margin-top: 7%; margin-bottom: 2%; width: 70%; }
 
 /* Campanita             */
-.notificaciones-container{
-    position: relative;
-    height: 10vw;
-    width: 15vw;
-}
-.campana-wrapper{
-    position: relative;   
-    width: fit-content;
-    cursor: pointer;
-    bottom: 0.4vw;
-}
-.bell{
-    width: 12vw;
-}
-.badge{
-position:absolute; top:0.6vw; right:0.5vw; background:red; color:white;
-font-size:3vw; min-width:4vw; height:4vw; padding:0 0.8vw; border-radius:90px;
-border:0.7vw solid #152191; display:flex; align-items:center; justify-content:center;
-}
+.notificaciones-container{ position: relative; height: 10vw; width: 15vw; }
+.campana-wrapper{ position: relative; width: fit-content; cursor: pointer; bottom: 0.4vw; }
+.bell{ width: 12vw; }
+.badge{ position:absolute; top:0.6vw; right:0.5vw; background:red; color:white; font-size:3vw; min-width:4vw; height:4vw; padding:0 0.8vw; border-radius:90px; border:0.7vw solid #152191; display:flex; align-items:center; justify-content:center; }
 .bell.nueva{ animation:campana 0.6s; }
 
-.titulo-panel{
-    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    font-size: clamp(40px, 2vw, 20px);
-    font-weight: 600;
-}
-.panel-notificaciones{
-    position: absolute; top: 60px; right: 0; width: 600px; background: white;
-    color: black; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.25);
-    padding: 15px; display: none; opacity: 0; transform: translateY(-10px);
-    transition: 0.3s ease; z-index: 3000;
-}
+.titulo-panel{ font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; font-size: clamp(40px, 2vw, 20px); font-weight: 600; }
+.panel-notificaciones{ position: absolute; top: 60px; right: 0; width: 600px; background: white; color: black; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.25); padding: 15px; display: none; opacity: 0; transform: translateY(-10px); transition: 0.3s ease; z-index: 3000; }
 .panel-notificaciones.activo{ display: block; opacity: 1; transform: translateY(0); }
 .bloque-noti{ margin-top: 10px; border-top: 1px solid #ddd; padding-top: 35px; }
-.cabecera-noti{
-    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    font-size: clamp(40px, 2vw, 20px); font-weight: 600; display:flex;
-    justify-content:space-between; cursor:pointer; font-weight:bold; color:#152191;
-}
+.cabecera-noti{ font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; font-size: clamp(40px, 2vw, 20px); font-weight: 600; display:flex; justify-content:space-between; cursor:pointer; font-weight:bold; color:#152191; }
 .flecha{ transition: transform 0.3s ease; }
-.contenido-noti{
-    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    font-size: clamp(40px, 2vw, 20px); max-height:0; overflow: hidden;
-    transition: max-height 0.3s ease; margin-top: 5px;
-}
+.contenido-noti{ font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; font-size: clamp(40px, 2vw, 20px); max-height:0; overflow: hidden; transition: max-height 0.3s ease; margin-top: 5px; }
 .contenido-noti.activo{ max-height: 100vw; overflow-y: auto; }
 .noti-partido{ font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; font-weight:normal; font-size:3vw; margin:13px 0; text-align: justify; }
 .noti-anterior{ font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; font-weight:normal; font-size:3vw; margin:6px 0; }
@@ -275,11 +237,7 @@ border:0.7vw solid #152191; display:flex; align-items:center; justify-content:ce
 /* Menu despegable              */
 .header{ background: #152191; color:white; display:flex; align-items:center; justify-content:space-between; padding:15px 20px; }
 .menu-btn{ font-size:12vw; cursor:pointer; }
-.menu-lateral{
-    position:fixed; top:0px; left:-80%; width:40%; height:100%; transition:0.3s ease;
-    z-index:1000; display: flex; flex-direction: column; height: 100%; flex: 1;
-    overflow-y: auto; scrollbar-width: none;
-}
+.menu-lateral{ position:fixed; top:0px; left:-80%; width:40%; height:100%; transition:0.3s ease; z-index:1000; display: flex; flex-direction: column; height: 100%; flex: 1; overflow-y: auto; scrollbar-width: none; }
 body.menu-abierto { overflow: hidden; }
 .menu-lateral::-webkit-scrollbar { display: none; }
 .menu-top { background: #2b2d31; padding-bottom: 15px; flex-shrink: 0; }
@@ -418,11 +376,10 @@ body{ display:flex; flex-direction:column; }
 .banner-menu { position: relative; height: 21vw; width: 100%; background-size: cover; background-position: center; }
 #nombreUsuario { font-size: 1.5vw; font-weight: bold; }
 #correoUsuario { font-size: 1.5vw; }
-.editar-banner { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.6); color: white; padding: 1.5% 2%; border-radius: 50%; font-size: 120%; cursor: pointer; transition: 0.2s; }
-.editar-banner:hover { background: rgba(0,0,0,0.9); transform: scale(1.1); }
+
 
 /* ========================================================= */
-/* 🔥 PERFIL Y MODALES (RESTAURADO + FIXES SEGUROS) 🔥       */
+/* 🔥 SOLUCIÓN DEFINITIVA DE PERFIL MÓVIL Y MODALES 🔥       */
 /* ========================================================= */
 
 .modal-perfil-full {
@@ -460,23 +417,24 @@ body{ display:flex; flex-direction:column; }
 
 /* 🔥 FIX 1: LA TACHA Y LÁPIZ (BOTONES SIMÉTRICOS PERFECTOS) */
 .btn-cerrar-flotante {
-    position: absolute; top: 15px; left: 15px; 
-    width: 40px; height: 40px; border-radius: 50%;
-    background: rgba(0,0,0,0.6); border: 2px solid rgba(255,255,255,0.3);
-    color: transparent; font-size: 0; /* Oculta la línea vieja ☰ */
-    display: flex; justify-content: center; align-items: center;
-    cursor: pointer; z-index: 100;
+    position: absolute !important; top: 15px !important; right: 15px !important; left: auto !important;
+    width: 40px !important; height: 40px !important; border-radius: 50% !important;
+    background: rgba(0,0,0,0.6) !important; border: 2px solid rgba(255,255,255,0.3) !important;
+    color: transparent !important; font-size: 0 !important; /* Oculta la línea vieja ☰ */
+    display: flex !important; justify-content: center !important; align-items: center !important;
+    cursor: pointer !important; z-index: 100 !important;
 }
 .btn-cerrar-flotante::after {
-    content: "✕"; color: white; font-size: 20px; font-weight: bold; /* Muestra la Tacha */
+    content: "✕" !important; color: white !important; font-size: 20px !important; font-weight: bold !important; /* Muestra la Tacha perfecta */
 }
+
 .btn-editar-banner {
-    position: absolute; top: 15px; right: 15px; 
-    width: 40px; height: 40px; border-radius: 50%;
-    background: rgba(0,0,0,0.6); border: 2px solid rgba(255,255,255,0.3);
-    color: white; font-size: 20px; 
-    display: flex; justify-content: center; align-items: center;
-    cursor: pointer; z-index: 100;
+    position: absolute !important; top: 15px !important; left: 15px !important; right: auto !important;
+    width: 40px !important; height: 40px !important; border-radius: 50% !important;
+    background: rgba(0,0,0,0.6) !important; border: 2px solid rgba(255,255,255,0.3) !important;
+    color: white !important; font-size: 20px !important; 
+    display: flex !important; justify-content: center !important; align-items: center !important;
+    cursor: pointer !important; z-index: 100 !important;
 }
 
 .contenedor-avatar-perfil {
@@ -495,9 +453,7 @@ body{ display:flex; flex-direction:column; }
 #previewNombre { font-size: 24px; color: white; text-align: center; margin: 0; font-weight: bold; display: block;}
 #previewUser { font-size: 16px; color: #b5bac1; text-align: center; margin-bottom: 10px; display: block;}
 
-.bloque-datos-oscuro, .bloque-licencia {
-    background: #2b2d31; border-radius: 12px; padding: 20px; 
-}
+.bloque-datos-oscuro, .bloque-licencia { background: #2b2d31; border-radius: 12px; padding: 20px; }
 .fila-dato { display: flex; justify-content: space-between; font-size: 16px; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;}
 .fila-dato:last-child { margin-bottom: 0; border-bottom: none; padding-bottom: 0; }
 .fila-dato .etiqueta { color: #8e9297; }
@@ -518,7 +474,7 @@ body{ display:flex; flex-direction:column; }
 
 /* 🔥 FIX 2: FOTOS Y EDITOR ENFRENTE DE TODO */
 .panel-avatares, .editor-banner, .modal-editor {
-    z-index: 999999 !important; /* Prioridad máxima */
+    z-index: 9999999 !important; /* Prioridad máxima */
 }
 
 /* Modales originales (Avatares y Editor) */
@@ -561,8 +517,12 @@ body{ display:flex; flex-direction:column; }
 .editor-footer .aplicar { background: #5865f2; }
 
 /* MODALES DE CONFIRMACIÓN (CERRAR SESION / CAMBIOS) */
-.modal-confirmarp { position: fixed; bottom: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: flex-end; opacity: 0; pointer-events: none; transition: 0.3s; z-index: 100000; }
-.modal-confirmarp.activo { opacity: 1; pointer-events: all; }
+.modal-confirmarp, .modal-confirmar { 
+    position: fixed; bottom: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); 
+    display: flex; justify-content: center; align-items: flex-end; 
+    visibility: hidden; opacity: 0; pointer-events: none; transition: 0.3s; z-index: 1000000; 
+}
+.modal-confirmarp.activo, .modal-confirmar.activo { visibility: visible; opacity: 1; pointer-events: all; }
 
 .modal-boxp { width: 100%; max-width: 500px; background: #2b2d31; color: white; border-radius: 20px 20px 0 0; padding: 30px; transform: translateY(100%); transition: 0.3s; margin: 0 auto; box-sizing: border-box; }
 .modal-confirmarp.activo .modal-boxp { transform: translateY(0); }
@@ -583,27 +543,40 @@ body{ display:flex; flex-direction:column; }
 .img-burbuja { position: absolute; width: 100%; height: 100%; object-fit: contain; }
 .texto-burbuja { position: relative; font-size: 18px; font-weight: bold; color: black; z-index: 4; }
 
-/* 🔥 FIX 3: ADAPTACIÓN EXCLUSIVA PARA CELULAR */
+/* 🔥 FIX 3: ADAPTACIÓN EXCLUSIVA PARA CELULAR (Para Perfil y Menús de Actualizar) */
 @media (max-width: 768px) {
-    .modal-perfil-full { align-items: flex-start; } /* Permite deslizar si no cabe */
-    .card-perfil-celular { border-radius: 0; min-height: 100vh; padding-bottom: 50px; }
+    .modal-perfil-full { align-items: flex-start; padding: 0; } /* Permite deslizar en cel y quita márgenes */
+    .card-perfil-celular { border-radius: 0; min-height: 100vh; padding-bottom: 50px; width: 100%; max-width: 100%; }
+    .banner-azul-perfil { height: 200px; }
+    .contenedor-avatar-perfil { margin-top: -70px; }
+    .avatar-perfil-img { width: 140px; height: 140px; }
     
-    /* Ampliar los menús de Actualizar en Celular */
+    /* Ampliar los menús de Actualizar y Cerrar Sesión en Celular */
     .modal-boxp {
+        width: 95% !important;
+        max-width: none !important;
         padding: 30px !important;
         border-radius: 20px 20px 0 0 !important;
+        height: auto !important;
+        min-height: 50vh !important;
     }
+    
     .modal-boxp input {
-        font-size: 18px !important; /* Textos de inputs grandes para el teléfono */
-        padding: 16px !important;
+        font-size: 16px !important; 
+        padding: 15px !important;
     }
-    .accionesp {
-        flex-direction: column; /* Apila los botones (Enviar/Cancelar) */
-        gap: 15px;
+    
+    /* Apila los botones de Cancelar / Enviar en celular para que sean más grandes */
+    #modalCambioAuto > div > div:last-child,
+    #modalCambioCorreo > div > div:last-child,
+    #modalCambioTel > div > div:last-child {
+        flex-direction: column !important;
+        gap: 15px !important;
     }
+    
     .accionesp button {
-        width: 100% !important; /* Botones a lo ancho de la pantalla */
-        padding: 16px !important;
+        width: 100% !important; 
+        padding: 18px !important;
         font-size: 18px !important;
     }
 }
