@@ -582,3 +582,64 @@ input[type="file"]::file-selector-button:hover {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+/* ========================================================= */
+/* ARREGLO DE LOS MENÚS DE ACTUALIZACIÓN (Hacerlos grandes)  */
+/* ========================================================= */
+
+/* 1. Arreglar la caja para que no esté aplastada */
+.modal-boxp {
+    height: auto !important; /* Deja que crezca con el contenido */
+    padding: 35px 25px !important; /* Más espacio por dentro */
+    border-radius: 25px 25px 0 0 !important; /* Bordes más redondos arriba */
+    background: #2b2d31 !important;
+    justify-content: center !important;
+}
+
+/* 2. Letras de los títulos grandes (mata el error del 'vw') */
+.modal-boxp h2 {
+    font-size: 26px !important; 
+    margin-bottom: 10px !important;
+    text-align: center !important;
+    color: white !important;
+}
+
+.modal-boxp p, 
+.modal-boxp label {
+    font-size: 16px !important;
+    text-align: center !important;
+    color: #b5bac1 !important;
+    margin-bottom: 15px !important;
+}
+
+/* 3. Cuadros de texto (Inputs) grandes y fáciles de picar */
+.modal-boxp input[type="text"],
+.modal-boxp input[type="email"],
+.modal-boxp input[type="number"] {
+    font-size: 18px !important;
+    padding: 18px !important;
+    margin-bottom: 12px !important;
+    border-radius: 12px !important;
+    width: 100% !important;
+    background: #111214 !important;
+    color: white !important;
+    border: 1px solid #3a3c41 !important;
+    box-sizing: border-box !important;
+}
+
+/* Arreglo especial para el botón de "Seleccionar archivo" */
+.modal-boxp input[type="file"] {
+    font-size: 14px !important;
+    margin-top: 10px !important;
+    margin-bottom: 20px !important;
+    width: 100% !important;
+}
+
+/* 4. Botones de "Cancelar" y "Enviar" grandes y anchos */
+.modal-boxp div[style*="display: flex"] button, 
+.accionesp button {
+    font-size: 18px !important;
+    padding: 18px !important;
+    border-radius: 12px !important;
+    font-weight: bold !important;
+    height: auto !important;
+}
