@@ -666,3 +666,24 @@ input[type="file"]::file-selector-button:hover {
 .opciones a {
     font-size: 15px !important;
 }
+
+/* ========================================================= */
+/* ARREGLO DEL CHECKBOX RECUÉRDAME                          */
+/* ========================================================= */
+
+/* Le quita el ancho del 100% al cuadrito para que no se separe */
+.opciones input[type="checkbox"] {
+    width: auto !important; 
+    margin: 0 !important;
+    transform: scale(1.3) !important; /* Lo hace un poquitito más grande para que sea fácil picarle */
+    cursor: pointer;
+}
+
+/* Junta el cuadrito con el texto exactamente en el centro */
+.opciones label {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 10px !important; /* Espacio perfecto entre el cuadro y la palabra */
+    width: 100% !important;
+}
