@@ -160,18 +160,30 @@ async function cargarPartidos(){
 
         lineas.forEach(linea => {
             const datos = linea.split(",");
-            if(datos.length < 5) return;
-            const clave = datos[0] + "-" + datos[1]; // Mes-Dia
-            if(!partidos[clave]) partidos[clave] = [];
-            partidos[clave].push({ rival:datos[3], local:datos[2], hora:datos[4], logoLocal:datos[5], logoRival:datos[6] });
-        });
+            if(datos.length >= 7) {
+                const mes = datos[0];
+                const dia = datos[1];
+                const local = datos[2];
+                const rival = datos[3];
+                const hora = datos[4];
+                const logoLocal = datos[5];
+                const logoRival = datos[6];
+                const clave = mes + "-" + dia;
 
+                if(!partidos[clave]){
+                    partidos[clave] = [];
+                }
+                partidos[clave].push({
+                    rival:rival, local:local, hora:hora, logoLocal:logoLocal, logoRival:logoRival
+                });
+            }
+        });
         marcarPartidos();
         activarClicks();
         revisarPartidosHoy();
         revisarPartidosAnteriores();
     } catch(e) {
-        console.log("No se pudo cargar el archivo partidos.csv");
+        console.log("No se pudo cargar partidos.csv");
     }
 }
 
@@ -179,8 +191,13 @@ function marcarPartidos(){
     const meses = document.querySelectorAll(".mes");
     meses.forEach((mesDiv, index) => {
         const mesNumero = index + 1;
-        mesDiv.querySelectorAll(".dias span").forEach(dia => {
-            if(partidos[mesNumero + "-" + dia.dataset.dia]) dia.classList.add("partido");
+        const dias = mesDiv.querySelectorAll(".dias span");
+        dias.forEach(dia => {
+            const numero = dia.dataset.dia;
+            const clave = mesNumero + "-" + numero;
+            if(partidos[clave]){
+                dia.classList.add("partido");
+            }
         });
     });
 }
@@ -189,10 +206,14 @@ function activarClicks(){
     const meses = document.querySelectorAll(".mes");
     meses.forEach((mesDiv, index) => {
         const mesNumero = index + 1;
-        mesDiv.querySelectorAll(".dias span").forEach(dia => {
+        const dias = mesDiv.querySelectorAll(".dias span");
+        dias.forEach(dia => {
             dia.addEventListener("click", function(){
-                const clave = mesNumero + "-" + this.dataset.dia;
-                if(partidos[clave]) mostrarPopup(partidos[clave]);
+                const numero = this.dataset.dia;
+                const clave = mesNumero + "-" + numero;
+                if(partidos[clave]){
+                    mostrarPopup(partidos[clave]);
+                }
             });
         });
     });
@@ -203,36 +224,40 @@ function mostrarPopup(listaPartidos){
     if(!popup) return;
     popup.style.display="flex";
     let contenido = "";
-    
-    listaPartidos.forEach(p => {
+    listaPartidos.forEach(partido => {
         contenido += `
         <div class="partido-card">
             <div class="partido-info">
-               <div class="equipo">
-    <img src="logos/${p.logoLocal}" alt="${p.local}">
-    <span class="nombre-equipo">${p.local}</span>
-</div>
-<div class="vs">VS</div>
-<div class="equipo">
-    <span class="nombre-equipo">${p.rival}</span>
-    <img src="logos/${p.logoRival}" alt="${p.rival}">
-</div>
+                <div class="equipo">
+                    <img src="logos/${partido.logoLocal}">
+                    <span class="nombre-equipo">${partido.local}</span>
+                </div>
+                <div class="vs">VS</div>
+                <div class="equipo">
+                    <span class="nombre-equipo">${partido.rival}</span>
+                    <img src="logos/${partido.logoRival}">
+                </div>
                 <div class="info-partido">
-                    <div class="hora">🕒 ${p.hora}</div>
+                    <div class="hora">🕒 ${partido.hora}</div>
                 </div>
             </div>
             <div class="barra-color"></div>
-        </div>`;
+        </div>
+        `;
     });
-    
     const popupRival = document.getElementById("popup-rival");
     if(popupRival) popupRival.innerHTML = contenido;
 }
 
-function cerrarPopup(){ 
+function cerrarPopup(){
     const popup = document.getElementById("popup");
-    if(popup) popup.style.display="none"; 
+    if(popup) popup.style.display="none";
 }
+
+document.addEventListener("DOMContentLoaded",function(){
+    corregirInicioMeses();
+    cargarPartidos();
+});
 
 function revisarPartidosHoy(){
     const hoy = new Date();
@@ -242,29 +267,23 @@ function revisarPartidosHoy(){
     const contenedor = document.getElementById("hoy");
     const estadoVacio = document.getElementById("estadoVacioHoy");
 
-    if(!contenedor) return;
-
     if(partidos[clave]){
         if(estadoVacio) estadoVacio.style.display = "none";
         partidos[clave].forEach(partido => {
             const aviso = document.createElement("div");
             aviso.classList.add("notificacion-card");
-            
-            // 🔥 AQUÍ ESTÁ LA CORRECCIÓN 🔥
-            // Ahora usa "noti-titulo" y "noti-mensaje" exactamente igual que los anteriores
             aviso.innerHTML = `
             <div class="noti-icono">⚽</div>
             <div class="noti-texto">
-                <div class="noti-titulo">Partido hoy</div>
-                <div class="noti-mensaje">A las ${partido.hora}</div>
-            </div>`;
-            
-            contenedor.appendChild(aviso);
+            <div class="noti-titulo">Partido hoy</div>
+            <div class="noti-mensaje">Hoy hay partido a las ${partido.hora}. Se recomienda salir temprano.</div>
+            </div>
+            `;
+            if(contenedor) contenedor.appendChild(aviso);
         });
     }
     actualizarNumeroCampana();
 }
-
 function revisarPartidosAnteriores(){
     const hoy = new Date();
     // Normalizamos la fecha de hoy a la medianoche para evitar problemas con las horas
@@ -278,16 +297,14 @@ function revisarPartidosAnteriores(){
     
     let hayEventos = false;
 
-    // Limpiamos el contenedor antes de agregar (útil si la función se llama varias veces)
+    // Limpiamos el contenedor antes de agregar
     const tarjetasViejas = contenedor.querySelectorAll(".notificacion-card");
     tarjetasViejas.forEach(tarjeta => tarjeta.remove());
-
 
     Object.keys(partidos).forEach(clave => {
         const [m, d] = clave.split("-").map(Number);
         
-        // Creamos un objeto Date para el partido (Asumiendo año 2026 según tu código)
-        // El mes en JavaScript empieza en 0, por eso le restamos 1 a 'm'
+        // Creamos un objeto Date para el partido
         const fechaPartido = new Date(2026, m - 1, d);
         fechaPartido.setHours(0,0,0,0);
 
@@ -296,56 +313,61 @@ function revisarPartidosAnteriores(){
             partidos[clave].forEach(p => {
                 const aviso = document.createElement("div");
                 aviso.classList.add("notificacion-card");
-                aviso.innerHTML = `<div class=\"noti-icono\">📅</div><div class=\"noti-texto\"><b>${p.local} vs ${p.rival}</b><br>${d}/${m}/26</div>`;
+                
+                // Estructura corregida para que el texto no se encime
+                aviso.innerHTML = `
+                <div class="noti-icono">📅</div>
+                <div class="noti-texto">
+                    <div class="noti-titulo">${p.local} vs ${p.rival}</div>
+                    <div class="noti-mensaje">${d}/${m}/26</div>
+                </div>`;
+                
                 contenedor.appendChild(aviso);
                 hayEventos = true;
             });
         }
     });
 
+    // Validar si hay eventos para mostrar u ocultar la imagen del Dino triste
     const estadoVacio = document.getElementById("estadoVacioAnteriores");
     if(estadoVacio) {
          estadoVacio.style.display = hayEventos ? "none" : "flex";
     }
    
     actualizarNumeroCampana();
-}
+} 
 
 function corregirInicioMeses(){
+    const year = 2026;
     document.querySelectorAll(".mes").forEach((mesDiv, index) => {
         const diasContainer = mesDiv.querySelector(".dias");
-        if(!diasContainer) return;
-        diasContainer.querySelectorAll(".vacio").forEach(e => e.remove());
-        const primerDia = new Date(2026, index, 1).getDay();
-        let offset = primerDia - 1;
-        if(offset < 0) offset = 6;
-        for(let i = 0; i < offset; i++){
-            const espacio = document.createElement("span");
-            espacio.classList.add("vacio");
-            diasContainer.prepend(espacio);
+        if(diasContainer) {
+            diasContainer.querySelectorAll(".vacio").forEach(e => e.remove());
+            const primerDia = new Date(year, index, 1).getDay();
+            let offset = primerDia - 1;
+            if(offset < 0) offset = 6;
+            for(let i = 0; i < offset; i++){
+                const espacio = document.createElement("span");
+                espacio.classList.add("vacio");
+                diasContainer.prepend(espacio);
+            }
         }
     });
 }
 
 function actualizarNumeroCampana(){
-    // Sumar las notificaciones de hoy y las anteriores
     const hoyCards = document.querySelectorAll("#hoy .notificacion-card");
     const anterioresCards = document.querySelectorAll("#anteriores .notificacion-card");
-    
-    let total = 0;
-    if(hoyCards) total += hoyCards.length;
-    if(anterioresCards) total += anterioresCards.length;
-    
+    const total = (hoyCards ? hoyCards.length : 0) + (anterioresCards ? anterioresCards.length : 0);
     const badge = document.getElementById("badgeNoti");
-    if(badge){
+
+    if(badge) {
         badge.textContent = total;
-        badge.style.backgroundColor = (total === 0) ? "#00c800" : "red";
+        if(total === 0){
+            badge.style.backgroundColor = "#00c800"; // verde
+        }else{
+            badge.style.backgroundColor = "red"; // rojo
+        }
     }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    corregirInicioMeses();
-    cargarPartidos();
-    const input = document.getElementById("inputUsuario");
-    if(input) input.addEventListener("keypress", (e) => { if(e.key === "Enter") enviarMensaje(); });
-});
