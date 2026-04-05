@@ -960,76 +960,82 @@ body{ display:flex; flex-direction:column; }
     z-index: 1000000 !important; /* Un número gigante para que nada lo tape */
 }
 /* ========================================================= */
-/* ARREGLO DEL SCROLL EN LA PANTALLA DE PERFIL               */
+/* ARREGLO DEFINITIVO DEL SCROLL PARA CHROME Y CELULARES     */
 /* ========================================================= */
 
-#modalPerfil {
-    overflow-y: auto !important;
-    -webkit-overflow-scrolling: touch !important; /* Activa el scroll suave en celulares */
+.modal-confirmarp {
+    overflow-y: auto !important; /* Fuerza la barra de scroll a aparecer */
+    -webkit-overflow-scrolling: touch !important; /* Scroll suave en móviles */
+    align-items: flex-start !important; /* EVITA QUE CHROME CORTE LA PANTALLA */
+    padding: 30px 0 !important; /* Da un respiro arriba para que no pegue al techo */
 }
 
-#modalPerfil.activo {
-    align-items: flex-start !important; /* Obliga a la tarjeta a empezar desde arriba */
+.modal-boxp {
+    margin: auto !important; /* Centra horizontalmente */
+    margin-bottom: 80px !important; /* ESPACIO VITAL ABAJO para alcanzar los botones */
+    height: auto !important;
+    max-height: none !important; /* Evita que se limite la altura */
+    overflow: visible !important; 
 }
 
-#modalPerfil .card-perfil-celular {
-    margin: 20px auto !important; /* Centra solo a los lados, liberando arriba y abajo */
-    margin-bottom: 60px !important; /* Agrega un espacio extra hasta abajo para que no choque */
-}
 
 /* ========================================================= */
-/* HACER MÁS GRANDES LOS MENÚS DE AUTO, CORREO Y TELÉFONO    */
+/* TAMAÑOS EXTRA GRANDES (AUTO, CORREO Y TELÉFONO)           */
 /* ========================================================= */
 
-/* 1. Hacemos la caja principal un poco más ancha y con más espacio interior */
+/* 1. Caja principal más ancha para aprovechar la pantalla */
 #modalCambioAuto .modal-boxp,
 #modalCambioCorreo .modal-boxp,
 #modalCambioTel .modal-boxp {
-    max-width: 500px !important; /* Crece el ancho máximo */
-    padding: 35px !important; /* Más espacio por dentro para que no se vea apretado */
+    width: 95% !important;
+    max-width: 600px !important; 
+    padding: 40px !important; 
 }
 
-/* 2. Títulos más grandes y llamativos */
+/* 2. Títulos masivos */
 #modalCambioAuto h2,
 #modalCambioCorreo h2,
 #modalCambioTel h2 {
-    font-size: 32px !important; /* Antes estaba en 22px */
-    margin-bottom: 10px !important;
+    font-size: 38px !important; 
+    margin-bottom: 15px !important;
 }
 
-/* 3. Textos descriptivos más legibles */
+/* 3. Textos explicativos grandes y claros */
 #modalCambioAuto p,
 #modalCambioCorreo p,
 #modalCambioTel p {
-    font-size: 18px !important; /* Antes estaba en 13px */
-    margin-bottom: 25px !important;
+    font-size: 20px !important; 
+    margin-bottom: 30px !important;
 }
 
-/* 4. Cajas de texto (inputs) más grandes para escribir cómodo */
+/* 4. Cajas de texto súper altas y anchas */
 #modalCambioAuto input[type="text"],
 #modalCambioAuto input[type="number"],
 #modalCambioCorreo input[type="email"],
 #modalCambioTel input[type="text"] {
-    font-size: 18px !important; 
-    padding: 16px !important; /* Cajas más altas */
-    margin-bottom: 10px !important; /* Separación entre inputs */
+    font-size: 20px !important; 
+    padding: 22px !important; 
+    margin-bottom: 15px !important; 
+    border-radius: 12px !important;
 }
 
-/* 5. El texto que dice "Nueva Foto Frontal" y el botón de subir foto */
+/* 5. Textos de foto */
 #modalCambioAuto label {
-    font-size: 18px !important; /* Antes 14px */
-    margin-top: 10px !important;
+    font-size: 20px !important; 
+    margin-top: 15px !important;
+    margin-bottom: 10px !important;
     display: block !important;
 }
 #modalCambioAuto input[type="file"] {
-    font-size: 16px !important; /* Antes 12px */
-    padding: 10px 0 !important;
+    font-size: 18px !important; 
+    padding: 15px 0 !important;
 }
 
-/* 6. Botones de acción (Cancelar, Enviar, Verificar) más gorditos */
+/* 6. Botones inmensos (Cancelar, Enviar, etc.) */
 #modalCambioAuto button,
 #modalCambioCorreo button,
 #modalCambioTel button {
-    font-size: 18px !important; 
-    padding: 16px !important; /* Botones más altos y fáciles de tocar con el dedo */
+    font-size: 22px !important; 
+    padding: 22px !important; 
+    border-radius: 12px !important;
 }
