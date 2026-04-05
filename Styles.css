@@ -2921,3 +2921,65 @@ font-size:1.7vw ;
     display: flex; gap: 15px; width: 85%; justify-content: center;
 }
 .fila-botones-mitad button { width: 100%; }
+
+/* ========================================================= */
+/* CORRECCIONES EXACTAS DEL PERFIL (FOTO, TEXTOS Y BOTONES)  */
+/* ========================================================= */
+
+/* 1. TRAER LA FOTO HACIA ADELANTE Y HACERLA MÁS GRANDE */
+.perfil-foto-container {
+    position: relative !important;
+    z-index: 9999 !important; /* Esto obliga a la foto a estar al frente del banner */
+    display: flex !important;
+    justify-content: center !important;
+    margin-top: -60px !important; /* Ajusta qué tanto sube al banner azul */
+    margin-bottom: 15px !important;
+}
+
+#previewFoto {
+    width: 130px !important; /* Foto más grande */
+    height: 130px !important;
+    border-radius: 50% !important;
+    border: 5px solid #1e1f22 !important; /* Borde oscuro para separarla del fondo */
+    object-fit: cover !important;
+    position: relative !important;
+    z-index: 10000 !important; /* DOBLE SEGURIDAD para que quede al frente */
+    background: #2b2d31 !important;
+}
+
+/* 2. HACER LAS LETRAS DE LOS DATOS MÁS GRANDES Y VISIBLES */
+#previewNombre {
+    font-size: 26px !important; /* Nombre bien visible */
+    margin-top: 10px !important;
+}
+
+#previewUser, 
+#previewMatricula {
+    font-size: 18px !important;
+}
+
+.preview-detalles-auto p, 
+.preview-detalles-auto span, 
+.preview-detalles-auto strong {
+    font-size: 18px !important; /* Letras del vehículo y datos personales más grandes */
+    line-height: 1.8 !important; /* Más espacio entre renglones para que no se vea amontonado */
+}
+
+/* 3. BOTONES DE ACTUALIZACIÓN GIGANTES PARA CELULAR */
+#btnSolicitarAuto, 
+#btnActualizarCorreo, 
+#btnActualizarTel, 
+#btnCerrarSesion {
+    font-size: 18px !important; /* Letras del botón mucho más grandes */
+    padding: 20px !important; /* Botón más "gordo" y fácil de picar */
+    border-radius: 12px !important; /* Bordes un poco más suaves */
+    font-weight: bold !important;
+    margin-bottom: 8px !important;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2) !important; /* Sombrita para que resalten */
+}
+
+/* Ajuste del contenedor de los botones Correo y Teléfono para que no se aplasten */
+#btnActualizarCorreo, 
+#btnActualizarTel {
+    padding: 18px 10px !important;
+}
