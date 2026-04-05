@@ -237,7 +237,7 @@ function revisarPartidosAnteriores(){
     hoy.setHours(0, 0, 0, 0); 
     
     // Calculamos la fecha límite (hace 14 días)
-    const fechaLimite = new Date(hoy.getTime() - (14 * 24 * 60 * 60 * 1000)); 
+    const fechaLimite = new Date(hoy.getTime() - (7 * 24 * 60 * 60 * 1000)); 
 
     const contenedor = document.getElementById("anteriores");
     let hayEventos = false;
