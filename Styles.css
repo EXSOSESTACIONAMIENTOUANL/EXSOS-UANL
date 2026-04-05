@@ -3033,41 +3033,98 @@ font-size:1.7vw ;
     margin-top: 10px !important; /* Separarlo un poco del resto */
 }
 /* ========================================================= */
-/* BOTÓN DE CERRAR PERFIL MINIMALISTA Y ELEGANTE             */
+/* DISEÑO TIPO TARJETA FLOTANTE (MINIMALISTA Y OSCURO)       */
 /* ========================================================= */
 
-.btn-cerrar-flotante {
-    position: absolute !important;
-    top: 20px !important;
-    right: 20px !important; /* Lo movemos a la derecha, es más estético */
-    left: auto !important; /* Anulamos la posición izquierda vieja */
-    width: 38px !important; 
-    height: 38px !important;
-    border-radius: 50% !important; /* Círculo perfecto */
-    background: rgba(0, 0, 0, 0.25) !important; /* Transparente muy suave */
-    backdrop-filter: blur(5px) !important; /* Efecto de cristal borroso */
+/* 1. Fondo oscuro exterior para separar la tarjeta de la pantalla */
+.modal-perfil-full {
+    padding: 20px !important; /* Da un respiro a los lados del celular */
+    box-sizing: border-box !important;
+    background: rgba(0, 0, 0, 0.85) !important; /* Fondo oscurecido para resaltar la tarjeta */
+    display: none; 
+    align-items: center !important; /* Centra la tarjeta verticalmente */
+}
+.modal-perfil-full.activo { display: flex !important; }
+
+/* 2. El Cuadro/Contorno negro principal (La Tarjeta) */
+.card-perfil-celular {
+    width: 100% !important;
+    max-width: 450px !important;
+    min-height: auto !important; /* Ya no forzamos que toque el fondo de la pantalla */
+    max-height: 90vh !important; /* Altura máxima para no salir de la pantalla */
+    margin: auto !important;
+    border-radius: 20px !important; /* Bordes muy redondos */
+    background: #111214 !important; /* EL CUADRO NEGRO DE FONDO QUE PEDISTE */
+    overflow-y: auto !important; /* Scroll solo dentro de la tarjeta */
+    box-shadow: 0 15px 40px rgba(0,0,0,0.8) !important; /* Sombra profunda */
+    border: 1px solid #2b2d31 !important; /* Contorno sutil */
+    position: relative;
+}
+
+/* 3. Reducir la Portada (Banner) */
+.banner-azul-perfil {
+    height: 110px !important; /* Portada más delgada y estética */
+    flex-shrink: 0;
+}
+
+/* 4. Reducir y centrar la Foto de Perfil */
+.contenedor-avatar-perfil {
+    margin-top: -50px !important; /* Sube la foto exactamente a la mitad de la línea */
+    margin-bottom: 10px !important;
+    z-index: 10000 !important;
+}
+
+#previewFoto {
+    width: 100px !important; /* Foto reducida y elegante */
+    height: 100px !important;
+    border: 5px solid #111214 !important; /* El borde es del mismo color que la tarjeta negra */
+    background: #2b2d31 !important;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4) !important;
+}
+
+/* 5. Cajas de Datos (Gris oscuro sobre el fondo negro) */
+.cuerpo-datos-perfil {
+    padding: 10px 20px 30px 20px !important;
+}
+
+.bloque-datos-oscuro, 
+.bloque-licencia {
+    background: #1e1f22 !important; /* Gris oscuro para contrastar con el fondo negro */
+    border-radius: 16px !important;
+    padding: 18px !important;
+    margin-bottom: 18px !important;
+    border: 1px solid #2b2d31 !important;
+}
+
+/* Letras de los datos bien alineadas y sin amontonarse */
+.fila-dato {
+    font-size: 16px !important; 
+    margin-bottom: 8px !important;
+}
+.fila-dato .etiqueta { color: #b5bac1 !important; }
+.fila-dato .valor { font-size: 17px !important; color: #ffffff !important; }
+
+#previewNombre { font-size: 24px !important; margin-bottom: 5px !important; }
+#previewUser { font-size: 16px !important; color: #b5bac1 !important; }
+
+/* 6. Botones de Actualización (Grandes pero estéticos) */
+#btnSolicitarAuto, 
+#btnActualizarCorreo, 
+#btnActualizarTel, 
+#btnCerrarSesion {
+    font-size: 17px !important; 
+    padding: 16px !important; /* Tamaño perfecto para el dedo */
+    border-radius: 14px !important; 
+    width: 100% !important;
     border: none !important;
-    color: transparent !important; /* Escondemos las rayitas (☰) originales */
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    z-index: 100000 !important;
-    cursor: pointer !important;
-    transition: all 0.2s ease !important;
+    font-weight: bold !important;
+    margin-bottom: 10px !important;
+    transition: transform 0.2s ease !important;
 }
 
-/* Dibujamos una 'X' delgada y moderna en su lugar */
-.btn-cerrar-flotante::before {
-    content: "✕" !important; 
-    color: #ffffff !important;
-    font-size: 20px !important;
-    font-weight: 300 !important; /* Letra delgada y fina */
-    font-family: sans-serif !important;
-    position: absolute !important;
-}
+#btnSolicitarAuto { background: #5865f2 !important; color: white !important; }
+#btnActualizarCorreo, #btnActualizarTel { background: #4e5058 !important; color: white !important; }
+#btnCerrarSesion { background: #ed4245 !important; color: white !important; margin-top: 5px !important; }
 
-/* Efecto al pasar el dedo o mouse */
-.btn-cerrar-flotante:hover {
-    background: rgba(0, 0, 0, 0.6) !important;
-    transform: scale(1.1) !important;
-}
+/* Ocultar barra de scroll para que se vea más limpio en Android/iOS */
+.card-perfil-celular::-webkit-scrollbar { display: none; }
