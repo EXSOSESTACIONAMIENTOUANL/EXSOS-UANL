@@ -233,14 +233,32 @@ function revisarPartidosHoy(){
 
 function revisarPartidosAnteriores(){
     const hoy = new Date();
-    const mesAct = hoy.getMonth() + 1;
-    const diaAct = hoy.getDate();
+    // Normalizamos la fecha de hoy a la medianoche para evitar problemas con las horas
+    hoy.setHours(0, 0, 0, 0); 
+    
+    // Calculamos la fecha límite (hace 14 días)
+    const fechaLimite = new Date(hoy.getTime() - (14 * 24 * 60 * 60 * 1000)); 
+
     const contenedor = document.getElementById("anteriores");
     let hayEventos = false;
 
+    // Limpiamos el contenedor antes de agregar (útil si la función se llama varias veces)
+    // Asumiendo que el HTML original tiene el estado vacío, lo preservamos o lo recreamos si es necesario, 
+    // pero lo más seguro es solo limpiar las tarjetas de notificación:
+    const tarjetasViejas = contenedor.querySelectorAll(".notificacion-card");
+    tarjetasViejas.forEach(tarjeta => tarjeta.remove());
+
+
     Object.keys(partidos).forEach(clave => {
         const [m, d] = clave.split("-").map(Number);
-        if(m < mesAct || (m === mesAct && d < diaAct)){
+        
+        // Creamos un objeto Date para el partido (Asumiendo año 2026 según tu código)
+        // El mes en JavaScript empieza en 0, por eso le restamos 1 a 'm'
+        const fechaPartido = new Date(2026, m - 1, d);
+        fechaPartido.setHours(0,0,0,0);
+
+        // Verificamos si el partido fue ANTES de hoy y DESPUÉS (o igual) a la fecha límite de hace 2 semanas
+        if(fechaPartido < hoy && fechaPartido >= fechaLimite){
             partidos[clave].forEach(p => {
                 const aviso = document.createElement("div");
                 aviso.classList.add("notificacion-card");
@@ -250,7 +268,12 @@ function revisarPartidosAnteriores(){
             });
         }
     });
-    document.getElementById("estadoVacioAnteriores").style.display = hayEventos ? "none" : "flex";
+
+    const estadoVacio = document.getElementById("estadoVacioAnteriores");
+    if(estadoVacio) {
+         estadoVacio.style.display = hayEventos ? "none" : "flex";
+    }
+   
     actualizarNumeroCampana();
 }
 
