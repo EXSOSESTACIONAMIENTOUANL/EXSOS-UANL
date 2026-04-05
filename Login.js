@@ -10,7 +10,7 @@ import {
     sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink,
     updatePassword, linkWithPhoneNumber
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 // 🔥 CREDENCIALES CORREGIDAS PARA QUE COINCIDAN CON EL ADMIN 🔥
 const firebaseConfig = {
@@ -48,6 +48,24 @@ function procesarImagen(file) {
         };
         reader.onerror = error => reject(error);
     });
+}
+
+// --- FUNCIONES DE VALIDACIÓN EXTRA ---
+
+// Verifica si el correo ya existe en Firestore
+async function verificarCorreoExistente(email) {
+    const usuariosRef = collection(db, "usuarios");
+    const q = query(usuariosRef, where("correo", "==", email));
+    const querySnapshot = await getDocs(q);
+    return !querySnapshot.empty; // Retorna true si ya existe
+}
+
+// Verifica si el teléfono ya existe en Firestore
+async function verificarTelefonoExistente(telefono) {
+    const usuariosRef = collection(db, "usuarios");
+    const q = query(usuariosRef, where("telefono", "==", telefono));
+    const querySnapshot = await getDocs(q);
+    return !querySnapshot.empty; // Retorna true si ya existe
 }
 
 // --- LOGIN ---
@@ -114,13 +132,23 @@ async function iniciarVerificacionCorreo() {
 
     if (!email) return mostrarMensaje("mensajeRegistro", "Escribe tu correo para verificarlo.");
 
+    btn.disabled = true;
+    btn.innerText = "Comprobando correo...";
+
+    // 1. Validar si el correo ya existe en la base de datos
+    const correoEnUso = await verificarCorreoExistente(email);
+    if (correoEnUso) {
+        btn.disabled = false;
+        btn.innerText = "Verificar Correo";
+        return mostrarMensaje("mensajeRegistro", "❌ Este correo ya fue registrado anteriormente. Usa otro diferente.");
+    }
+
     const actionCodeSettings = {
         url: window.location.href, 
         handleCodeInApp: true,
     };
 
     try {
-        btn.disabled = true;
         btn.innerText = "Enviando enlace...";
         
         await sendSignInLinkToEmail(auth, email, actionCodeSettings);
@@ -194,6 +222,16 @@ async function finalizarRegistro() {
     if (!fotoCarro || !documento) return mostrarMensaje("mensajeRegistro", "Falta subir la foto del carro o el INE.");
 
     btn.disabled = true;
+    btn.innerText = "Comprobando teléfono...";
+
+    // 1. Validar si el teléfono ya existe en la base de datos
+    const telefonoEnUso = await verificarTelefonoExistente(telefono);
+    if (telefonoEnUso) {
+        btn.disabled = false;
+        btn.innerText = "Finalizar y enviar SMS";
+        return mostrarMensaje("mensajeRegistro", "❌ Este número de teléfono ya está registrado. Usa otro.");
+    }
+
     btn.innerText = "Enviando SMS...";
 
     try {
@@ -209,7 +247,7 @@ async function finalizarRegistro() {
         btn.disabled = false;
         btn.innerText = "Finalizar y enviar SMS";
         if (error.code === 'auth/provider-already-linked' || error.code === 'auth/credential-already-in-use') {
-            mostrarMensaje("mensajeRegistro", "Este número de teléfono ya está registrado en otra cuenta.");
+            mostrarMensaje("mensajeRegistro", "❌ Este número de teléfono ya está registrado en otra cuenta.");
         } else {
             mostrarMensaje("mensajeRegistro", "Error Firebase: " + error.code);
         }
