@@ -950,3 +950,12 @@ body{ display:flex; flex-direction:column; }
 #modalPerfil .card-perfil-celular {
     position: relative !important; 
 }
+/* ========================================================= */
+/* FORZAR MENÚS DE EDICIÓN AL FRENTE (Z-INDEX)               */
+/* ========================================================= */
+
+.panel-avatares, 
+.modal-editor, 
+.editor-banner {
+    z-index: 1000000 !important; /* Un número gigante para que nada lo tape */
+}
