@@ -2886,12 +2886,20 @@ font-size:1.7vw ;
 }
 
 /* En celulares la tarjeta abarca toda la pantalla de forma bonita */
-@media (max-width: 600px) {
+/* --- FIX PARA PANTALLA COMPLETA EN CELULAR --- */
+@media (max-width: 768px) {
+    .modal-perfil-full {
+        align-items: flex-start !important; /* Para que el contenido empiece desde arriba */
+        overflow-y: auto !important; /* Permite hacer scroll en toda la pantalla */
+        padding: 0 !important;
+    }
+
     .card-perfil-unica {
-        margin: 0 auto;
-        border-radius: 0;
-        min-height: 100vh;
-        padding-bottom: 40px; 
+        width: 100vw !important; /* 100% del ancho de la pantalla */
+        min-height: 100vh !important; /* 100% del alto de la pantalla */
+        margin: 0 !important; 
+        border-radius: 0 !important; /* Quita los bordes redondos para que pegue a las orillas */
+        padding-bottom: 50px !important; /* Espacio extra al final para que nada quede cortado */
     }
 }
 
