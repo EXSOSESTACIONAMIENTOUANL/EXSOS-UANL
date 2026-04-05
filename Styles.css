@@ -1749,22 +1749,7 @@ input:-webkit-autofill:active{
 
 
 
-@media (max-width: 480px){
 
-    .perfil-header{
-        flex-direction:column;
-        gap:10px;
-        align-items:center;
-    }
-
-    .perfil-header span{
-        font-size:14px;
-    }
-
-    .perfil-campo input{
-        font-size:16px; /* evita zoom iPhone */
-    }
-}
 
 .modal-perfil-full{
     overflow-y:auto;
@@ -3217,65 +3202,93 @@ font-size:1.7vw ;
 
 /* ========================================================= */
 /* DISEÑO DE PERFIL MÓVIL (TIPO APP / FACEBOOK / INSTAGRAM)  */
+/* VERSIÓN DEFINITIVA - FUERZA BRUTA                         */
 /* ========================================================= */
 
 @media (max-width: 900px) {
-    /* 1. Fondo a pantalla completa real y Scroll nativo */
+    /* 1. Fondo a pantalla completa real */
     .modal-perfil-full {
         position: fixed !important;
         top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
-        width: 100vw !important; height: 100vh !important;
-        background: #111214 !important; /* Fondo app oscura */
+        width: 100vw !important; 
+        height: 100vh !important;
+        background-color: #111214 !important; /* Fuerza fondo oscuro sólido */
         z-index: 999999 !important;
-        padding: 0 !important; margin: 0 !important;
-        overflow-y: auto !important; /* Scroll fluido activado */
-        align-items: flex-start !important;
+        padding: 0 !important; 
+        margin: 0 !important;
+        overflow-y: auto !important; /* Scroll activado */
+        display: none; /* Se mantiene oculto hasta que se llame con .activo */
+        align-items: flex-start !important; /* Empieza desde arriba */
+    }
+    .modal-perfil-full.activo {
+        display: block !important; /* Sobrescribe el display flex centrado viejo */
     }
 
-    /* 2. El contenedor abarca todo el espacio hacia abajo */
+    /* 2. El contenedor abarca todo el espacio */
     .card-perfil {
-        width: 100% !important; max-width: 100% !important;
+        width: 100% !important; 
+        max-width: 100vw !important; /* Anula el clamp(320px, 90vw, 500px) viejo */
         min-height: 100vh !important;
         margin: 0 !important; 
-        padding: 0 20px 100px 20px !important; /* Espacio extra abajo para hacer scroll cómodo */
+        padding: 0 0 100px 0 !important; /* Solo padding abajo para el scroll */
         border-radius: 0 !important;
         background: transparent !important;
-        display: block !important;
+        display: block !important; /* Quita el flexbox antiguo que ponía cosas lado a lado */
+        box-sizing: border-box !important;
+    }
+
+    /* Ocultar la parte derecha (preview del banner chiquito) en celular */
+    .perfil-preview {
+        display: none !important;
+    }
+
+    /* El formulario toma el 100% del ancho */
+    .perfil-form {
+        max-width: 100% !important;
+        width: 100% !important;
+        padding: 0 20px !important; /* Espacio a los lados de los inputs */
         box-sizing: border-box !important;
     }
 
     /* 3. Botón de Cerrar: Tacha (X) en Círculo Flotante */
     .btn-salir {
         position: fixed !important;
-        top: 20px !important; right: 20px !important;
-        width: 48px !important; height: 48px !important;
-        background: rgba(255, 255, 255, 0.15) !important;
-        border-radius: 50% !important; /* Forma de círculo perfecto */
+        top: 20px !important; 
+        right: 20px !important;
+        width: 48px !important; 
+        height: 48px !important;
+        background-color: rgba(43, 45, 49, 0.8) !important; /* Gris oscuro translúcido */
+        border-radius: 50% !important; /* Círculo */
         z-index: 1000000 !important;
-        display: flex !important; align-items: center !important; justify-content: center !important;
-        color: transparent !important; /* Oculta cualquier texto viejo */
-        backdrop-filter: blur(10px) !important; /* Efecto cristal */
-        box-shadow: 0 4px 10px rgba(0,0,0,0.3) !important;
+        display: flex !important; 
+        align-items: center !important; 
+        justify-content: center !important;
+        color: transparent !important; /* Oculta el texto o ícono viejo */
+        box-shadow: 0 4px 10px rgba(0,0,0,0.5) !important;
+        padding: 0 !important;
     }
     .btn-salir::after {
-        content: "✕" !important; /* Símbolo de tacha */
+        content: "✕" !important;
         color: white !important;
-        font-size: 22px !important;
+        font-size: 24px !important;
         font-family: Arial, sans-serif !important;
         font-weight: bold !important;
+        line-height: 1 !important;
     }
 
     /* 4. Foto de Perfil Central Gigante */
     .perfil-foto-container {
         width: 100% !important;
-        margin-top: 50px !important;
+        margin-top: 60px !important; /* Espacio arriba de la foto */
         margin-bottom: 20px !important;
-        display: flex !important; justify-content: center !important;
+        display: flex !important; 
+        justify-content: center !important;
     }
     #previewFoto {
-        width: 160px !important; height: 160px !important; /* Tamaño premium */
-        border: 4px solid #2b2d31 !important;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.5) !important;
+        width: 150px !important; 
+        height: 150px !important;
+        border: 5px solid #2b2d31 !important;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.5) !important;
     }
 
     /* 5. Textos Base (Nombre y Correo adaptables) */
@@ -3283,63 +3296,90 @@ font-size:1.7vw ;
         text-align: center !important;
         border-bottom: none !important;
         margin-bottom: 30px !important;
-        display: flex !important; flex-direction: column !important; align-items: center !important;
+        display: flex !important; 
+        flex-direction: column !important; 
+        align-items: center !important;
+        padding-top: 0 !important;
     }
     .perfil-header h2 {
-        font-size: 28px !important; color: white !important;
-        margin: 0 0 10px 0 !important; text-align: center !important;
+        font-size: 26px !important; 
+        color: white !important;
+        margin: 0 0 8px 0 !important; 
+        text-align: center !important;
         line-height: 1.2 !important;
     }
     .perfil-header span {
-        font-size: 16px !important; color: #b5bac1 !important;
-        word-break: break-all !important; /* Evita que el correo rompa el diseño */
+        font-size: 16px !important; 
+        color: #b5bac1 !important;
+        word-break: break-all !important; 
         text-align: center !important;
+        display: block !important;
     }
 
-    /* 6. Listas de Información estilo App (Más grandes) */
-    .perfil-form {
-        max-width: 100% !important;
-        padding: 0 !important;
-    }
+    /* 6. Listas de Información (Estilo Ajustes de iPhone/Android) */
     .perfil-campo {
-        background: #1e1f22 !important;
-        padding: 18px 20px !important;
+        background-color: #1e1f22 !important;
+        padding: 16px 20px !important;
         border-radius: 14px !important;
         margin-bottom: 12px !important;
         border: 1px solid #2b2d31 !important;
-        display: flex !important; flex-direction: row !important;
-        justify-content: space-between !important; align-items: center !important;
+        display: flex !important; 
+        flex-direction: row !important; /* Pone Label e Input en la misma línea */
+        justify-content: space-between !important; 
+        align-items: center !important;
     }
     .perfil-campo label {
-        font-size: 16px !important; color: #b5bac1 !important; margin: 0 !important; flex-shrink: 0 !important;
+        font-size: 16px !important; 
+        color: #b5bac1 !important; 
+        margin: 0 !important; 
+        flex-shrink: 0 !important;
     }
     .perfil-campo input {
-        width: auto !important; flex-grow: 1 !important;
-        background: transparent !important; border: none !important;
-        text-align: right !important; font-size: 18px !important; /* Letra de datos más grande */
-        font-weight: bold !important; color: white !important; padding: 0 !important;
+        width: auto !important; 
+        flex-grow: 1 !important;
+        background: transparent !important; 
+        border: none !important;
+        text-align: right !important; /* Texto alineado a la derecha */
+        font-size: 16px !important; 
+        font-weight: bold !important; 
+        color: white !important; 
+        padding: 0 !important;
         margin-left: 15px !important;
+        box-shadow: none !important; /* Evita brillos raros al tocar */
     }
 
-    /* 7. Sección Licencia / INE Mejorada */
+    /* 7. Sección Licencia / INE */
     .licencia-card {
-        background: #1e1f22 !important;
+        background-color: #1e1f22 !important;
         border-radius: 16px !important;
-        padding: 20px !important; margin-top: 25px !important; margin-bottom: 25px !important;
+        padding: 20px !important; 
+        margin-top: 25px !important; 
+        margin-bottom: 25px !important;
         border: 1px solid #2b2d31 !important;
+        width: auto !important;
     }
-    .licencia-card h3 { font-size: 20px !important; text-align: center !important; margin-bottom: 20px !important; }
+    .licencia-card h3 { 
+        font-size: 18px !important; 
+        text-align: center !important; 
+        margin-top: 0 !important;
+        margin-bottom: 15px !important; 
+    }
     .licencia-preview-container {
-        height: 250px !important; border: 2px dashed #5865f2 !important; border-radius: 12px !important;
-        background: #111 !important;
+        height: 220px !important; 
+        border: 2px dashed #5865f2 !important; 
+        border-radius: 12px !important;
+        background-color: #111 !important;
     }
 
-    /* 8. Botones Finales Grandes */
+    /* 8. Botones */
     .btn-cerrar-sesion {
-        width: 100% !important; padding: 18px !important; font-size: 18px !important;
-        border-radius: 14px !important; margin-top: 15px !important;
+        width: 100% !important; 
+        padding: 16px !important; 
+        font-size: 18px !important;
+        border-radius: 12px !important; 
+        margin-top: 20px !important;
     }
     
-    /* Ocultar barra lateral nativa de scroll para que se vea más limpio */
+    /* Ocultar barra lateral nativa de scroll */
     .modal-perfil-full::-webkit-scrollbar { display: none !important; }
 }
