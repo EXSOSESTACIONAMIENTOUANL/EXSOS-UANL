@@ -976,3 +976,60 @@ body{ display:flex; flex-direction:column; }
     margin: 20px auto !important; /* Centra solo a los lados, liberando arriba y abajo */
     margin-bottom: 60px !important; /* Agrega un espacio extra hasta abajo para que no choque */
 }
+
+/* ========================================================= */
+/* HACER MÁS GRANDES LOS MENÚS DE AUTO, CORREO Y TELÉFONO    */
+/* ========================================================= */
+
+/* 1. Hacemos la caja principal un poco más ancha y con más espacio interior */
+#modalCambioAuto .modal-boxp,
+#modalCambioCorreo .modal-boxp,
+#modalCambioTel .modal-boxp {
+    max-width: 500px !important; /* Crece el ancho máximo */
+    padding: 35px !important; /* Más espacio por dentro para que no se vea apretado */
+}
+
+/* 2. Títulos más grandes y llamativos */
+#modalCambioAuto h2,
+#modalCambioCorreo h2,
+#modalCambioTel h2 {
+    font-size: 32px !important; /* Antes estaba en 22px */
+    margin-bottom: 10px !important;
+}
+
+/* 3. Textos descriptivos más legibles */
+#modalCambioAuto p,
+#modalCambioCorreo p,
+#modalCambioTel p {
+    font-size: 18px !important; /* Antes estaba en 13px */
+    margin-bottom: 25px !important;
+}
+
+/* 4. Cajas de texto (inputs) más grandes para escribir cómodo */
+#modalCambioAuto input[type="text"],
+#modalCambioAuto input[type="number"],
+#modalCambioCorreo input[type="email"],
+#modalCambioTel input[type="text"] {
+    font-size: 18px !important; 
+    padding: 16px !important; /* Cajas más altas */
+    margin-bottom: 10px !important; /* Separación entre inputs */
+}
+
+/* 5. El texto que dice "Nueva Foto Frontal" y el botón de subir foto */
+#modalCambioAuto label {
+    font-size: 18px !important; /* Antes 14px */
+    margin-top: 10px !important;
+    display: block !important;
+}
+#modalCambioAuto input[type="file"] {
+    font-size: 16px !important; /* Antes 12px */
+    padding: 10px 0 !important;
+}
+
+/* 6. Botones de acción (Cancelar, Enviar, Verificar) más gorditos */
+#modalCambioAuto button,
+#modalCambioCorreo button,
+#modalCambioTel button {
+    font-size: 18px !important; 
+    padding: 16px !important; /* Botones más altos y fáciles de tocar con el dedo */
+}
