@@ -2835,18 +2835,54 @@ font-size:1.7vw ;
     -webkit-overflow-scrolling: touch !important;
 }
 
-/* La nueva Tarjeta Centrada */
+/* Contenedor principal del perfil para evitar solapamientos */
 .card-perfil-unica {
-    width: 100%;
-    max-width: 480px; /* Tamaño perfecto para PC y Tablet */
+    width: 95%;
+    max-width: 450px;
     background: #2b2d31;
-    position: relative;
-    margin: 40px auto; 
     border-radius: 20px;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+    overflow-y: auto; /* Permite scroll si la info es mucha */
+    max-height: 90vh;
+}
+
+.info-grid-auto {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Dos columnas */
+    gap: 10px;
+    background: #1e1f22;
+    padding: 15px;
+    border-radius: 12px;
+    margin: 15px 0;
+}
+
+.info-item {
     display: flex;
     flex-direction: column;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-size: 0.85rem;
+    color: #b5bac1;
+}
+
+.info-item strong {
+    color: #fff;
+    font-size: 1rem;
+}
+
+/* Ajuste para la licencia */
+.licencia-box {
+    width: 100%;
+    height: 180px;
+    background: #111214;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px dashed #3a3c41;
+}
+
+.licencia-box img {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
 }
 
 /* En celulares la tarjeta abarca toda la pantalla de forma bonita */
