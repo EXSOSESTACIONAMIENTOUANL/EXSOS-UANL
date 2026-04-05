@@ -96,6 +96,8 @@ async function cargarPerfil(){
             if(document.getElementById("fotoPerfil")) document.getElementById("fotoPerfil").src = fotoFinal;
             if(document.getElementById("nombreUsuario")) document.getElementById("nombreUsuario").textContent = data.nombre || "Usuario";
             if(document.getElementById("correoUsuario")) document.getElementById("correoUsuario").textContent = correoFinal;
+           if(document.getElementById("previewTelefono")) document.getElementById("previewTelefono").textContent = data.telefono || "Sin registrar";
+         if(document.getElementById("previewNacimiento")) document.getElementById("previewNacimiento").textContent = data.fechaNacimiento || "Sin registrar";
 
             // Tarjeta Unificada
             if(document.getElementById("previewFoto")) document.getElementById("previewFoto").src = fotoFinal;
