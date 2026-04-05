@@ -3058,110 +3058,145 @@ font-size:1.7vw ;
 
 
 /* ========================================================= */
-/* REDISEÑO PREMIUM PARA BRIAN - NO SIMPLIFICA, SOLO ESTILIZA */
+/* PERFIL FULL SCREEN PROFESIONAL - SCROLL TOTAL             */
 /* ========================================================= */
 
-/* ========================================================= */
-/* DISEÑO TARJETA GRANDE Y DESLIZABLE PARA BRIAN            */
-/* ========================================================= */
-
-/* El fondo exterior ahora es un poco más claro para dar profundidad */
+/* 1. Fondo del modal: Ahora es total y permite scroll */
 .modal-perfil-full {
-    background: rgba(0, 0, 0, 0.8) !important; 
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #000000 !important; /* Fondo negro puro */
     display: none;
-    align-items: flex-start !important; /* Cambiado de center a flex-start para permitir subir/bajar */
-    justify-content: center !important;
-    padding: 40px 20px !important; /* Más espacio arriba y abajo */
-    overflow-y: auto !important; /* EL SECRETO: El scroll se activa aquí para la tarjeta completa */
-    backdrop-filter: blur(10px);
+    z-index: 99999;
+    overflow-y: auto; /* Permite bajar y subir con el dedo */
+    padding: 0;
+    margin: 0;
 }
 
-.modal-perfil-full.activo { display: flex !important; }
+.modal-perfil-full.activo {
+    display: block; /* Cambiamos a block para que el scroll natural funcione */
+}
 
-/* LA TARJETA NEGRA: Más ancha y proporcional */
+/* 2. La Tarjeta: Ahora es el contenedor de TODA la pantalla */
 .card-perfil-celular {
-    width: 100% !important;
-    max-width: 480px !important; /* Aumentamos el ancho */
-    background: #111214 !important; 
-    border-radius: 32px !important; /* Bordes más pronunciados */
-    border: 1px solid #333;
-    box-shadow: 0 40px 80px rgba(0,0,0,0.9) !important;
-    position: relative;
-    margin: auto; /* Centra la tarjeta si el contenido es poco */
+    width: 100%;
+    min-height: 100vh;
+    background: #0b0b0b; /* Un gris casi negro para los bloques */
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* Evita que el banner se salga de los bordes redondeados */
+    padding-bottom: 50px; /* Espacio al final para que no pegue con el borde */
 }
 
-/* PORTADA (BANNER): Más alta para que luzca al abrirlo */
+/* 3. PORTADA (BANNER): Grande y visible al abrir */
 .banner-azul-perfil {
-    height: 180px !important; /* Aumentamos la altura de la portada */
-    background: linear-gradient(135deg, #152191 0%, #0c1661 100%) !important;
-    border-bottom: 4px solid #ead228 !important;
-    flex-shrink: 0;
+    width: 100%;
+    height: 250px; /* Mucho más alta para que luzca tu foto */
+    background-color: #152191; 
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+    border-bottom: 5px solid #ead228; /* Línea de acento dorada */
 }
 
-/* LA FOTO: Proporcional al nuevo tamaño de tarjeta */
+/* 4. LA FOTO DE PERFIL: Proporcional y al frente */
 .contenedor-avatar-perfil {
-    margin-top: -75px !important; /* Sube la foto un poco más */
-    margin-bottom: 20px !important;
-    z-index: 100 !important;
+    width: 100%;
     display: flex;
     justify-content: center;
+    margin-top: -80px; /* Sube la foto para que rompa la línea del banner */
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 10;
 }
 
 #previewFoto {
-    width: 140px !important; /* Foto más grande y visible */
-    height: 140px !important;
-    border: 8px solid #111214 !important; /* Borde más grueso para resaltar */
-    border-radius: 50% !important;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.7) !important;
+    width: 160px; /* Foto más grande */
+    height: 160px;
+    border-radius: 50%;
+    border: 6px solid #0b0b0b; /* Borde del color del fondo */
+    object-fit: cover;
+    background: #2b2d31;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.8);
 }
 
-/* CUERPO: Mantenemos toda tu info intacta */
+/* 5. DATOS Y TEXTOS: Letras grandes y legibles */
 .cuerpo-datos-perfil {
-    padding: 0 30px 40px 30px !important;
-    text-align: center;
+    padding: 0 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
-#previewNombre {
-    font-size: 30px !important; /* Nombre mucho más grande */
-    font-weight: 800 !important;
-    color: #fff !important;
-    margin-bottom: 8px !important;
-}
-
-#previewUser {
-    font-size: 17px !important;
-    color: #b5bac1 !important;
-    margin-bottom: 30px !important;
-}
-
-/* BLOQUES DE DATOS: Ajustados para el nuevo ancho */
 .bloque-datos-oscuro, .bloque-licencia {
-    background: #1e1f22 !important; 
-    border-radius: 22px !important;
-    padding: 25px !important;
-    margin-bottom: 25px !important;
+    background: #161719; /* Bloques minimalistas */
+    border-radius: 20px;
+    padding: 25px;
+    border: 1px solid #252629;
 }
 
 .fila-dato {
-    font-size: 17px !important; /* Letras de datos más grandes */
-    margin-bottom: 15px !important;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    font-size: 20px; /* Letras grandes como pediste */
 }
 
-/* BOTONES: Más grandes para el dedo */
-#btnSolicitarAuto, #btnActualizarCorreo, #btnActualizarTel, #btnCerrarSesion {
-    padding: 20px !important;
-    font-size: 18px !important;
-    border-radius: 18px !important;
+.fila-dato .etiqueta {
+    color: #8e9297;
+    font-weight: 500;
 }
 
-/* EL BOTÓN CERRAR: Ahora en una posición fija arriba a la derecha */
-#btnCerrarPerfil {
-    position: absolute !important;
+.fila-dato .valor {
+    color: #ffffff;
+    font-weight: bold;
+    text-align: right;
+}
+
+/* 6. BOTONES: Gigantes para el pulgar */
+.bloque-botones-perfil {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.btn-blanco-perfil {
+    width: 100%;
+    padding: 22px; /* Botones muy grandes */
+    border-radius: 15px;
+    font-size: 20px;
+    font-weight: 800;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+/* Colores minimalistas */
+#btnSolicitarAuto { background: #5865f2; color: white; }
+#btnActualizarCorreo, #btnActualizarTel { background: #313338; color: white; }
+#btnCerrarSesion { background: #ed4245; color: white; margin-top: 10px; }
+
+/* 7. BOTÓN CERRAR: Flotante y minimalista arriba a la derecha */
+.btn-cerrar-flotante {
+    position: absolute;
     top: 20px;
     right: 20px;
-    background: rgba(0,0,0,0.6) !important;
-    z-index: 200;
+    background: rgba(0,0,0,0.5);
+    color: white;
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    font-size: 25px;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
 }
