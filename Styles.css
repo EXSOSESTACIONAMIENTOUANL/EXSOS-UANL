@@ -3168,7 +3168,35 @@ font-size:1.7vw ;
 .btn-editar-banner {
     position: absolute !important;
     top: 15px !important;
-    left: 15px !important; /* Lo clava en la izquierda */
+    left: 15px !important;
     right: auto !important;
-    z-index: 99999 !important;
+
+    z-index: 100000 !important;
+
+    width: 40px;
+    height: 40px;
+
+    border-radius: 50%;
+    background: rgba(0,0,0,0.6);
+    color: white;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+}
+
+html {
+    font-size: clamp(14px, 1.5vw, 18px);
+}
+
+body {
+    width: 100%;
+    min-height: 100vh;
+}
+
+main, .contenido, .pantalla {
+    width: 100%;
+    min-height: 100vh;
 }
