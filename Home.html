@@ -229,24 +229,26 @@ Asistente virtual Exsos
         <div class="preview-body">
             <div class="perfil-main-info">
                 <img id="previewFoto" src="perfil/user.png" class="preview-avatar">
-                <h2 id="previewNombre">Usuario</h2>
-                <span id="previewUser">usuario@email.com</span>
-                <p class="matricula-tag">Matrícula: <span id="previewMatricula">---</span></p>
-            </div>
+<div style="margin-top: 20px; background: #1e1f22; border: 1px solid #3a3c41; padding: 15px; border-radius: 12px; text-align: left; font-size: 15px; color: #ddd; width: 100%; box-sizing: border-box;">
+    <p style="margin: 6px 0; display: flex; justify-content: space-between;"><span>👤 Nombre:</span> <strong id="previewNombre">Sin registrar</strong></p>
+    <p style="margin: 6px 0; display: flex; justify-content: space-between;"><span>✉️ Correo:</span> <strong id="previewUser">Sin registrar</strong></p>
+    <p style="margin: 6px 0; display: flex; justify-content: space-between;"><span>🎓 Matrícula:</span> <strong id="previewMatricula">Sin registrar</strong></p>
+    <p style="margin: 6px 0; display: flex; justify-content: space-between;"><span>📱 Teléfono:</span> <strong id="previewTelefono">Sin registrar</strong></p>
+    <p style="margin: 6px 0; display: flex; justify-content: space-between;"><span>🎂 Nacimiento:</span> <strong id="previewNacimiento">Sin registrar</strong></p>
+</div>
 
-            <div class="info-grid-auto">
-                <div class="info-item"><span>🚗 Auto</span><strong id="previewModelo">---</strong></div>
-                <div class="info-item"><span>🎨 Color</span><strong id="previewColor">---</strong></div>
-                <div class="info-item"><span>📅 Año</span><strong id="previewAnio">---</strong></div>
-                <div class="info-item"><span>🏷️ Placas</span><strong id="previewPlacas">---</strong></div>
-            </div>
+<div style="margin-top: 15px; background: #1e1f22; border: 1px solid #3a3c41; padding: 15px; border-radius: 12px; text-align: left; font-size: 15px; color: #ddd; width: 100%; box-sizing: border-box;">
+    <p style="margin: 6px 0; display: flex; justify-content: space-between;"><span>🚗 Auto:</span> <strong id="previewModelo">Sin registrar</strong></p>
+    <p style="margin: 6px 0; display: flex; justify-content: space-between;"><span>📅 Año:</span> <strong id="previewAnio">Sin registrar</strong></p>
+    <p style="margin: 6px 0; display: flex; justify-content: space-between;"><span>🏷️ Placas:</span> <strong id="previewPlacas">Sin registrar</strong></p>
+</div>
 
-            <div class="licencia-section">
-                <h3>Licencia / INE</h3>
-                <div class="licencia-box">
-                    <img id="previewLicencia" src="perfil/licencia-default.png">
-                </div>
-            </div>
+<div class="licencia-card" style="margin-top: 15px; width: 100%; box-sizing: border-box; background: #1e1f22; border: 1px solid #3a3c41; padding: 15px; border-radius: 12px;">
+    <h3 style="font-size: 16px; margin: 0 0 10px 0; color: white; text-align: left;">Licencia de manejo </h3>
+    <div class="licencia-preview-container" style="width: 100%; min-height: 200px; background: #111214; border-radius: 8px; display: flex; justify-content: center; align-items: center; overflow: hidden;">
+        <img id="previewLicencia" src="perfil/licencia-default.png" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+    </div>
+</div>
 
             <div class="perfil-actions">
                 <button id="btnSolicitarAuto" class="btn-primary-yellow">Actualizar Vehículo</button>
