@@ -3061,41 +3061,49 @@ font-size:1.7vw ;
 /* REDISEÑO PREMIUM PARA BRIAN - NO SIMPLIFICA, SOLO ESTILIZA */
 /* ========================================================= */
 
-/* El fondo exterior que hace resaltar la tarjeta negra */
+/* ========================================================= */
+/* DISEÑO TARJETA GRANDE Y DESLIZABLE PARA BRIAN            */
+/* ========================================================= */
+
+/* El fondo exterior ahora es un poco más claro para dar profundidad */
 .modal-perfil-full {
-    background: rgba(0, 0, 0, 0.9) !important; 
+    background: rgba(0, 0, 0, 0.8) !important; 
     display: none;
-    align-items: center !important; 
+    align-items: flex-start !important; /* Cambiado de center a flex-start para permitir subir/bajar */
     justify-content: center !important;
-    padding: 20px !important;
-    backdrop-filter: blur(8px); /* Efecto de cristal esmerilado al fondo */
+    padding: 40px 20px !important; /* Más espacio arriba y abajo */
+    overflow-y: auto !important; /* EL SECRETO: El scroll se activa aquí para la tarjeta completa */
+    backdrop-filter: blur(10px);
 }
 
-/* LA TARJETA NEGRA (El cuadro principal que pediste) */
+.modal-perfil-full.activo { display: flex !important; }
+
+/* LA TARJETA NEGRA: Más ancha y proporcional */
 .card-perfil-celular {
     width: 100% !important;
-    max-width: 440px !important;
-    background: #111214 !important; /* FONDO NEGRO PROFUNDO */
-    border-radius: 28px !important; /* Bordes muy redondos y modernos */
-    border: 1px solid #2b2d31 !important;
-    box-shadow: 0 30px 60px rgba(0,0,0,0.8) !important;
-    overflow-y: auto !important; 
+    max-width: 480px !important; /* Aumentamos el ancho */
+    background: #111214 !important; 
+    border-radius: 32px !important; /* Bordes más pronunciados */
+    border: 1px solid #333;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.9) !important;
     position: relative;
-    max-height: 92vh !important; /* Aprovecha casi toda la pantalla */
-    scrollbar-width: none; /* Oculta scroll en Firefox */
+    margin: auto; /* Centra la tarjeta si el contenido es poco */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Evita que el banner se salga de los bordes redondeados */
 }
-.card-perfil-celular::-webkit-scrollbar { display: none; } /* Oculta scroll en Chrome/Safari */
 
-/* EL BANNER (PROPORCIONAL) */
+/* PORTADA (BANNER): Más alta para que luzca al abrirlo */
 .banner-azul-perfil {
-    height: 130px !important; 
+    height: 180px !important; /* Aumentamos la altura de la portada */
     background: linear-gradient(135deg, #152191 0%, #0c1661 100%) !important;
     border-bottom: 4px solid #ead228 !important;
+    flex-shrink: 0;
 }
 
-/* LA FOTO: Aquí es donde deja de ser una tachuela y sobrepasa con estilo */
+/* LA FOTO: Proporcional al nuevo tamaño de tarjeta */
 .contenedor-avatar-perfil {
-    margin-top: -60px !important; 
+    margin-top: -75px !important; /* Sube la foto un poco más */
     margin-bottom: 20px !important;
     z-index: 100 !important;
     display: flex;
@@ -3103,99 +3111,57 @@ font-size:1.7vw ;
 }
 
 #previewFoto {
-    width: 120px !important; /* Tamaño proporcional ideal */
-    height: 120px !important;
-    border: 6px solid #111214 !important; /* Borde del color de la tarjeta para integrarla */
+    width: 140px !important; /* Foto más grande y visible */
+    height: 140px !important;
+    border: 8px solid #111214 !important; /* Borde más grueso para resaltar */
     border-radius: 50% !important;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.6) !important;
-    background: #2b2d31 !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.7) !important;
 }
 
-/* CUERPO DE DATOS (MANTENIENDO TODA TU INFO) */
+/* CUERPO: Mantenemos toda tu info intacta */
 .cuerpo-datos-perfil {
-    padding: 0 25px 40px 25px !important;
+    padding: 0 30px 40px 30px !important;
     text-align: center;
 }
 
-/* Estilo para los textos principales */
 #previewNombre {
-    font-size: 26px !important;
+    font-size: 30px !important; /* Nombre mucho más grande */
     font-weight: 800 !important;
-    color: #ffffff !important;
-    display: block;
-    margin-bottom: 4px !important;
+    color: #fff !important;
+    margin-bottom: 8px !important;
 }
 
 #previewUser {
-    font-size: 15px !important;
+    font-size: 17px !important;
     color: #b5bac1 !important;
-    margin-bottom: 25px !important;
-    display: block;
+    margin-bottom: 30px !important;
 }
 
-/* TUS BLOQUES DE DATOS (Gris sobre Negro) */
+/* BLOQUES DE DATOS: Ajustados para el nuevo ancho */
 .bloque-datos-oscuro, .bloque-licencia {
     background: #1e1f22 !important; 
-    border: 1px solid #2b2d31 !important;
-    border-radius: 18px !important;
-    padding: 20px !important;
-    margin-bottom: 20px !important;
-    text-align: left;
+    border-radius: 22px !important;
+    padding: 25px !important;
+    margin-bottom: 25px !important;
 }
 
 .fila-dato {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 12px !important;
-    font-size: 15px !important;
-    border-bottom: 1px solid rgba(255,255,255,0.05) !important;
-    padding-bottom: 8px !important;
+    font-size: 17px !important; /* Letras de datos más grandes */
+    margin-bottom: 15px !important;
 }
 
-.etiqueta { color: #8e9297 !important; font-weight: bold; }
-.valor { color: #ffffff !important; }
-
-/* LA INE / LICENCIA */
-.titulo-licencia { 
-    font-size: 18px !important; 
-    margin-bottom: 15px !important; 
-    color: #fff !important;
-    text-align: center;
-}
-.caja-foto-licencia {
-    border-radius: 12px !important;
-    border: 2px dashed #4e5058 !important;
-    overflow: hidden;
-}
-
-/* BOTONES GIGANTES Y FÁCILES DE TOCAR */
+/* BOTONES: Más grandes para el dedo */
 #btnSolicitarAuto, #btnActualizarCorreo, #btnActualizarTel, #btnCerrarSesion {
-    width: 100% !important;
-    padding: 18px !important;
-    border-radius: 14px !important;
-    font-weight: bold !important;
-    font-size: 16px !important;
-    border: none !important;
-    margin-bottom: 12px !important;
-    transition: 0.2s ease;
+    padding: 20px !important;
+    font-size: 18px !important;
+    border-radius: 18px !important;
 }
 
-#btnSolicitarAuto { background: #5865f2 !important; color: white !important; }
-#btnActualizarCorreo, #btnActualizarTel { background: #4e5058 !important; color: white !important; }
-#btnCerrarSesion { background: #ed4245 !important; color: white !important; }
-
-/* BOTÓN CERRAR (Mantenemos tu ID pero con look minimalista) */
+/* EL BOTÓN CERRAR: Ahora en una posición fija arriba a la derecha */
 #btnCerrarPerfil {
     position: absolute !important;
-    top: 15px !important;
-    right: 15px !important;
-    background: rgba(0,0,0,0.5) !important;
-    color: #fff !important;
-    border: none !important;
-    width: 35px !important;
-    height: 35px !important;
-    border-radius: 50% !important;
-    font-size: 18px !important;
-    cursor: pointer;
+    top: 20px;
+    right: 20px;
+    background: rgba(0,0,0,0.6) !important;
     z-index: 200;
 }
