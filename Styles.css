@@ -578,18 +578,25 @@ body{ display:flex; flex-direction:column; }
     padding-bottom: 5vw !important;
 }
 
-/* Portada (Banner Azul) */
+
+/* Portada (Banner Azul por defecto, pero ahora sí deja cambiar el color) */
 #modalPerfil #previewBanner {
     width: 100% !important;
-    height: 25vw !important; /* Proporcional a la pantalla */
-    background-color: #152191 !important;
+    height: 25vw !important; 
+    
+    /* 🔥 AQUÍ ESTABA EL ERROR: Le quitamos el !important al color azul 
+       para que JavaScript pueda pintar el color que elijas encima 🔥 */
+    background-color: #152191; 
+    
     background-size: cover !important;
     background-position: center !important;
     background-repeat: no-repeat !important;
     position: relative !important;
-    border-bottom: 0.8vw solid #ead228 !important;
+    
+    /* 🔥 Si ya NO quieres que salga la línea amarilla de abajo, 
+       elimina esta línea. (Yo la dejé apagada poniéndole un /* al inicio) 🔥 */
+    /* border-bottom: 0.8vw solid #ead228 !important; */
 }
-
 /* BOTONES CERRAR Y EDITAR SIMÉTRICOS */
 #modalPerfil .btn-cerrar-flotante, 
 #modalPerfil .btn-editar-banner {
