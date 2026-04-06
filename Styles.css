@@ -1257,30 +1257,42 @@ body{ display:flex; flex-direction:column; }
 .personaje-box {
     padding-bottom: 80px !important; /* Espacio extra para el personaje y botones */
 }
+
+
 /* ========================================================= */
-/* FIX: CERRAR SESIÓN TRANSPARENTE Y SCROLL EN CHROME MÓVIL  */
+/* FIX: CERRAR SESIÓN TRANSPARENTE, SIN CORTAR LA IMAGEN     */
 /* ========================================================= */
 
-/* 1. Hacemos que el cuadro del personaje sea totalmente transparente */
 .personaje-box {
-    background: transparent !important; /* Adiós cuadro negro/gris */
-    box-shadow: none !important;        /* Adiós sombra del cuadro */
-    border: none !important;            /* Sin bordes */
+    background: transparent !important; /* Sin cuadro negro en Safari */
+    box-shadow: none !important;
+    border: none !important;
     
-    /* 2. ESCUDO CONTRA CHROME: Margen gigante abajo */
-    margin-bottom: 150px !important;    /* Empuja un espacio vacío al final */
-    padding-bottom: 50px !important;
+    /* 🔥 LA MAGIA: Esto evita que el navegador corte o esconda la imagen */
+    overflow: visible !important; 
+    
+    /* Espacio seguro para la barra de Chrome */
+    padding-bottom: 20px !important;
+    margin-bottom: 100px !important; 
 }
 
-/* 3. Aseguramos que la pantalla negra general permita bajar hasta el fondo */
-.modal-confirmarp {
-    padding-bottom: 150px !important; /* Espacio extra de seguridad para celulares */
+/* Le damos un tamaño real al contenedor para que el monito quepa bien */
+.personaje-container {
+    position: relative !important;
+    min-height: 45vh !important; 
+    overflow: visible !important;
 }
 
-/* Opcional: Centrar los botones de cancelar/salir para que se vean mejor flotando */
+/* Aseguramos que la imagen y la burbuja siempre estén al frente */
+.personaje-img, .globo-dialogo {
+    z-index: 100 !important; 
+}
+
 .personaje-box .accionesp {
     display: flex !important;
     justify-content: center !important;
     gap: 15px !important;
-    margin-top: 30px !important;
+    margin-top: 20px !important;
+    position: relative !important;
+    z-index: 101 !important; /* Los botones siempre se podrán tocar */
 }
