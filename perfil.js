@@ -182,21 +182,25 @@ function configurarEventos(){
     const btnCerrar = document.getElementById("btnCerrarSesion");
     if(btnCerrar) btnCerrar.addEventListener("click", ()=>{ abrirModalCerrarSesion(); });
 
-    if(btnColor && inputColor){
-        btnColor.addEventListener("click", () => {
-            inputColor.style.position = "fixed";
-            inputColor.style.left = "50%";
-            inputColor.style.top = "50%";
-            inputColor.style.transform = "translate(-50%, -50%)";
-            inputColor.click();
-            setTimeout(()=>{
-                inputColor.style.position = "";
-                inputColor.style.left = "";
-                inputColor.style.top = "";
-                inputColor.style.transform = "";
-            }, 100);
+// Basta con el evento 'input' y 'change' directamente sobre el input de color
+const colorPicker = document.getElementById("colorBannerPicker");
+
+if (colorPicker) {
+    // Escuchamos 'input' para ver cambios inmediatos y 'change' para confirmar en móviles
+    ['input', 'change'].forEach(evento => {
+        colorPicker.addEventListener(evento, (e) => {
+            const color = e.target.value;
+            actualizarBanner(color);
+            
+            // Cambiamos el color de fondo del botón 🎨 para que el usuario vea qué eligió
+            const pickerBox = document.getElementById("btnColor");
+            if (pickerBox) pickerBox.style.backgroundColor = color;
+            
+            // Autoguardado
+            guardarPerfil();
         });
-    }
+    });
+}
 
     if(colorPicker){
         colorPicker.addEventListener("input", (e)=>{
