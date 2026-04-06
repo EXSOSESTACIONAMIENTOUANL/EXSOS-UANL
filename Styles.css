@@ -1257,3 +1257,30 @@ body{ display:flex; flex-direction:column; }
 .personaje-box {
     padding-bottom: 80px !important; /* Espacio extra para el personaje y botones */
 }
+/* ========================================================= */
+/* FIX: CERRAR SESIÓN TRANSPARENTE Y SCROLL EN CHROME MÓVIL  */
+/* ========================================================= */
+
+/* 1. Hacemos que el cuadro del personaje sea totalmente transparente */
+.personaje-box {
+    background: transparent !important; /* Adiós cuadro negro/gris */
+    box-shadow: none !important;        /* Adiós sombra del cuadro */
+    border: none !important;            /* Sin bordes */
+    
+    /* 2. ESCUDO CONTRA CHROME: Margen gigante abajo */
+    margin-bottom: 150px !important;    /* Empuja un espacio vacío al final */
+    padding-bottom: 50px !important;
+}
+
+/* 3. Aseguramos que la pantalla negra general permita bajar hasta el fondo */
+.modal-confirmarp {
+    padding-bottom: 150px !important; /* Espacio extra de seguridad para celulares */
+}
+
+/* Opcional: Centrar los botones de cancelar/salir para que se vean mejor flotando */
+.personaje-box .accionesp {
+    display: flex !important;
+    justify-content: center !important;
+    gap: 15px !important;
+    margin-top: 30px !important;
+}
