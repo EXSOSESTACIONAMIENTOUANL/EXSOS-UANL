@@ -1140,3 +1140,61 @@ body{ display:flex; flex-direction:column; }
     background: #4752c4 !important;
     transform: scale(1.02) !important;
 }
+
+
+/* --- FIX PARA EL SCROLL Y EL BOTÓN DE CERRAR SESIÓN --- */
+
+.modal-perfil-full {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    /* Cambiamos height: 100% por 100dvh (Dynamic Viewport Height) */
+    height: 100dvh !important; 
+    background: #111214;
+    z-index: 99999;
+    /* Permitimos el scroll en el contenedor principal */
+    overflow-y: auto !important; 
+    -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
+    display: none;
+}
+
+.card-perfil-celular {
+    width: 100%;
+    /* Quitamos el min-height: 100vh para que el contenido dicte el largo */
+    min-height: auto !important; 
+    background: #232428;
+    display: flex;
+    flex-direction: column;
+    /* Agregamos un margen interno abajo muy grande para que el botón respire */
+    padding-bottom: 100px !important; 
+}
+
+/* --- FIX PARA EL SELECTOR DE COLOR --- */
+
+.banner-color-picker {
+    width: 100%;
+    height: 130px;
+    border-radius: 14px;
+    background: #5865f2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden; /* Importante */
+}
+
+/* Hacemos que el input de color sea invisible pero ocupe TODO el div */
+/* Así, cuando el usuario toque el div en el celular, realmente toca el input */
+.banner-color-picker input[type="color"] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100% !important;
+    height: 100% !important;
+    opacity: 0 !important;
+    cursor: pointer;
+    display: block !important;
+}
