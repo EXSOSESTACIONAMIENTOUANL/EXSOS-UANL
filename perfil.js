@@ -92,12 +92,14 @@ async function cargarPerfil(){
             const fotoFinal = data.foto || FOTO_DEFAULT;
             const correoFinal = data.correo || user.email || CORREO_DEFAULT;
 
+            // Datos del menú lateral oculto
             if(document.getElementById("fotoPerfil")) document.getElementById("fotoPerfil").src = fotoFinal;
             if(document.getElementById("nombreUsuario")) document.getElementById("nombreUsuario").textContent = data.nombre || "Usuario";
             if(document.getElementById("correoUsuario")) document.getElementById("correoUsuario").textContent = correoFinal;
-            if(document.getElementById("previewTelefono")) document.getElementById("previewTelefono").textContent = data.telefono || "Sin registrar";
-            if(document.getElementById("previewNacimiento")) document.getElementById("previewNacimiento").textContent = data.fechaNacimiento || "Sin registrar";
+           if(document.getElementById("previewTelefono")) document.getElementById("previewTelefono").textContent = data.telefono || "Sin registrar";
+         if(document.getElementById("previewNacimiento")) document.getElementById("previewNacimiento").textContent = data.fechaNacimiento || "Sin registrar";
 
+            // Tarjeta Unificada
             if(document.getElementById("previewFoto")) document.getElementById("previewFoto").src = fotoFinal;
             if(document.getElementById("previewNombre")) document.getElementById("previewNombre").textContent = data.nombre || "Usuario";
             if(document.getElementById("previewUser")) document.getElementById("previewUser").textContent = correoFinal;
@@ -111,7 +113,7 @@ async function cargarPerfil(){
                 if(data.ineUrl) document.getElementById("previewLicencia").src = data.ineUrl;
                 else if(data.licencia) document.getElementById("previewLicencia").src = data.licencia;
             }
-            
+
             if(data.banner) actualizarBanner(data.banner);
 
             datosOriginales = { foto: fotoFinal, banner: data.banner || "" };
@@ -125,27 +127,16 @@ function configurarEventos(){
     const preview = document.getElementById("previewFoto");
     const input = document.getElementById("inputFoto");
     const colorPicker = document.getElementById("colorBannerPicker");
-    const btnColorIcon = document.getElementById("btnColor");
     const inputBanner = document.getElementById("inputBannerPanel");
-    
+    const btnColor = document.getElementById("btnColor");
+    const inputColor = document.getElementById("colorBannerPicker");
+
     const btnMenu = document.getElementById("btnMenu");
     const overlay = document.getElementById("overlay");
     const btnCerrarAvatares = document.querySelector("#panelAvatares .cerrar-panel");
     const btnNoti = document.getElementById("btnNotificaciones");
     const panelNoti = document.getElementById("panelNotificaciones");
     const overlayAyuda = document.getElementById("overlayAyuda");
-
-    // LÓGICA DE COLOR COMPATIBLE CON MÓVILES
-    if (colorPicker) {
-        ['input', 'change'].forEach(evento => {
-            colorPicker.addEventListener(evento, (e) => {
-                const color = e.target.value;
-                actualizarBanner(color);
-                if (btnColorIcon) btnColorIcon.style.backgroundColor = color;
-                guardarPerfil();
-            });
-        });
-    }
 
     if(btnMenu) btnMenu.addEventListener("click", () => { if(window.abrirMenu) window.abrirMenu(); });
     if(overlay) overlay.addEventListener("click", () => { if(window.cerrarMenu) window.cerrarMenu(); });
@@ -170,26 +161,52 @@ function configurarEventos(){
     });
 
     if(btnCerrarAvatares) btnCerrarAvatares.addEventListener("click", cerrarPanelAvatares);
-    
+
     const btnCancelarBanner = document.querySelector("#editorBanner button:first-child");
     if(btnCancelarBanner) btnCancelarBanner.addEventListener("click", cancelarBanner);
     const btnAplicarBanner = document.querySelector("#editorBanner button:last-child");
     if(btnAplicarBanner) btnAplicarBanner.addEventListener("click", aplicarBanner);
-    
+
     const btnCerrarPerfil = document.getElementById("btnCerrarPerfil");
     if(btnCerrarPerfil) btnCerrarPerfil.addEventListener("click", cerrarPerfil);
     const btnEditarBanner = document.getElementById("btnEditarBanner");
     if(btnEditarBanner) btnEditarBanner.addEventListener("click", abrirPanelBanners);
-    
+
     const btnCancelar = document.getElementById("btnCancelarCerrarSesion");
     if(btnCancelar) btnCancelar.addEventListener("click", cancelarCerrarSesion);
     const btnConfirmar = document.getElementById("btnConfirmarCerrarSesion");
     if(btnConfirmar) btnConfirmar.addEventListener("click", confirmarCerrarSesion);
-    
+
     const btnEditar = document.getElementById("btnEditarPerfil");
     if(btnEditar) btnEditar.addEventListener("click", abrirPerfil);
     const btnCerrar = document.getElementById("btnCerrarSesion");
     if(btnCerrar) btnCerrar.addEventListener("click", ()=>{ abrirModalCerrarSesion(); });
+
+    if(btnColor && inputColor){
+        btnColor.addEventListener("click", () => {
+            inputColor.style.position = "fixed";
+            inputColor.style.left = "50%";
+            inputColor.style.top = "50%";
+            inputColor.style.transform = "translate(-50%, -50%)";
+            inputColor.click();
+            setTimeout(()=>{
+                inputColor.style.position = "";
+                inputColor.style.left = "";
+                inputColor.style.top = "";
+                inputColor.style.transform = "";
+            }, 100);
+        });
+    }
+
+    if(colorPicker){
+        colorPicker.addEventListener("input", (e)=>{
+            const color = e.target.value;
+            actualizarBanner(color);
+            const pickerBox = document.querySelector(".banner-color-picker");
+            if(pickerBox) pickerBox.style.background = color;
+            guardarPerfil(); // AUTOGUARDADO
+        });
+    }
 
     if(preview && input){
         preview.addEventListener("click", () => { abrirPanelAvatares(); });
@@ -201,7 +218,7 @@ function configurarEventos(){
                     const imagen = e.target.result;
                     actualizarFoto(imagen);
                     cerrarPanelAvatares();
-                    guardarPerfil();
+                    guardarPerfil(); // AUTOGUARDADO
                 }
                 reader.readAsDataURL(archivo);
             }
@@ -232,7 +249,7 @@ function configurarEventos(){
         div.addEventListener("click", ()=>{
             actualizarBanner(div.style.backgroundColor, false);
             cerrarPanelBanners();
-            guardarPerfil();
+            guardarPerfil(); // AUTOGUARDADO
         });
     });
 
@@ -240,7 +257,7 @@ function configurarEventos(){
         img.addEventListener("click", ()=>{
             actualizarBanner(img.src, true);
             cerrarPanelBanners();
-            guardarPerfil();
+            guardarPerfil(); // AUTOGUARDADO
         });
     });
 
@@ -259,7 +276,9 @@ function configurarEventos(){
         });
     }
 
-    // ACTUALIZACIÓN DE AUTO
+    // ========================================================
+    // 🔥 LÓGICA DE ACTUALIZACIÓN DE AUTO 🔥
+    // ========================================================
     const btnSolicitarAuto = document.getElementById("btnSolicitarAuto");
     if(btnSolicitarAuto) {
         btnSolicitarAuto.addEventListener("click", () => {
@@ -277,7 +296,7 @@ function configurarEventos(){
             const fotoFile = document.getElementById("nuevaFotoAuto").files[0];
 
             if(!modelo || !color || !anio || !placas || !fotoFile) {
-                alert("Por favor completa todos los datos.");
+                alert("Por favor completa todos los datos y sube la foto de tu nuevo vehículo.");
                 return;
             }
 
@@ -288,18 +307,139 @@ function configurarEventos(){
                 const fotoNuevaUrl = await procesarImagenBase64(fotoFile);
                 await updateDoc(doc(db, "usuarios", auth.currentUser.uid), {
                     solicitudCarro: {
-                        modelo: modelo, color: color, anio: anio, placas: placas,
-                        fotoUrl: fotoNuevaUrl, estado: "pendiente"
+                        modelo: modelo,
+                        color: color,
+                        anio: anio,
+                        placas: placas,
+                        fotoUrl: fotoNuevaUrl,
+                        estado: "pendiente"
                     }
                 });
+
                 document.getElementById("modalCambioAuto").classList.remove("activo");
-                alert("✅ Solicitud enviada.");
+                alert("✅ Tu solicitud fue enviada correctamente. El administrador la revisará en un lapso de 24 horas.");
+
             } catch (error) {
                 console.error(error);
-                alert("Error al enviar.");
+                alert("Error al enviar la solicitud. Revisa tu conexión.");
             } finally {
                 btnEnviarSolicitudAuto.disabled = false;
                 btnEnviarSolicitudAuto.innerText = "Enviar Solicitud";
+            }
+        });
+    }
+
+    // ========================================================
+    // 🔥 LÓGICA DE ACTUALIZACIÓN DE CORREO 🔥
+    // ========================================================
+    const btnCorreoAccion = document.getElementById("btnActualizarCorreo");
+    if(btnCorreoAccion) {
+        btnCorreoAccion.addEventListener("click", () => {
+            document.getElementById("modalCambioCorreo").classList.add("activo");
+        });
+    }
+
+    const btnConfirmarCorreo = document.getElementById("btnConfirmarCorreo");
+    if(btnConfirmarCorreo) {
+        btnConfirmarCorreo.addEventListener("click", async () => {
+            const nuevoCorreo = document.getElementById("nuevoCorreoInput").value.trim();
+            if(!nuevoCorreo || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(nuevoCorreo)) {
+                alert("Por favor ingresa un correo válido."); return;
+            }
+
+            btnConfirmarCorreo.disabled = true;
+            btnConfirmarCorreo.innerText = "Enviando...";
+
+            try {
+                await verifyBeforeUpdateEmail(auth.currentUser, nuevoCorreo);
+                await updateDoc(doc(db, "usuarios", auth.currentUser.uid), { correo: nuevoCorreo });
+
+                alert("✉️ Enlace enviado. Revisa tu bandeja de entrada en el nuevo correo para confirmar el cambio. (Se actualizará automáticamente).");
+                document.getElementById("modalCambioCorreo").classList.remove("activo");
+
+            } catch (error) {
+                if(error.code === 'auth/email-already-in-use') {
+                    alert("❌ Este correo ya está registrado en otra cuenta. Por favor elige otro.");
+                } else if(error.code === 'auth/requires-recent-login') {
+                    alert("⚠️ Por seguridad, debes cerrar sesión y volver a entrar antes de cambiar tu correo.");
+                } else {
+                    alert("Error Firebase: " + error.code);
+                }
+            } finally {
+                btnConfirmarCorreo.disabled = false;
+                btnConfirmarCorreo.innerText = "Verificar Correo";
+            }
+        });
+    }
+
+    // ========================================================
+    // 🔥 LÓGICA DE ACTUALIZACIÓN DE TELÉFONO (SMS) 🔥
+    // ========================================================
+    const btnTel = document.getElementById("btnActualizarTel");
+    if(btnTel) {
+        btnTel.addEventListener("click", () => {
+            document.getElementById("modalCambioTel").classList.add("activo");
+            document.getElementById("stepTel1").style.display = "block";
+            document.getElementById("stepTel2").style.display = "none";
+        });
+    }
+
+    const btnEnviarSms = document.getElementById("btnEnviarSmsPerfil");
+    if(btnEnviarSms) {
+        btnEnviarSms.addEventListener("click", async () => {
+            const nuevoTel = document.getElementById("nuevoTelInput").value.trim();
+            if(nuevoTel.length !== 10) { alert("El teléfono debe tener 10 dígitos."); return; }
+
+            btnEnviarSms.disabled = true;
+            btnEnviarSms.innerText = "Verificando...";
+
+            try {
+                if (!window.recaptchaVerifierPerfil) {
+                    window.recaptchaVerifierPerfil = new RecaptchaVerifier(auth, 'recaptcha-perfil-container', { 'size': 'normal' });
+                }
+                const numeroCompleto = "+52" + nuevoTel;
+                const provider = new PhoneAuthProvider(auth);
+
+                verificacionSmsPerfilId = await provider.verifyPhoneNumber(numeroCompleto, window.recaptchaVerifierPerfil);
+
+                document.getElementById("stepTel1").style.display = "none";
+                document.getElementById("stepTel2").style.display = "block";
+
+            } catch (error) {
+                btnEnviarSms.disabled = false;
+                btnEnviarSms.innerText = "Enviar SMS";
+                if(error.code === 'auth/credential-already-in-use') {
+                    alert("❌ Este número ya está asociado a otra cuenta.");
+                } else {
+                    alert("Error Firebase: " + error.message);
+                }
+            }
+        });
+    }
+
+    const btnVerificarSms = document.getElementById("btnVerificarSmsPerfil");
+    if(btnVerificarSms) {
+        btnVerificarSms.addEventListener("click", async () => {
+            const codigo = document.getElementById("codigoSmsPerfil").value.trim();
+            if(!codigo) { alert("Ingresa el código."); return; }
+
+            btnVerificarSms.disabled = true;
+            btnVerificarSms.innerText = "Actualizando...";
+
+            try {
+                const credencialNueva = PhoneAuthProvider.credential(verificacionSmsPerfilId, codigo);
+                await updatePhoneNumber(auth.currentUser, credencialNueva);
+
+                const nuevoTel = document.getElementById("nuevoTelInput").value.trim();
+                await updateDoc(doc(db, "usuarios", auth.currentUser.uid), { telefono: nuevoTel });
+
+                alert("✅ Tu número de teléfono se ha actualizado correctamente.");
+                document.getElementById("modalCambioTel").classList.remove("activo");
+
+            } catch (error) {
+                alert("❌ Código incorrecto o expirado.");
+                btnVerificarSms.disabled = false;
+                btnVerificarSms.innerText = "Verificar y Guardar";
             }
         });
     }
@@ -329,11 +469,13 @@ function cerrarPerfil(){
 async function guardarPerfil() {
     const user = auth.currentUser;
     if (!user) return;
+
     const uid = user.uid;
     const datosAActualizar = {
         foto: fotoTemporal || document.getElementById("previewFoto").src,
         banner: bannerTempFinal || datosOriginales.banner || ""
     };
+
     try {
         await updateDoc(doc(db, "usuarios", uid), datosAActualizar);
         datosOriginales.foto = datosAActualizar.foto;
@@ -350,11 +492,29 @@ function cerrarPanelAvatares(){ document.getElementById("panelAvatares").classLi
 
 document.querySelectorAll(".avatar-opcion").forEach(img => {
     img.addEventListener("click", () => {
-        actualizarFoto(img.src); 
+        const ruta = img.src;
+        actualizarFoto(ruta); 
         cerrarPanelAvatares();
-        guardarPerfil();
+        guardarPerfil(); // AUTOGUARDADO
     });
 });
+
+const inputAvatar = document.getElementById("inputAvatarPanel");
+if(inputAvatar){
+    inputAvatar.addEventListener("change", (e)=>{
+        const archivo = e.target.files[0];
+        if(archivo){
+            const reader = new FileReader();
+            reader.onload = function(e){
+                const imagen = e.target.result;
+                actualizarFoto(imagen);
+                cerrarPanelAvatares();
+                guardarPerfil(); // AUTOGUARDADO
+            }
+            reader.readAsDataURL(archivo);
+        }
+    });
+}
 
 function abrirPanelBanners(){ document.getElementById("panelBanners").classList.add("activo"); }
 function cerrarPanelBanners(){ document.getElementById("panelBanners").classList.remove("activo"); }
@@ -418,12 +578,12 @@ function aplicarBanner() {
             sx = 0; sy = (img.height - sHeight) / 2;
         }
         ctx.drawImage(img, sx, sy, sWidth, sHeight, 0, 0, canvas.width, canvas.height);
-        const resultado = canvas.toDataURL("image/jpeg", 0.6);
+        const resultado = canvas.toDataURL("image/png");
         actualizarBanner(resultado);
         cerrarEditorBanner();
         cerrarPanelBanners();
         bannerTemporal = null;
-        guardarPerfil();
+        guardarPerfil(); // AUTOGUARDADO
     }
     img.src = bannerTemporal;
 }
@@ -487,6 +647,7 @@ function abrirModalCerrarSesion(){ document.getElementById("modalCerrarSesion").
 function cancelarCerrarSesion(){ document.getElementById("modalCerrarSesion").classList.remove("activo"); }
 function confirmarCerrarSesion(){ signOut(auth).then(() => { window.location.href = "index.html"; }); }
 
+// 🔥 FUNCION DE PLACAS AUTOMATICAS 🔥
 window.formatearPlacas = function(input) {
     let valor = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
     let formateado = '';
@@ -496,6 +657,7 @@ window.formatearPlacas = function(input) {
     input.value = formateado;
 };
 
+// Variables Globales
 window.abrirPerfil = abrirPerfil;
 window.cerrarPerfil = cerrarPerfil;
 window.abrirPanelBanners = abrirPanelBanners;
