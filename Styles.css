@@ -1198,3 +1198,23 @@ body{ display:flex; flex-direction:column; }
     cursor: pointer;
     display: block !important;
 }
+/* ARREGLO DE SCROLL EN MÓVIL */
+.modal-perfil-full {
+    height: 100dvh !important; /* dVH es la clave para iPhone */
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+}
+
+.card-perfil-celular {
+    min-height: auto !important; 
+    padding-bottom: 120px !important; /* Espacio extra para que el scroll llegue al final */
+}
+
+/* FIX COLOR PICKER EN MÓVIL */
+.banner-color-picker input[type="color"] {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    opacity: 0 !important;
+    cursor: pointer;
+    display: block !important;
+}
