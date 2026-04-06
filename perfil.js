@@ -208,23 +208,24 @@ function configurarEventos(){
         });
     }
 
-    if(preview && input){
+if(preview && input){
         preview.addEventListener("click", () => { abrirPanelAvatares(); });
-        input.addEventListener("change", (e)=>{
+        input.addEventListener("change", async (e)=>{
             const archivo = e.target.files[0];
             if(archivo){
-                const reader = new FileReader();
-                reader.onload = function(e){
-                    const imagen = e.target.result;
-                    actualizarFoto(imagen);
+                try {
+                    // 🔥 MAGIA: Comprimimos la foto antes de usarla
+                    const imagenComprimida = await procesarImagenBase64(archivo);
+                    actualizarFoto(imagenComprimida);
                     cerrarPanelAvatares();
-                    guardarPerfil(); // AUTOGUARDADO
+                    await guardarPerfil(); 
+                } catch (error) {
+                    console.error("Error al procesar la foto:", error);
+                    alert("Error al cargar la foto.");
                 }
-                reader.readAsDataURL(archivo);
             }
         });
     }
-
     document.addEventListener("keydown", (e)=>{
         if(e.key === "Escape"){
             const editor = document.getElementById("editorBanner");
@@ -501,17 +502,19 @@ document.querySelectorAll(".avatar-opcion").forEach(img => {
 
 const inputAvatar = document.getElementById("inputAvatarPanel");
 if(inputAvatar){
-    inputAvatar.addEventListener("change", (e)=>{
+    inputAvatar.addEventListener("change", async (e)=>{
         const archivo = e.target.files[0];
         if(archivo){
-            const reader = new FileReader();
-            reader.onload = function(e){
-                const imagen = e.target.result;
-                actualizarFoto(imagen);
+            try {
+                // 🔥 MAGIA: Comprimimos la foto del panel también
+                const imagenComprimida = await procesarImagenBase64(archivo);
+                actualizarFoto(imagenComprimida);
                 cerrarPanelAvatares();
-                guardarPerfil(); // AUTOGUARDADO
+                await guardarPerfil(); 
+            } catch (error) {
+                console.error(error);
+                alert("Error al cargar la foto.");
             }
-            reader.readAsDataURL(archivo);
         }
     });
 }
@@ -578,7 +581,10 @@ function aplicarBanner() {
             sx = 0; sy = (img.height - sHeight) / 2;
         }
         ctx.drawImage(img, sx, sy, sWidth, sHeight, 0, 0, canvas.width, canvas.height);
-        const resultado = canvas.toDataURL("image/png");
+        
+        // 🔥 EL CAMBIO CLAVE: Usamos JPEG al 60% de calidad en vez de PNG
+        const resultado = canvas.toDataURL("image/jpeg", 0.6); 
+        
         actualizarBanner(resultado);
         cerrarEditorBanner();
         cerrarPanelBanners();
@@ -587,7 +593,6 @@ function aplicarBanner() {
     }
     img.src = bannerTemporal;
 }
-
 function cerrarEditorBanner(){ document.getElementById("editorBanner").classList.remove("activo"); }
 
 function activarMovimientoBanner(){
