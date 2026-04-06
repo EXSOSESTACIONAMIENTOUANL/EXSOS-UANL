@@ -1145,29 +1145,27 @@ body{ display:flex; flex-direction:column; }
 /* --- FIX PARA EL SCROLL Y EL BOTÓN DE CERRAR SESIÓN --- */
 
 .modal-perfil-full {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    /* Cambiamos height: 100% por 100dvh (Dynamic Viewport Height) */
-    height: 100dvh !important; 
-    background: #111214;
-    z-index: 99999;
-    /* Permitimos el scroll en el contenedor principal */
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100dvh !important; /* Ajuste automático a la pantalla del celular */
+    background: #111214 !important;
+    z-index: 99999 !important;
     overflow-y: auto !important; 
-    -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
-    display: none;
+    -webkit-overflow-scrolling: touch !important;
 }
 
 .card-perfil-celular {
-    width: 100%;
-    /* Quitamos el min-height: 100vh para que el contenido dicte el largo */
-    min-height: auto !important; 
-    background: #232428;
-    display: flex;
-    flex-direction: column;
-    /* Agregamos un margen interno abajo muy grande para que el botón respire */
-    padding-bottom: 100px !important; 
+    width: 100% !important;
+    min-height: 100% !important;
+    background: #111214 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    /* ESTE PADDING ES LO MÁS IMPORTANTE: 
+       Deja 150px de espacio vacío al final para que el botón de 
+       Cerrar Sesión suba por encima de la barra de Chrome */
+    padding-bottom: 150px !important; 
 }
 
 /* --- FIX PARA EL SELECTOR DE COLOR --- */
@@ -1217,4 +1215,45 @@ body{ display:flex; flex-direction:column; }
     opacity: 0 !important;
     cursor: pointer;
     display: block !important;
+}
+/* ========================================================= */
+/* FIX DEFINITIVO PARA MENÚS EMERGENTES (MODAL-CONFIRMARP)   */
+/* ========================================================= */
+
+.modal-confirmarp {
+    display: flex !important;
+    /* Cambiamos 'center' por 'flex-start' para que el scroll empiece desde arriba */
+    align-items: flex-start !important; 
+    justify-content: center !important;
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100dvh !important; /* dVH es vital para iPhone */
+    background: rgba(0, 0, 0, 0.85) !important;
+    z-index: 1000000 !important;
+    /* El scroll debe estar en el fondo negro para poder bajar libremente */
+    overflow-y: auto !important; 
+    padding: 40px 10px !important; 
+    -webkit-overflow-scrolling: touch !important;
+}
+
+.modal-boxp {
+    position: relative !important;
+    display: flex !important;
+    flex-direction: column !important;
+    width: 95% !important;
+    max-width: 500px !important;
+    background: #2b2d31 !important;
+    border-radius: 20px !important;
+    padding: 30px !important;
+    margin-top: auto !important;
+    margin-bottom: auto !important;
+    /* Agregamos un margen extra abajo para que el botón de cierre respire */
+    padding-bottom: 50px !important; 
+    height: auto !important;
+}
+
+/* Si es el modal de Cerrar Sesión específicamente */
+.personaje-box {
+    padding-bottom: 80px !important; /* Espacio extra para el personaje y botones */
 }
